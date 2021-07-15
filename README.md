@@ -19,14 +19,14 @@ Yes, there are a lot of arg parsers. But hear us out.
 
 ## Usage
 
-### Importing
+## Importing
 
 ```typescript
 import massarg from "massarg" // import init function (returns massarg instance)
 import { Massarg } from "massarg" // import class
 ```
 
-### Initializing
+## Initializing
 
 Call the default export function `massarg`, or create a new instance manually using `new Massarg()`,
 and then you can start chaining commands. Use `.parse()` to do the final parsing and run the
@@ -41,13 +41,13 @@ massarg()
   .parse()
 ```
 
-### Main command
+## Main command
 
 The main command is the one that runs when you supply no other commands.
 
-#### Example
+### Example
 
-##### JS/TS
+#### JS/TS
 
 ```typescript
 massarg().main((options) => {
@@ -56,7 +56,7 @@ massarg().main((options) => {
 })
 ```
 
-##### Shell
+#### Shell
 
 ```shell
 $ ./mybin
@@ -66,14 +66,23 @@ $ ./mybin --my-string "Some string"
 # Main command runs with option { myString: "Some string" }
 ```
 
-### Commands
+## Commands
 
 Commands are activated when their keyword is included in the args. The first command that matches
 will be executed, skipping the rest. Options will still be parsed.
 
-#### Example
+#### Options
 
-##### JS/TS
+| Name        | Type                        | Required | Example                                           | Description                                                                                                          |
+| ----------- | --------------------------- | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| name        | `string`                    | ✅       | `"my-command"`                                    | The name of the command, which will be used in the CLI to trigger it                                                 |
+| aliases     | `string[]`                  | ❎       | `["m", "mc"]`                                     | Alternate names for the command, available for use in addition to `name`                                             |
+| description | `string`                    | ❎       | `"Description of the command"`                    | Description for the command, only displayed with `--help` or `printHelp()`                                           |
+| run         | `function(options) => void` | ✅       | `(options) => console.log("my-command", options)` | Main function that runs this command. The supplied argument is the options passed via the CLI and parsed by massarg. |
+
+### Example
+
+#### JS/TS
 
 ```typescript
 massarg().command({
@@ -87,16 +96,7 @@ massarg().command({
 })
 ```
 
-###### Options
-
-| Name        | Type                        | Required | Example                                           | Description                                                                                                          |
-| ----------- | --------------------------- | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| name        | `string`                    | ✅       | `"my-command"`                                    | The name of the command, which will be used in the CLI to trigger it                                                 |
-| aliases     | `string[]`                  | ❎       | `["m", "mc"]`                                     | Alternate names for the command, available for use in addition to `name`                                             |
-| description | `string`                    | ❎       | `"Description of the command"`                    | Description for the command, only displayed with `--help` or `printHelp()`                                           |
-| run         | `function(options) => void` | ✅       | `(options) => console.log("my-command", options)` | Main function that runs this command. The supplied argument is the options passed via the CLI and parsed by massarg. |
-
-##### Shell
+#### Shell
 
 ```shell
 $ ./mybin my-command
@@ -106,14 +106,23 @@ $ ./mybin my-command --my-string "Some string"
 # Specified "my-command" runs with option { myString: "Some string" }
 ```
 
-### Options
+## Options
 
 Options are variables you can accept via CLI and parse to use in your commands, e.g. `--my-bool`,
 `--my-string string`, `--my-number 1`
 
-#### Example
+#### Options
 
-##### JS/TS
+| Name        | Type                              | Required | Default  | Example                               | Description                                                                                                                                                                                                |
+| ----------- | --------------------------------- | -------- | -------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| name        | `string`                          | ✅       |          | `"my-number"`                         | The name of the option, which will be used in the CLI to apply it                                                                                                                                          |
+| aliases     | `string[]`                        | ❎       |          | `["n"]`                               | Alternate names for the option, available for use in addition to `name`                                                                                                                                    |
+| description | `string`                          | ❎       |          | `"Description of the command"`        | Description for the command, only displayed with `--help` or `printHelp()`                                                                                                                                 |
+| parse       | `function(value, options) => any` | ❎       | `String` | `(value, options) => parseInt(value)` | Function that parses this option. The supplied arguments are the string value from the arg, and other options passed via the CLI and parsed by massarg before this one. Not all options will be available. |
+
+### Example
+
+#### JS/TS
 
 ```typescript
 massarg()
@@ -135,16 +144,7 @@ massarg()
   })
 ```
 
-###### Options
-
-| Name        | Type                              | Required | Default  | Example                               | Description                                                                                                                                                                                                |
-| ----------- | --------------------------------- | -------- | -------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name        | `string`                          | ✅       |          | `"my-number"`                         | The name of the option, which will be used in the CLI to apply it                                                                                                                                          |
-| aliases     | `string[]`                        | ❎       |          | `["n"]`                               | Alternate names for the option, available for use in addition to `name`                                                                                                                                    |
-| description | `string`                          | ❎       |          | `"Description of the command"`        | Description for the command, only displayed with `--help` or `printHelp()`                                                                                                                                 |
-| parse       | `function(value, options) => any` | ❎       | `String` | `(value, options) => parseInt(value)` | Function that parses this option. The supplied arguments are the string value from the arg, and other options passed via the CLI and parsed by massarg before this one. Not all options will be available. |
-
-##### Shell
+#### Shell
 
 ```shell
 $ ./mybin my-command
@@ -154,14 +154,31 @@ $ ./mybin my-command --my-string "Some string" --my-number 1 --my-bool
 # Specified "my-command" runs with option { myString: "Some string", myNumber: 1, myBool: true }
 ```
 
-### Help/Usage Command
+## Help/Usage Command
 
 You can modify some of the styles and behavior of the help text. None of the options are required,
 you may override their defaults to modify the behavior.
 
-#### Example
+#### Options
 
-##### JS/TS
+| Name                   | Type                 | Default                | Description                                                                                                   |
+| ---------------------- | -------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `binName`              | `string`             | running script name    | The name of the binary, to be used when outputting usage information.                                         |
+| `printWidth`           | `number`             | `80`                   | The amount of characters to allow per line. Use `0` to disable wrapping.                                      |
+| `normalColors`         | `string \| string[]` | `"dim"`                | Colors to use on normal text (descriptions, usage example, etc.)                                              |
+| `highlightColors`      | `string \| string[]` | `"yellow"`             | Colors to use on highlighted text (command names, option names, binary name, etc)                             |
+| `titleColors`          | `string \| string[]` | `"white"`              | Colors to use on title text ("Options", "Usage", etc)                                                         |
+| `subtitleColors`       | `string \| string[]` | `["bold", "dim"]`      | Colors to use on subtitle text (e.g. command titles for non-gloal options)                                    |
+| `header`               | `string`             | `"Header text"`        | Additional content to display below the usage line, and above the rest.                                       |
+| `footer`               | `string`             | `"Footer text"`        | Additional content to display below the commands and options, at the very bottom.                             |
+| `commandNameSeparator` | `string`             | `" \| "`               | Separator for command name & its aliases.                                                                     |
+| `optionNameSeparator`  | `string`             | `"\|"`                 | Separator for option name & its aliases.                                                                      |
+| `useGlobalColumns`     | `boolean`            | `false`                | Decides whether to align the columns of the option/command names and their descriptions globally or per table |
+| `usageExample`         | `string`             | `"[command] [option]"` | Default text to use as suffix for the `binName`, which will be used in the "Usage" line of the help text      |
+
+### Example
+
+#### JS/TS
 
 ```typescript
 massarg().help({
@@ -180,24 +197,7 @@ massarg().help({
 })
 ```
 
-###### Options
-
-| Name                   | Type                 | Default                | Description                                                                                                   |
-| ---------------------- | -------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
-| `binName`              | `string`             | running script name    | The name of the binary, to be used when outputting usage information.                                         |
-| `printWidth`           | `number`             | `80`                   | The amount of characters to allow per line. Use `0` to disable wrapping.                                      |
-| `normalColors`         | `string \| string[]` | `"dim"`                | Colors to use on normal text (descriptions, usage example, etc.)                                              |
-| `highlightColors`      | `string \| string[]` | `"yellow"`             | Colors to use on highlighted text (command names, option names, binary name, etc)                             |
-| `titleColors`          | `string \| string[]` | `"white"`              | Colors to use on title text ("Options", "Usage", etc)                                                         |
-| `subtitleColors`       | `string \| string[]` | `["bold", "dim"]`      | Colors to use on subtitle text (e.g. command titles for non-gloal options)                                    |
-| `header`               | `string`             | `"Header text"`        | Additional content to display below the usage line, and above the rest.                                       |
-| `footer`               | `string`             | `"Footer text"`        | Additional content to display below the commands and options, at the very bottom.                             |
-| `commandNameSeparator` | `string`             | `" \| "`               | Separator for command name & its aliases.                                                                     |
-| `optionNameSeparator`  | `string`             | `"\|"`                 | Separator for option name & its aliases.                                                                      |
-| `useGlobalColumns`     | `boolean`            | `false`                | Decides whether to align the columns of the option/command names and their descriptions globally or per table |
-| `usageExample`         | `string`             | `"[command] [option]"` | Default text to use as suffix for the `binName`, which will be used in the "Usage" line of the help text      |
-
-##### Shell
+#### Shell
 
 ```shell
 $ ./mybin --help
