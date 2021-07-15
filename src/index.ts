@@ -1,9 +1,8 @@
 #!/usr/bin/env node
 import chalk from "chalk"
 import merge from "lodash/merge"
-import { clearLine } from "node:readline"
 import path from "path"
-import { color, COLOR_CODE_LEN, wrap } from "./utils"
+import { ArrayOr, asArray, color, COLOR_CODE_LEN, wrap } from "./utils"
 
 export function massarg() {
   return new Massarg()
@@ -21,7 +20,7 @@ export interface OptionDef<Options, Value> {
   description?: string
   defaultValue?: Value
   boolean?: boolean
-  command?: string
+  commands?: ArrayOr<string>
   parse?(value: string, options: Options): Value
 }
 
@@ -35,9 +34,10 @@ export interface CommandDef<T> {
 export interface HelpDef {
   printWidth?: number
   binName?: string
-  normalColor?: keyof typeof chalk
-  highlightColor?: keyof typeof chalk
-  titleColor?: keyof typeof chalk
+  normalColors?: ArrayOr<keyof typeof chalk>
+  highlightColors?: ArrayOr<keyof typeof chalk>
+  titleColors?: ArrayOr<keyof typeof chalk>
+  subtitleColors?: ArrayOr<keyof typeof chalk>
   header?: string
   footer?: string
   commandNameSeparator?: string
@@ -55,9 +55,10 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
   private _help: Required<HelpDef> = {
     binName: undefined as any,
-    normalColor: "dim",
-    highlightColor: "yellow",
-    titleColor: "white",
+    normalColors: "dim",
+    highlightColors: "yellow",
+    titleColors: "white",
+    subtitleColors: "dim",
     printWidth: 80,
     header: "",
     footer: "",
@@ -99,33 +100,31 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   public printHelp(args?: string[]): void {
     this.parseArgs(args)
 
-    const { highlightColor, normalColor, titleColor, binName } = this._help
+    const { highlightColors, normalColors, titleColors, binName } = this._help
 
     console.log(
-      color(titleColor, chalk.bold`Usage:`),
-      color(highlightColor, binName ?? path.basename(process.argv[1])),
-      color(normalColor, "[command] [options]")
+      color(titleColors, chalk.bold`Usage:`),
+      color(highlightColors, binName ?? path.basename(process.argv[1])),
+      color(normalColors, "[command] [options]")
     )
 
     if (this._help.header) {
       console.log()
-      console.log(color(titleColor, this._help.header))
+      console.log(color(titleColors, this._help.header))
     }
 
     if (this._commands.length) {
       console.log("")
-      console.log(color(titleColor, chalk.bold`Commands:`))
+      console.log(color(titleColors, chalk.bold`Commands:`))
       this._printCommands()
     }
 
     console.log()
-
-    console.log(color(titleColor, chalk.bold`Options:`))
     this._printOptions()
 
     if (this._help.footer) {
       console.log()
-      console.log(color(titleColor, this._help.footer))
+      console.log(color(titleColors, this._help.footer))
     }
   }
 
@@ -203,6 +202,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 
   private _getWrappedLines(list: Array<{ name: string; description?: string }>): string[] {
+    const { normalColors, highlightColors } = this._help
     const lines: string[] = []
 
     let maxNameLen = this._help.useGlobalColumns ? this._maxNameLen ?? 0 : 0
@@ -221,8 +221,11 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     const nameFullSize = maxNameLen + ARG_SPACE_LEN + INDENT_LEN
 
     for (const item of list) {
-      const cmdName = chalk.yellow(`${item.name}`).padEnd(nameFullSize + (COLOR_COUNT - 1) * COLOR_CODE_LEN, " ")
-      const cmdDescr = chalk.dim(item.description ?? "")
+      const cmdName = color(highlightColors, `${item.name}`).padEnd(
+        nameFullSize + (COLOR_COUNT - 1) * COLOR_CODE_LEN,
+        " "
+      )
+      const cmdDescr = color(normalColors, item.description ?? "")
 
       for (const line of wrap(cmdName + cmdDescr, {
         indent: nameFullSize + INDENT_LEN,
@@ -248,11 +251,46 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 
   private _printOptions() {
-    for (const line of this._getWrappedLines(
-      this._options.map((c) => ({ name: this._fullOptName(c), description: c.description }))
-    )) {
-      if (line.trim().length) {
-        console.log(line)
+    let printedTitle = false
+    const { titleColors, subtitleColors } = this._help
+
+    const commandOpts: string[] = []
+
+    for (const cmd of this._commands) {
+      const opts = this._commandOptions(cmd)
+      if (opts.length) {
+        commandOpts.push(color(subtitleColors, `${cmd.name}:`))
+        for (const line of this._getWrappedLines(
+          opts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
+        )) {
+          if (line.trim().length) {
+            commandOpts.push(line)
+          }
+        }
+      }
+    }
+
+    console.log(color(titleColors, chalk.bold`${commandOpts.length ? "Command Options" : "Options"}:`))
+    // if (commandOpts.length) {
+    console.log()
+    // }
+
+    for (const line of commandOpts) {
+      console.log(line)
+    }
+
+    const globalOpts = this._globalOptions()
+    if (globalOpts.length) {
+      if (commandOpts.length) {
+        console.log(chalk.bold`Global Options:`)
+        console.log()
+      }
+      for (const line of this._getWrappedLines(
+        globalOpts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
+      )) {
+        if (line.trim().length) {
+          console.log(line)
+        }
       }
     }
   }
@@ -260,8 +298,21 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   private _fullCmdName(cmd: CommandDef<Options>) {
     return [cmd.name, ...(cmd.aliases ?? [])].join(this._help.commandNameSeparator)
   }
+
   private _fullOptName(opt: OptionDef<Options, any>) {
     return [`--${opt.name}`, ...(opt.aliases ?? []).map((a) => `-${a}`)].join(this._help.optionNameSeparator)
+  }
+
+  private _commandOptions(cmd: CommandDef<Options>): OptionDef<Options, any>[] {
+    return this._options.filter(
+      (o) =>
+        (asArray(o.commands).length && asArray(o.commands).includes(cmd.name)) ||
+        cmd.aliases?.some((a) => asArray(o.commands).includes(a))
+    )
+  }
+
+  private _globalOptions(): OptionDef<Options, any>[] {
+    return this._options.filter((o) => !o.commands)
   }
 }
 
@@ -285,6 +336,7 @@ massarg()
     aliases: ["n"],
     description: "This is a number arg, if you include this option, you must supply it with a value.",
     defaultValue: 0,
+    commands: ["do"],
     parse: (v) => parseInt(v),
   })
   .command({

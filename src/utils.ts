@@ -3,8 +3,12 @@ import chalk from "chalk"
 import repeat from "lodash/repeat"
 import merge from "lodash/merge"
 
-export function color(color: keyof typeof chalk, ...text: any[]): string {
-  return chalk.reset((chalk[color] as typeof chalk.dim)(...text))
+export function color(color: ArrayOr<keyof typeof chalk>, ...text: any[]): string {
+  let output: string = undefined as any
+  for (const c of asArray(color)) {
+    output = (chalk[c as keyof typeof chalk] as typeof chalk.dim)(...(output ? [output] : text))
+  }
+  return chalk.reset(output)
 }
 
 export interface WrapOptions {
@@ -54,7 +58,7 @@ export function wrap(text: string, options?: WrapOptions): string[] {
   return lines
 }
 
-export const COLOR_CODE_LEN = chalk.yellow` `.length - 1
+export const COLOR_CODE_LEN = color("yellow", " ").length - 1
 
 function chunk(text: string, len: number): string[] {
   const arr = text.split(" ")
@@ -73,4 +77,9 @@ function chunk(text: string, len: number): string[] {
     result.push(subStr)
   }
   return result
+}
+
+export type ArrayOr<T> = T | T[]
+export function asArray<T>(obj: T | T[]): T[] {
+  return Array.isArray(obj) ? obj ?? [] : obj ? [obj] : []
 }
