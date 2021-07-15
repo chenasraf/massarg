@@ -259,6 +259,9 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     for (const cmd of this._commands) {
       const opts = this._commandOptions(cmd)
       if (opts.length) {
+        if (commandOpts.length) {
+          commandOpts.push("")
+        }
         commandOpts.push(color(subtitleColors, `${cmd.name}:`))
         for (const line of this._getWrappedLines(
           opts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
@@ -328,6 +331,7 @@ massarg()
     name: "bool",
     aliases: ["b"],
     defaultValue: false,
+    commands: ["do", "cc"],
     description: "This is a boolean arg. Supply it without value to set as true, or set value 0 for false",
     parse: Boolean,
   })
@@ -336,7 +340,7 @@ massarg()
     aliases: ["n"],
     description: "This is a number arg, if you include this option, you must supply it with a value.",
     defaultValue: 0,
-    commands: ["do"],
+    commands: "do",
     parse: (v) => parseInt(v),
   })
   .command({
