@@ -2,6 +2,7 @@
 
 import chalk from "chalk"
 import merge from "lodash/merge"
+import camelCase from "lodash/camelCase"
 import path from "path"
 import { OptionsBase, CommandDef, HelpDef, MainDef, OptionDef } from "./options"
 import { asArray, color, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
@@ -179,7 +180,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
   private _addOptionToData(option: OptionDef<Options, any>, value: any) {
     const _d: Record<string, any> = this.data
-    _d[option.name] = value
+    _d[camelCase(option.name)] = value
     option.aliases?.forEach((a) => (_d[a] = value))
   }
 
