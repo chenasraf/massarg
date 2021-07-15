@@ -1,0 +1,18 @@
+{
+  "name": "massarg",
+  "version": "0.1.0",
+  "description": "Flexible, powerful, and simple command/argument parser for JS",
+  "main": "index.js",
+  "repository": "https://github.com/chenasraf/massarg.git",
+  "author": "Chen Asraf <chenasrafil@gmail.com>",
+  "license": "Apache 2.0",
+  "devDependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/lodash": "^4.14.171",
+    "@types/node": "^16.3.2"
+  },
+  "dependencies": {
+    "chalk": "^4.1.1",
+    "lodash": "^4.17.21"
+  }
+}
