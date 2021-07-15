@@ -2,7 +2,7 @@
 import chalk from "chalk"
 import merge from "lodash/merge"
 import path from "path"
-import { ArrayOr, asArray, color, COLOR_CODE_LEN, wrap } from "./utils"
+import { ArrayOr, asArray, color, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
 
 export function massarg() {
   return new Massarg()
@@ -58,7 +58,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     normalColors: "dim",
     highlightColors: "yellow",
     titleColors: "white",
-    subtitleColors: "dim",
+    subtitleColors: ["bold", "dim"],
     printWidth: 80,
     header: "",
     footer: "",
@@ -229,7 +229,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
       for (const line of wrap(cmdName + cmdDescr, {
         indent: nameFullSize + INDENT_LEN,
-        colorCount: COLOR_COUNT,
+        colorCount: colorCount(normalColors, highlightColors),
         firstLineIndent: INDENT_LEN,
         printWidth: this._help.printWidth,
       })) {

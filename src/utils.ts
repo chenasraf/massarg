@@ -11,6 +11,10 @@ export function color(color: ArrayOr<keyof typeof chalk>, ...text: any[]): strin
   return chalk.reset(output)
 }
 
+export function colorCount(...colors: any[]): number {
+  return asArray(colors).reduce((all, colorSet) => all + asArray(colorSet).length, 0)
+}
+
 export interface WrapOptions {
   indent?: number
   firstLineIndent?: number
