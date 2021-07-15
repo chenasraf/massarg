@@ -112,10 +112,13 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       console.log(color(titleColor, this._help.header))
     }
 
-    console.log()
+    if (this._commands.length) {
+      console.log("")
+      console.log(color(titleColor, chalk.bold`Commands:`))
+      this._printCommands()
+    }
 
-    console.log(color(titleColor, chalk.bold`Commands:`))
-    this._printCommands()
+    console.log()
 
     console.log(color(titleColor, chalk.bold`Options:`))
     this._printOptions()
@@ -225,6 +228,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
         indent: nameFullSize + INDENT_LEN,
         colorCount: COLOR_COUNT,
         firstLineIndent: INDENT_LEN,
+        printWidth: this._help.printWidth,
       })) {
         lines.push(line)
       }
@@ -237,7 +241,9 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     for (const line of this._getWrappedLines(
       this._commands.map((c) => ({ name: this._fullCmdName(c), description: c.description }))
     )) {
-      console.log(line)
+      if (line.trim().length) {
+        console.log(line)
+      }
     }
   }
 
@@ -245,7 +251,9 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     for (const line of this._getWrappedLines(
       this._options.map((c) => ({ name: this._fullOptName(c), description: c.description }))
     )) {
-      console.log(line)
+      if (line.trim().length) {
+        console.log(line)
+      }
     }
   }
 
@@ -259,6 +267,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
 massarg()
   .help({
+    // printWidth: 0,
     binName: "my-cmd",
     useGlobalColumns: true,
     header: "This is the app description",
@@ -287,7 +296,8 @@ massarg()
   .command({
     name: "my-custom-command",
     description:
-      "This is another command that does something. It's a different one just to see more available. This description is just to fill the blanks. Don't kill the messenger.",
+      "This is another command that does something. It's a different one just to see more available. This " +
+      "description is just to fill the blanks. Don't kill the messenger.",
     aliases: ["cc", "c"],
     run: console.log.bind(undefined, "do"),
   })
