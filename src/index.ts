@@ -1,49 +1,10 @@
 #!/usr/bin/env node
+
 import chalk from "chalk"
 import merge from "lodash/merge"
 import path from "path"
-import { ArrayOr, asArray, color, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
-
-export function massarg() {
-  return new Massarg()
-}
-
-export type OptionsBase = {
-  help: boolean
-}
-
-export type MainDef<Options> = (options: Options) => void
-
-export interface OptionDef<Options, Value> {
-  name: string
-  aliases?: string[]
-  description?: string
-  defaultValue?: Value
-  boolean?: boolean
-  commands?: ArrayOr<string>
-  parse?(value: string, options: Options): Value
-}
-
-export interface CommandDef<T> {
-  name: string
-  aliases?: string[]
-  description?: string
-  run(options: T): void
-}
-
-export interface HelpDef {
-  printWidth?: number
-  binName?: string
-  normalColors?: ArrayOr<keyof typeof chalk>
-  highlightColors?: ArrayOr<keyof typeof chalk>
-  titleColors?: ArrayOr<keyof typeof chalk>
-  subtitleColors?: ArrayOr<keyof typeof chalk>
-  header?: string
-  footer?: string
-  commandNameSeparator?: string
-  optionNameSeparator?: string
-  useGlobalColumns?: boolean
-}
+import { OptionsBase, CommandDef, HelpDef, MainDef, OptionDef } from "./options"
+import { asArray, color, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
 
 export class Massarg<Options extends OptionsBase = OptionsBase> {
   private _main?: MainDef<Options>
@@ -51,6 +12,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   private _commands: CommandDef<Options>[] = []
   private _runCommand?: CommandDef<Options>
   private _maxNameLen = 0
+  /** These are the parsed options passed via args. They will only be available after using `parse()` or `printHelp()`. */
   public data: Options = { help: false } as Options
 
   private _help: Required<HelpDef> = {
@@ -65,6 +27,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     commandNameSeparator: " | ",
     optionNameSeparator: "|",
     useGlobalColumns: false,
+    usageExample: "[command] [options]",
   }
 
   constructor() {
@@ -77,35 +40,46 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     })
   }
 
+  /** Define the main command to run when no commands are passed. */
   public main(options: MainDef<Options>): Massarg<Options> {
     this._main = options
     return this
   }
 
+  /** Add option to be parsed */
   public option<Value>(options: OptionDef<Options, Value>): Massarg<Options> {
     this._options.push(options)
     return this
   }
 
+  /** Add command to be run */
   public command(options: CommandDef<Options>): Massarg<Options> {
     this._commands.push(options)
     return this
   }
 
+  /** Set options for behavior of the help text print. */
   public help(options: HelpDef): Massarg<Options> {
     this._help = merge(this._help, options)
     return this
   }
 
+  /**
+   * Print the help text without being required to pass option.
+   *
+   * @param args If args weren't already parsed, you can add them here
+   */
   public printHelp(args?: string[]): void {
-    this.parseArgs(args)
+    if (args?.length) {
+      this.parseArgs(args)
+    }
 
-    const { highlightColors, normalColors, titleColors, binName } = this._help
+    const { highlightColors, normalColors, titleColors, binName, usageExample } = this._help
 
     console.log(
       color(titleColors, chalk.bold`Usage:`),
       color(highlightColors, binName ?? path.basename(process.argv[1])),
-      color(normalColors, "[command] [options]")
+      color(normalColors, usageExample)
     )
 
     if (this._help.header) {
@@ -148,12 +122,14 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
         const nextTokenIsValue = hasNextToken && !args[i + 1].startsWith("-")
         const parse: NonNullable<OptionDef<Options, unknown>["parse"]> = option.parse ?? ((a) => a)
 
-        // parse boolean args
         if (option.boolean && (!hasNextToken || !nextTokenIsValue)) {
+          // parse boolean args w/o value
           tempValue = true
         } else if (!hasNextToken || !nextTokenIsValue) {
+          // non-boolean args with no value
           throw new TypeError(`Missing value for: ${option.name}`)
         } else {
+          // any args (incl. boolean) with value
           tempValue = args[i + 1]
           args.shift()
         }
@@ -176,6 +152,12 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     return this.data
   }
 
+  /**
+   * Parse the given args, running any relevant commands in the process.
+   *
+   * @param args args to parse. Defaults to `process.argv`
+   * @returns Parsed options
+   */
   public parse(args?: string[]): void {
     this.parseArgs(args)
 
@@ -319,45 +301,8 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 }
 
-massarg()
-  .help({
-    // printWidth: 0,
-    binName: "my-cmd",
-    useGlobalColumns: true,
-    header: "This is the app description",
-    footer: "Copyright",
-  })
-  .option({
-    name: "bool",
-    aliases: ["b"],
-    defaultValue: false,
-    commands: ["do", "cc"],
-    description: "This is a boolean arg. Supply it without value to set as true, or set value 0 for false",
-    parse: Boolean,
-  })
-  .option({
-    name: "number",
-    aliases: ["n"],
-    description: "This is a number arg, if you include this option, you must supply it with a value.",
-    defaultValue: 0,
-    commands: "do",
-    parse: (v) => parseInt(v),
-  })
-  .command({
-    name: "do-something",
-    description: "This command does something. This description is just to fill the blanks. Don't kill the messenger.",
-    aliases: ["do", "d"],
-    run: console.log.bind(undefined, "do"),
-  })
-  .command({
-    name: "my-custom-command",
-    description:
-      "This is another command that does something. It's a different one just to see more available. This " +
-      "description is just to fill the blanks. Don't kill the messenger.",
-    aliases: ["cc", "c"],
-    run: console.log.bind(undefined, "do"),
-  })
-  .main(console.log.bind(undefined, "main"))
-  .parse()
+export function massarg<T extends OptionsBase = OptionsBase>() {
+  return new Massarg<T>()
+}
 
 export default massarg

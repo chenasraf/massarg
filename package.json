@@ -1,11 +1,17 @@
 {
   "name": "massarg",
-  "version": "0.1.0",
-  "description": "Flexible, powerful, and simple command/argument parser for JS",
+  "version": "0.1.0-pre.6",
+  "description": "Flexible, powerful, and simple command/argument parser for CLI applications",
   "main": "index.js",
   "repository": "https://github.com/chenasraf/massarg.git",
   "author": "Chen Asraf <chenasrafil@gmail.com>",
-  "license": "Apache 2.0",
+  "license": "Apache",
+  "scripts": {
+    "clean": "rm -rf build",
+    "build": "yarn clean && tsc && cp package.json README.md src/*.d.ts build",
+    "develop": "tsc --watch",
+    "deploy": "yarn build && npm publish build --dry-run"
+  },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
     "@types/lodash": "^4.14.171",
