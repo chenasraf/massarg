@@ -357,9 +357,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     for (const cmd of this._commands) {
       const opts = this._commandOptions(cmd)
       if (opts.length) {
-        if (commandOpts.length > 1) {
-          commandOpts.push("")
-        }
         commandOpts.push(this.color(subtitleColors, `${cmd.name}:`))
         commandOpts.push("")
         for (const line of this._getWrappedLines(
