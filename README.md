@@ -9,6 +9,7 @@ Yes, there are a lot of arg parsers. But hear us out.
 - Primary command to be run without args
 - Commands to be run from arg
 - Options with flexible parsing
+- Required options
 - Automatically generated help text:
   - Customizable colors
   - Customizable header and footer text

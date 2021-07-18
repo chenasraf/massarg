@@ -23,6 +23,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     highlightColors: "yellow",
     titleColors: ["bold", "white"],
     subtitleColors: ["bold", "dim"],
+    bodyColors: "white",
     printWidth: 80,
     header: "",
     footer: "",
@@ -31,6 +32,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     useGlobalColumns: false,
     usageExample: "[command] [options]",
     useColors: true,
+    includeDefaults: true,
   }
   private _requiredOptions: Record<"all" | string, Record<string, boolean>> = {}
 
@@ -92,7 +94,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
    * @param args If args weren't already parsed, you can add them here
    */
   public printHelp(args?: string[]): void {
-    console.log(this.getHelpString(args))
+    console.log(this.getHelpString(args).join("\n"))
   }
 
   public getHelpString(args?: string[]): string[] {
@@ -102,7 +104,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       this.parseArgs(args)
     }
 
-    const { highlightColors, normalColors, titleColors, binName, usageExample } = this._help
+    const { bodyColors, highlightColors, normalColors, titleColors, binName, usageExample } = this._help
 
     lines.push(
       [
@@ -114,21 +116,21 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
     if (this._help.header) {
       lines.push("")
-      lines.push(this.color(titleColors, this._help.header))
+      lines.push(this.color(bodyColors, this._help.header))
     }
 
     if (this._commands.length) {
       lines.push("")
       lines.push(this.color(titleColors, "Commands:"))
+      lines.push("")
       lines.push(...this._printCommands())
     }
 
-    lines.push("")
     lines.push(...this._printOptions())
 
     if (this._help.footer) {
       lines.push("")
-      lines.push(this.color(titleColors, this._help.footer))
+      lines.push(this.color(bodyColors, this._help.footer))
     }
 
     return lines
@@ -324,6 +326,8 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       })) {
         lines.push(line)
       }
+
+      lines.push("")
     }
 
     return lines
@@ -334,7 +338,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     for (const line of this._getWrappedLines(
       this._commands.map((c) => ({ name: this._fullCmdName(c), description: c.description }))
     )) {
-      if (line.trim().length) {
+      if (line.length === 0 || line.trim().length) {
         lines.push(line)
       }
     }
@@ -348,17 +352,20 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
     const commandOpts: string[] = []
 
+    commandOpts.push("")
+
     for (const cmd of this._commands) {
       const opts = this._commandOptions(cmd)
       if (opts.length) {
-        if (commandOpts.length) {
+        if (commandOpts.length > 1) {
           commandOpts.push("")
         }
         commandOpts.push(this.color(subtitleColors, `${cmd.name}:`))
+        commandOpts.push("")
         for (const line of this._getWrappedLines(
           opts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
         )) {
-          if (line.trim().length) {
+          if (line.length === 0 || line.trim().length) {
             commandOpts.push(line)
           }
         }
@@ -366,7 +373,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     }
 
     lines.push(this.color(titleColors, commandOpts.length ? "Command Options:" : "Options:"))
-    lines.push()
 
     for (const line of commandOpts) {
       lines.push(line)
@@ -376,7 +382,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     if (globalOpts.length) {
       if (commandOpts.length) {
         lines.push(this.color(titleColors, "Global Options:"))
-        lines.push()
+        lines.push("")
       }
       for (const line of this._getWrappedLines(
         globalOpts.map((c) => ({ name: this._fullOptName(c), description: c.description }))

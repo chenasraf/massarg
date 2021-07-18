@@ -151,6 +151,18 @@ export interface HelpDef {
   subtitleColors?: ArrayOr<keyof typeof chalk>
 
   /**
+   * A single color or array of colors to use on body text (e.g. header and footer)
+   *
+   * The colors are passed to `chalk`, so you can use any color `chalk` supports, including foreground and
+   * background colors.
+   *
+   * **Please note** that combining colors may break wrapping, so please test your help output before releasing.
+   *
+   * Defaults to `["white"]`
+   */
+  bodyColors?: ArrayOr<keyof typeof chalk>
+
+  /**
    * Additional content to display below the usage line, and above the rest.
    */
   header?: string
@@ -206,4 +218,9 @@ export interface HelpDef {
    * When disabled, all colors in the output will be disabled.
    */
   useColors?: boolean
+
+  /**
+   * When disabled, the default values will not be appended to the help text of each option.
+   */
+  includeDefaults?: boolean
 }
