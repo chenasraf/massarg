@@ -117,6 +117,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       if (option) {
         // detect boolean values
         option.boolean ??= option.parse === Boolean || [true, false].includes(option.defaultValue)
+        option.array ??= Array.isArray(option.defaultValue)
 
         let tempValue: any
         const hasNextToken = args.length > i + 1
@@ -180,8 +181,36 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
   private _addOptionToData(option: OptionDef<Options, any>, value: any) {
     const _d: Record<string, any> = this.data
-    _d[camelCase(option.name)] = value
-    option.aliases?.forEach((a) => (_d[a] = value))
+    const set = (value: any) => {
+      _d[option.name] = value
+      _d[camelCase(option.name)] = value
+      option.aliases?.forEach((a) => (_d[a] = value))
+    }
+    const push = (value: any) => {
+      const ccSame = camelCase(option.name) === option.name
+      _d[option.name] ??= []
+      _d[camelCase(option.name)] ??= []
+      option.aliases?.forEach((a) => (_d[a] ??= []))
+
+      _d[option.name].push(value)
+      if (!ccSame) {
+        _d[camelCase(option.name)].push(value)
+      }
+      option.aliases?.forEach((a) => _d[a].push(value))
+    }
+    if (!option.array) {
+      // single value
+      set(value)
+    } else {
+      // multiple values
+      if (Array.isArray(value) && value.length) {
+        for (const el of value) {
+          push(el)
+        }
+      } else if (!Array.isArray(value)) {
+        push(value)
+      }
+    }
   }
 
   private _getWrappedLines(list: Array<{ name: string; description?: string }>): string[] {

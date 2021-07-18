@@ -31,6 +31,12 @@ export interface OptionDef<Options, Value> {
   boolean?: boolean
 
   /**
+   * An array field will collect any inputs to it into a list. Each item in the list will be parsed with `parse` before
+   * being added.
+   */
+  array?: boolean
+
+  /**
    * Commands this option is relevant for. You may use either name or alias of command, but in the help text, only the
    * name will be shown as the section title.
    *

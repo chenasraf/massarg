@@ -13,7 +13,7 @@
     },
     {
       "type": "shell",
-      "command": "yarn build && npm publish build",
+      "command": "yarn build && npm publish build/",
       "problemMatcher": [
         "$tsc-watch"
       ],
