@@ -40,7 +40,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     this._options.push({
       name: "help",
       aliases: ["h"],
-      defaultValue: false,
       description: "Display help information",
       parse: Boolean,
     })
@@ -294,7 +293,9 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     }
   }
 
-  private _getWrappedLines(list: Array<{ name: string; description?: string }>): string[] {
+  private _getWrappedLines(
+    list: Array<{ name: string; description?: string; additionalColorCount?: number }>
+  ): string[] {
     const { normalColors, highlightColors } = this._help
     const lines: string[] = []
 
@@ -321,7 +322,13 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
       for (const line of wrap(cmdName + cmdDescr, {
         indent: nameFullSize + INDENT_LEN,
-        colorCount: this._help.useColors ? colorCount(normalColors, highlightColors) : 0,
+        colorCount: this._help.useColors
+          ? colorCount(
+              normalColors,
+              highlightColors,
+              item.additionalColorCount ? new Array({ length: item.additionalColorCount }) : []
+            )
+          : 0,
         firstLineIndent: INDENT_LEN,
         printWidth: this._help.printWidth,
       })) {
@@ -335,15 +342,9 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 
   private _printCommands(): string[] {
-    const lines: string[] = []
-    for (const line of this._getWrappedLines(
+    return this._getWrappedLines(
       this._commands.map((c) => ({ name: this._fullCmdName(c), description: c.description }))
-    )) {
-      if (line.trim().length) {
-        lines.push(line)
-      }
-    }
-    return lines
+    )
   }
 
   private _printOptions(): string[] {
@@ -357,12 +358,16 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       const opts = this._commandOptions(cmd)
       if (opts.length) {
         commandOpts.push(this.color(subtitleColors, `${cmd.name}:`))
+        commandOpts.push("")
+
         for (const line of this._getWrappedLines(
-          opts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
+          opts.map((c) => ({
+            name: this._fullOptName(c),
+            description: this._optionDescription(c),
+            additionalColorCount: c.defaultValue !== undefined ? 1 : 0,
+          }))
         )) {
-          if (line.trim().length) {
-            commandOpts.push(line)
-          }
+          commandOpts.push(line)
         }
       }
     }
@@ -372,7 +377,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
     for (const line of commandOpts) {
       lines.push(line)
-      lines.push("")
     }
 
     const globalOpts = this._globalOptions()
@@ -382,15 +386,22 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
         lines.push("")
       }
       for (const line of this._getWrappedLines(
-        globalOpts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
+        globalOpts.map((c) => ({ name: this._fullOptName(c), description: this._optionDescription(c) }))
       )) {
-        if (line.trim().length) {
-          lines.push(line)
-          lines.push("")
-        }
+        lines.push(line)
       }
     }
     return lines
+  }
+
+  private _optionDescription(c: OptionDef<Options, any>): string | undefined {
+    if (c.defaultValue === undefined || !this._help.includeDefaults) {
+      return c.description
+    }
+
+    return [c.description!, this.color(this._help.bodyColors, `(default: ${c.defaultValue.toString().trim()})`)]
+      .filter(Boolean)
+      .join(" ")
   }
 
   private _fullCmdName(cmd: CommandDef<Options>) {
