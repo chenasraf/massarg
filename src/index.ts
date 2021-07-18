@@ -29,7 +29,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     footer: "",
     commandNameSeparator: " | ",
     optionNameSeparator: "|",
-    useGlobalColumns: false,
+    useGlobalColumns: true,
     usageExample: "[command] [options]",
     useColors: true,
     includeDefaults: true,

@@ -1,6 +1,8 @@
 # massarg
 
-Flexible, powerful, and simple command/argument parser for JS applications.
+Massarg is a beautiful, flexible, powerful, and simple-to-use command/argument parser for JS
+applications, allowing you to create complex but easy applications that consume command-line
+arguments and commands.
 
 Yes, there are a lot of arg parsers. But hear us out.
 
@@ -11,6 +13,10 @@ Yes, there are a lot of arg parsers. But hear us out.
 - Options with flexible parsing
 - Required options
 - Options with multiple values
+  <<<<<<< Updated upstream
+  =======
+- Nameless options (TBD)
+  > > > > > > > Stashed changes
 - Automatically generated help text:
   - Customizable colors
   - Customizable header and footer text
@@ -41,6 +47,38 @@ massarg()
   .help(...)
   .main(...)
   .parse()
+```
+
+## Quick Start
+
+Here is an example with some commonly used examples to get you started. Keep reading for a complete
+documentation of every option.
+
+```typescript
+massarg()
+  .main((options) => console.log("main command", options))
+  .command({
+    name: "sub",
+    description: "a sub command",
+    aliases: ["s"],
+    run: (options) => console.log("sub command", options),
+  })
+  .option({
+    name: "flag",
+    description: "a flag that will be related to any command (main or sub)",
+    aliases: ["f"],
+    boolean: true,
+  })
+  .option({
+    name: "command-specific-flag",
+    description: "a flag that will be related to only the 'sub' command",
+    commands: ["sub"],
+    parse: (v) => parseInt(v),
+  })
+  .help({
+    binName: "my-cli-app",
+    footer: "Copyright © 2021 Me, Myself and I",
+  })
 ```
 
 ## Main command
@@ -172,13 +210,14 @@ you may override their defaults to modify the behavior.
 | `printWidth`           | `number`             | `80`                   | The amount of characters to allow per line. Use `0` to disable wrapping.                                      |
 | `normalColors`         | `string \| string[]` | `"dim"`                | Colors to use on normal text (descriptions, usage example, etc.)                                              |
 | `highlightColors`      | `string \| string[]` | `"yellow"`             | Colors to use on highlighted text (command names, option names, binary name, etc)                             |
-| `titleColors`          | `string \| string[]` | `"white"`              | Colors to use on title text ("Options", "Usage", etc)                                                         |
+| `titleColors`          | `string \| string[]` | `["bold", "white"]`    | Colors to use on title text ("Options", "Usage", etc)                                                         |
 | `subtitleColors`       | `string \| string[]` | `["bold", "dim"]`      | Colors to use on subtitle text (e.g. command titles for non-gloal options)                                    |
+| `bodyColors`           | `string \| string[]` | `"white"`              | Colors to use on special body text (header, footer)                                                           |
 | `header`               | `string`             |                        | Additional content to display below the usage line, and above the rest.                                       |
 | `footer`               | `string`             |                        | Additional content to display below the commands and options, at the very bottom.                             |
 | `commandNameSeparator` | `string`             | `" \| "`               | Separator for command name & its aliases.                                                                     |
 | `optionNameSeparator`  | `string`             | `"\|"`                 | Separator for option name & its aliases.                                                                      |
-| `useGlobalColumns`     | `boolean`            | `false`                | Decides whether to align the columns of the option/command names and their descriptions globally or per table |
+| `useGlobalColumns`     | `boolean`            | `true`                 | Decides whether to align the columns of the option/command names and their descriptions globally or per table |
 | `usageExample`         | `string`             | `"[command] [option]"` | Default text to use as suffix for the `binName`, which will be used in the "Usage" line of the help text      |
 | `useColors`            | `boolean`            | `true`                 | When false, no colors will be output in the help. Good for non-supporting systems.                            |
 
@@ -198,12 +237,11 @@ massarg().help({
   footer: "Footer text",
   commandNameSeparator: " | ",
   optionNameSeparator: "|",
-  useGlobalColumns: false,
-  usageExample: "[command] [option]",
+  useGlobalColumns: true,
+  usageExample: "command [option]",
 })
 ```
 
 #### Shell output
 
-![image](https://user-images.githubusercontent.com/167217/126082783-fccd5688-739b-46aa-b50f-3d7609a979b7.png)
-
+![colored shell output](https://user-images.githubusercontent.com/167217/126082881-bb92d4d2-5d2e-4f7b-a2e5-8098bff1a37c.png)
