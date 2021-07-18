@@ -24,7 +24,7 @@ jobs:
       - name: Publish on NPM
         uses: JS-DevTools/npm-publish@v1
         with:
-          package: build
+          package: build/package.json
           token: "${{ secrets.NPM_TOKEN }}"
       - name: Create Release
         if: steps.update_tag.outputs.tagname
