@@ -19,6 +19,12 @@
       ],
       "group": "build",
       "label": "deploy"
+    },
+    {
+      "type": "shell",
+      "command": "yarn test --watchAll",
+      "group": "test",
+      "label": "test --watchAll"
     }
   ]
 }

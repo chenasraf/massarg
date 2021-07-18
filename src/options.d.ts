@@ -37,6 +37,13 @@ export interface OptionDef<Options, Value> {
   array?: boolean
 
   /**
+   * A required option will throw an error if it's not passed as input. If you attach this option to a specific command
+   * (or multiple commands), it will only be required when using that command. If not, it will be required for any
+   * command.
+   */
+  required?: boolean
+
+  /**
    * Commands this option is relevant for. You may use either name or alias of command, but in the help text, only the
    * name will be shown as the section title.
    *
@@ -194,4 +201,9 @@ export interface HelpDef {
    * ```
    */
   usageExample?: string
+
+  /**
+   * When disabled, all colors in the output will be disabled.
+   */
+  useColors?: boolean
 }

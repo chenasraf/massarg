@@ -5,7 +5,8 @@ import merge from "lodash/merge"
 import camelCase from "lodash/camelCase"
 import path from "path"
 import { OptionsBase, CommandDef, HelpDef, MainDef, OptionDef } from "./options"
-import { asArray, color, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
+import { ArrayOr, asArray, color, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
+import { RequiredError } from "./errors"
 
 export class Massarg<Options extends OptionsBase = OptionsBase> {
   private _main?: MainDef<Options>
@@ -20,7 +21,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     binName: undefined as any,
     normalColors: "dim",
     highlightColors: "yellow",
-    titleColors: "white",
+    titleColors: ["bold", "white"],
     subtitleColors: ["bold", "dim"],
     printWidth: 80,
     header: "",
@@ -29,7 +30,9 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     optionNameSeparator: "|",
     useGlobalColumns: false,
     usageExample: "[command] [options]",
+    useColors: true,
   }
+  private _requiredOptions: Record<"all" | string, Record<string, boolean>> = {}
 
   constructor() {
     this._options.push({
@@ -50,12 +53,30 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   /** Add option to be parsed */
   public option<Value>(options: OptionDef<Options, Value>): Massarg<Options> {
     this._options.push(options)
+    this._prepareRequired(options)
     return this
   }
 
+  private _prepareRequired(options: OptionDef<Options, any>) {
+    if (options.required) {
+      if (options.commands?.length) {
+        for (const command of this._optionCommands(options)) {
+          this._requiredOptions[command.name] ??= {}
+          this._requiredOptions[command.name][options.name] = true
+        }
+      } else {
+        this._requiredOptions["all"] ??= {}
+        this._requiredOptions["all"][options.name] = true
+      }
+    }
+  }
+
   /** Add command to be run */
-  public command(options: CommandDef<Options>): Massarg<Options> {
-    this._commands.push(options)
+  public command(command: CommandDef<Options>): Massarg<Options> {
+    this._commands.push(command)
+    for (const opt of this._commandOptions(command)) {
+      this._prepareRequired(opt)
+    }
     return this
   }
 
@@ -71,42 +92,54 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
    * @param args If args weren't already parsed, you can add them here
    */
   public printHelp(args?: string[]): void {
+    console.log(this.getHelpString(args))
+  }
+
+  public getHelpString(args?: string[]): string[] {
+    const lines: string[] = []
+
     if (args?.length) {
       this.parseArgs(args)
     }
 
     const { highlightColors, normalColors, titleColors, binName, usageExample } = this._help
 
-    console.log(
-      color(titleColors, chalk.bold`Usage:`),
-      color(highlightColors, binName ?? path.basename(process.argv[1])),
-      color(normalColors, usageExample)
+    lines.push(
+      [
+        this.color(titleColors, "Usage:"),
+        this.color(highlightColors, binName ?? path.basename(process.argv[1])),
+        this.color(normalColors, usageExample),
+      ].join(" ")
     )
 
     if (this._help.header) {
-      console.log()
-      console.log(color(titleColors, this._help.header))
+      lines.push("")
+      lines.push(this.color(titleColors, this._help.header))
     }
 
     if (this._commands.length) {
-      console.log("")
-      console.log(color(titleColors, chalk.bold`Commands:`))
-      this._printCommands()
+      lines.push("")
+      lines.push(this.color(titleColors, "Commands:"))
+      lines.push(...this._printCommands())
     }
 
-    console.log()
-    this._printOptions()
+    lines.push("")
+    lines.push(...this._printOptions())
 
     if (this._help.footer) {
-      console.log()
-      console.log(color(titleColors, this._help.footer))
+      lines.push("")
+      lines.push(this.color(titleColors, this._help.footer))
     }
+
+    return lines
   }
 
   public parseArgs(args = process.argv): Options {
     for (const option of this._options) {
       if (option.defaultValue !== undefined) {
         this._addOptionToData(option, option.defaultValue)
+      } else if (option.array) {
+        this._pushToArrayData(option)
       }
     }
 
@@ -115,14 +148,20 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       const option = this._options.find((o) => `--${o.name}` === arg || o.aliases?.map((a) => `-${a}`).includes(arg))
 
       if (option) {
+        let defaultValue = option.defaultValue
         // detect boolean values
-        option.boolean ??= option.parse === Boolean || [true, false].includes(option.defaultValue)
-        option.array ??= Array.isArray(option.defaultValue)
+        option.boolean ??= option.parse === Boolean || [true, false].includes(defaultValue)
+        option.array ??= Array.isArray(defaultValue)
+
+        if (option.array && defaultValue === undefined) {
+          defaultValue = []
+        }
 
         let tempValue: any
         const hasNextToken = args.length > i + 1
         const nextTokenIsValue = hasNextToken && !args[i + 1].startsWith("-")
-        const parse: NonNullable<OptionDef<Options, unknown>["parse"]> = option.parse ?? ((a) => a)
+        const parse: NonNullable<OptionDef<Options, unknown>["parse"]> =
+          option.parse ?? (option.boolean ? this._isTruthy : (a) => a)
 
         if (option.boolean && (!hasNextToken || !nextTokenIsValue)) {
           // parse boolean args w/o value
@@ -154,49 +193,65 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     return this.data
   }
 
+  private _isTruthy(v: any): boolean {
+    return [true, "1", "true", "yes", "on"].includes(v)
+  }
+
   /**
    * Parse the given args, running any relevant commands in the process.
    *
    * @param args args to parse. Defaults to `process.argv`
    * @returns Parsed options
    */
-  public parse(args?: string[]): void {
+  public parse(args?: string[]): Options {
     this.parseArgs(args)
 
     if (this.data.help) {
       this.printHelp()
-      return
+      return this.data
     }
 
-    console.log("data", this.data)
+    try {
+      if (this._runCommand) {
+        this._ensureRequired(this._runCommand)
+        this._runCommand.run(this.data)
+      } else if (this._main) {
+        this._ensureRequired()
+        this._main(this.data)
+      }
+    } catch (e) {
+      if (e.cmdName && e.fieldName) {
+        console.log()
+        console.error("Error")
+        console.error(chalk.red`${e.message}`)
+        process.exit(1)
+      } else {
+        throw e
+      }
+    }
+    return this.data
+  }
 
-    if (this._runCommand) {
-      console.log("Running command", this._runCommand)
-      this._runCommand.run(this.data)
-    } else if (this._main) {
-      console.log("Running main", this._main)
-      this._main(this.data)
+  private _ensureRequired(cmd?: CommandDef<Options>) {
+    const cmdName = cmd ? cmd.name : "all"
+
+    for (const optName in this._requiredOptions[cmdName]) {
+      if (this._requiredOptions[cmdName][optName]) {
+        throw new RequiredError(optName, cmdName)
+      }
     }
   }
 
   private _addOptionToData(option: OptionDef<Options, any>, value: any) {
     const _d: Record<string, any> = this.data
+
     const set = (value: any) => {
       _d[option.name] = value
       _d[camelCase(option.name)] = value
       option.aliases?.forEach((a) => (_d[a] = value))
     }
     const push = (value: any) => {
-      const ccSame = camelCase(option.name) === option.name
-      _d[option.name] ??= []
-      _d[camelCase(option.name)] ??= []
-      option.aliases?.forEach((a) => (_d[a] ??= []))
-
-      _d[option.name].push(value)
-      if (!ccSame) {
-        _d[camelCase(option.name)].push(value)
-      }
-      option.aliases?.forEach((a) => _d[a].push(value))
+      this._pushToArrayData(option, value)
     }
     if (!option.array) {
       // single value
@@ -210,6 +265,28 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       } else if (!Array.isArray(value)) {
         push(value)
       }
+    }
+    if (value !== option.defaultValue && value !== undefined) {
+      for (const key in this._requiredOptions) {
+        this._requiredOptions[key][option.name] = false
+      }
+    }
+  }
+
+  private _pushToArrayData(option: OptionDef<Options, any>, value?: any) {
+    const _d: Record<string, any> = this.data
+
+    const ccSame = camelCase(option.name) === option.name
+    _d[option.name] ??= []
+    _d[camelCase(option.name)] ??= []
+    option.aliases?.forEach((a) => (_d[a] ??= []))
+
+    if (value !== undefined) {
+      _d[option.name].push(value)
+      if (!ccSame) {
+        _d[camelCase(option.name)].push(value)
+      }
+      option.aliases?.forEach((a) => _d[a].push(value))
     }
   }
 
@@ -233,11 +310,11 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     const nameFullSize = maxNameLen + ARG_SPACE_LEN + INDENT_LEN
 
     for (const item of list) {
-      const cmdName = color(highlightColors, `${item.name}`).padEnd(
+      const cmdName = this.color(highlightColors, `${item.name}`).padEnd(
         nameFullSize + (COLOR_COUNT - 1) * COLOR_CODE_LEN,
         " "
       )
-      const cmdDescr = color(normalColors, item.description ?? "")
+      const cmdDescr = this.color(normalColors, item.description ?? "")
 
       for (const line of wrap(cmdName + cmdDescr, {
         indent: nameFullSize + INDENT_LEN,
@@ -252,18 +329,21 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     return lines
   }
 
-  private _printCommands() {
+  private _printCommands(): string[] {
+    const lines: string[] = []
     for (const line of this._getWrappedLines(
       this._commands.map((c) => ({ name: this._fullCmdName(c), description: c.description }))
     )) {
       if (line.trim().length) {
-        console.log(line)
+        lines.push(line)
       }
     }
+    return lines
   }
 
-  private _printOptions() {
-    let printedTitle = false
+  private _printOptions(): string[] {
+    const lines: string[] = []
+
     const { titleColors, subtitleColors } = this._help
 
     const commandOpts: string[] = []
@@ -274,7 +354,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
         if (commandOpts.length) {
           commandOpts.push("")
         }
-        commandOpts.push(color(subtitleColors, `${cmd.name}:`))
+        commandOpts.push(this.color(subtitleColors, `${cmd.name}:`))
         for (const line of this._getWrappedLines(
           opts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
         )) {
@@ -285,29 +365,28 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       }
     }
 
-    console.log(color(titleColors, chalk.bold`${commandOpts.length ? "Command Options" : "Options"}:`))
-    // if (commandOpts.length) {
-    console.log()
-    // }
+    lines.push(this.color(titleColors, commandOpts.length ? "Command Options:" : "Options:"))
+    lines.push()
 
     for (const line of commandOpts) {
-      console.log(line)
+      lines.push(line)
     }
 
     const globalOpts = this._globalOptions()
     if (globalOpts.length) {
       if (commandOpts.length) {
-        console.log(chalk.bold`Global Options:`)
-        console.log()
+        lines.push(this.color(titleColors, "Global Options:"))
+        lines.push()
       }
       for (const line of this._getWrappedLines(
         globalOpts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
       )) {
         if (line.trim().length) {
-          console.log(line)
+          lines.push(line)
         }
       }
     }
+    return lines
   }
 
   private _fullCmdName(cmd: CommandDef<Options>) {
@@ -326,8 +405,27 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     )
   }
 
+  private _optionCommands(opt: OptionDef<Options, any>): OptionDef<Options, any>[] {
+    return this._commands.filter((c) => {
+      return asArray(opt.commands).some((_c) => {
+        return [c.name, ...(c.aliases ?? [])].includes(_c!)
+      })
+    })
+  }
+
   private _globalOptions(): OptionDef<Options, any>[] {
     return this._options.filter((o) => !o.commands)
+  }
+
+  private color(color: ArrayOr<keyof typeof chalk>, ...text: any[]): string {
+    if (!this._help.useColors) {
+      return text.join(" ")
+    }
+    let output: string = undefined as any
+    for (const c of asArray(color)) {
+      output = (chalk[c as keyof typeof chalk] as typeof chalk.dim)(...(output ? [output] : text))
+    }
+    return chalk.reset(output)
   }
 }
 
