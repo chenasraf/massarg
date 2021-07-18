@@ -23,6 +23,21 @@ describe("Print Help", () => {
         "\n"
     )
   })
+
+  test("should not throw when passing args", () => {
+    expect(() =>
+      massarg()
+        .help({ binName: "test", useColors: false })
+        .option({
+          name: "number",
+          description: "Number value",
+          parse: (v) => parseInt(v),
+        })
+        .getHelpString(["--help"])
+        .join("\n")
+    ).not.toThrow()
+  })
+
   test("should print help correctly with only global options", () => {
     const helpStr = massarg()
       .help({ binName: "test", useColors: false })

@@ -13,14 +13,14 @@ Yes, there are a lot of arg parsers. But hear us out.
 - Options with flexible parsing
 - Required options
 - Options with multiple values
-- Nameless options (TBD)
+- Nameless options
 - Automatically generated help text:
   - Customizable colors
   - Customizable header and footer text
   - Customizable usage examples
   - Automatic text alignment
   - Add run examples for your args (TBD)
-  - Shows default value and type next to description (customizable) (TBD)
+  - Shows default value and type next to description
 - TypeScript-first package: You will always have strong types
 
 ## Usage
@@ -109,6 +109,10 @@ $ ./mybin --my-string "Some string"
 Commands are activated when their keyword is included in the args. The first command that matches
 will be executed, skipping the rest. Options will still be parsed.
 
+Any arguments that are not taken by options or commands, are automatically passed to
+`options.extra`, which you can access when running a command or when using the return value from
+`parseArgs()`.
+
 #### Options
 
 | Name          | Type                        | Required | Example                                           | Description                                                                                                          |
@@ -148,6 +152,10 @@ $ ./mybin my-command --my-string "Some string"
 
 Options are variables you can accept via CLI and parse to use in your commands, e.g. `--my-bool`,
 `--my-string string`, `--my-number 1`
+
+Any arguments that are not taken by options or commands, are automatically passed to
+`options.extra`, which you can access when running a command or when using the return value from
+`parseArgs()`.
 
 #### Options
 

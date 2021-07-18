@@ -4,6 +4,9 @@ import chalk from "chalk"
 export type OptionsBase = {
   /** When `true`, will output help text and exit the process without error */
   help: boolean
+
+  /** This contains arguments that were not taken by any command or option. */
+  extras: string[]
 }
 
 export type MainDef<Options> = (options: Options) => void

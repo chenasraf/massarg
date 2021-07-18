@@ -14,8 +14,10 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   private _commands: CommandDef<Options>[] = []
   private _runCommand?: CommandDef<Options>
   private _maxNameLen = 0
-  /** These are the parsed options passed via args. They will only be available after using `parse()` or `printHelp()`. */
-  public data: Options = { help: false } as Options
+  /**
+   * These are the parsed options passed via args. They will only be available after using `parse()` or `printHelp()`,
+   * or when retured by `parseArgs()`. */
+  public data: Options = { help: false, extras: [] as string[] } as Options
 
   private _help: Required<HelpDef> = {
     binName: undefined as any,
@@ -201,6 +203,10 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
         }
         this._runCommand = command
       }
+
+      if (!option && !command) {
+        this.data.extras.push(arg)
+      }
     }
     return this.data
   }
@@ -229,16 +235,16 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       } else if (this._main) {
         this._ensureRequired()
         this._main(this.data)
+      } else {
+        this._ensureRequired()
       }
     } catch (e) {
       if (e.cmdName && e.fieldName) {
         console.log()
         console.error("Error")
         console.error(chalk.red`${e.message}`)
-        process.exit(1)
-      } else {
-        throw e
       }
+      throw e
     }
     return
   }
