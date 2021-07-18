@@ -15,7 +15,7 @@
       "type": "shell",
       "command": "yarn build && npm publish build/",
       "problemMatcher": [
-        "$tsc-watch"
+        "$tsc"
       ],
       "group": "build",
       "label": "deploy"

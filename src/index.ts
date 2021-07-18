@@ -114,16 +114,18 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       ].join(" ")
     )
 
+    lines.push("")
+
     if (this._help.header) {
-      lines.push("")
       lines.push(this.color(bodyColors, this._help.header))
+      lines.push("")
     }
 
     if (this._commands.length) {
-      lines.push("")
       lines.push(this.color(titleColors, "Commands:"))
       lines.push("")
       lines.push(...this._printCommands())
+      lines.push("")
     }
 
     lines.push(...this._printOptions())
@@ -308,19 +310,18 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
     const ARG_SPACE_LEN = 2
     const INDENT_LEN = 2
-    const COLOR_COUNT = 2
     const nameFullSize = maxNameLen + ARG_SPACE_LEN + INDENT_LEN
 
     for (const item of list) {
       const cmdName = this.color(highlightColors, `${item.name}`).padEnd(
-        nameFullSize + (COLOR_COUNT - 1) * COLOR_CODE_LEN,
+        nameFullSize + (this._help.useColors ? colorCount(highlightColors) : 0) * COLOR_CODE_LEN,
         " "
       )
       const cmdDescr = this.color(normalColors, item.description ?? "")
 
       for (const line of wrap(cmdName + cmdDescr, {
         indent: nameFullSize + INDENT_LEN,
-        colorCount: colorCount(normalColors, highlightColors),
+        colorCount: this._help.useColors ? colorCount(normalColors, highlightColors) : 0,
         firstLineIndent: INDENT_LEN,
         printWidth: this._help.printWidth,
       })) {
@@ -338,7 +339,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     for (const line of this._getWrappedLines(
       this._commands.map((c) => ({ name: this._fullCmdName(c), description: c.description }))
     )) {
-      if (line.length === 0 || line.trim().length) {
+      if (line.trim().length) {
         lines.push(line)
       }
     }
@@ -352,17 +353,14 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
     const commandOpts: string[] = []
 
-    commandOpts.push("")
-
     for (const cmd of this._commands) {
       const opts = this._commandOptions(cmd)
       if (opts.length) {
         commandOpts.push(this.color(subtitleColors, `${cmd.name}:`))
-        commandOpts.push("")
         for (const line of this._getWrappedLines(
           opts.map((c) => ({ name: this._fullOptName(c), description: c.description }))
         )) {
-          if (line.length === 0 || line.trim().length) {
+          if (line.trim().length) {
             commandOpts.push(line)
           }
         }
@@ -370,9 +368,11 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     }
 
     lines.push(this.color(titleColors, commandOpts.length ? "Command Options:" : "Options:"))
+    lines.push("")
 
     for (const line of commandOpts) {
       lines.push(line)
+      lines.push("")
     }
 
     const globalOpts = this._globalOptions()
@@ -386,6 +386,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       )) {
         if (line.trim().length) {
           lines.push(line)
+          lines.push("")
         }
       }
     }

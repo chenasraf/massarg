@@ -1,6 +1,6 @@
 {
   "name": "massarg",
-  "version": "0.1.0-pre.11",
+  "version": "0.1.0-pre.12",
   "description": "Flexible, powerful, and simple command/argument parser for CLI applications",
   "main": "index.js",
   "repository": "https://github.com/chenasraf/massarg.git",
@@ -8,9 +8,8 @@
   "license": "Apache",
   "scripts": {
     "clean": "rm -rf build",
-    "build": "yarn clean && tsc -p tsconfig.build.json && cp package.json README.md src/*.d.ts build",
+    "build": "echo $(pwd); yarn clean && tsc -p tsconfig.build.json && cp package.json README.md src/*.d.ts build",
     "develop": "tsc --watch",
-    "prepack": "yarn build",
     "test": "jest"
   },
   "devDependencies": {

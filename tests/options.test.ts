@@ -50,26 +50,4 @@ describe("Options", () => {
     const arr2el = massarg().option(opts).parse(["--array", "something", "--array", "another"])
     expect(arr2el).toHaveProperty("array", ["something", "another"])
   })
-
-  test("should print help properly", () => {
-    const helpStr = massarg()
-      .help({ useColors: false })
-      .option({
-        name: "number",
-        description: "Number value",
-        parse: (v) => parseInt(v),
-      })
-      .getHelpString()
-      .join("\n")
-
-    expect(helpStr).toBe(
-      "Usage: processChild.js [command] [options]" +
-        "\n\n" +
-        "Options:" +
-        "\n" +
-        "  --help|-h                      Display help information" +
-        "\n" +
-        "  --number                       Number value"
-    )
-  })
 })
