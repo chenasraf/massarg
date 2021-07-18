@@ -210,7 +210,7 @@ you may override their defaults to modify the behavior.
 | `highlightColors`      | `string \| string[]` | `"yellow"`             | Colors to use on highlighted text (command names, option names, binary name, etc)                             |
 | `titleColors`          | `string \| string[]` | `["bold", "white"]`    | Colors to use on title text ("Options", "Usage", etc)                                                         |
 | `subtitleColors`       | `string \| string[]` | `["bold", "dim"]`      | Colors to use on subtitle text (e.g. command titles for non-gloal options)                                    |
-| `bodyColors`           | `string \| string[]` | `"white"`              | Colors to use on special body text (header, footer)                                                           |
+| `bodyColors`           | `string \| string[]` | `"white"`              | Colors to use on special body text (header, footer, and default value)                                        |
 | `header`               | `string`             |                        | Additional content to display below the usage line, and above the rest.                                       |
 | `footer`               | `string`             |                        | Additional content to display below the commands and options, at the very bottom.                             |
 | `commandNameSeparator` | `string`             | `" \| "`               | Separator for command name & its aliases.                                                                     |
@@ -218,6 +218,7 @@ you may override their defaults to modify the behavior.
 | `useGlobalColumns`     | `boolean`            | `true`                 | Decides whether to align the columns of the option/command names and their descriptions globally or per table |
 | `usageExample`         | `string`             | `"[command] [option]"` | Default text to use as suffix for the `binName`, which will be used in the "Usage" line of the help text      |
 | `useColors`            | `boolean`            | `true`                 | When false, no colors will be output in the help. Good for non-supporting systems.                            |
+| `includeDefaults`      | `boolean`            | `true`                 | When false, the default values will not be specified after the description of each option.                    |
 
 ### Example
 
@@ -242,4 +243,4 @@ massarg().help({
 
 #### Shell output
 
-![colored shell output](https://user-images.githubusercontent.com/167217/126083690-be30e26a-3adb-4244-80d6-fee2e5f9ad9a.png)
+![colored shell output](https://user-images.githubusercontent.com/167217/126083733-bad682f6-fabf-477e-871c-a758fd250713.png)
