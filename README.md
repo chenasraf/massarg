@@ -113,12 +113,15 @@ Options are variables you can accept via CLI and parse to use in your commands, 
 
 #### Options
 
-| Name        | Type                              | Required | Default  | Example                               | Description                                                                                                                                                                                                |
-| ----------- | --------------------------------- | -------- | -------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| name        | `string`                          | ✅       |          | `"my-number"`                         | The name of the option, which will be used in the CLI to apply it                                                                                                                                          |
-| aliases     | `string[]`                        | ❎       |          | `["n"]`                               | Alternate names for the option, available for use in addition to `name`                                                                                                                                    |
-| description | `string`                          | ❎       |          | `"Description of the command"`        | Description for the command, only displayed with `--help` or `printHelp()`                                                                                                                                 |
-| parse       | `function(value, options) => any` | ❎       | `String` | `(value, options) => parseInt(value)` | Function that parses this option. The supplied arguments are the string value from the arg, and other options passed via the CLI and parsed by massarg before this one. Not all options will be available. |
+| Name        | Type                              | Required | Default  | Example                               | Description                                                                                                                                                                                                      |
+| ----------- | --------------------------------- | -------- | -------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| name        | `string`                          | ✅       |          | `"my-number"`                         | The name of the option, which will be used in the CLI to apply it                                                                                                                                                |
+| aliases     | `string[]`                        | ❎       |          | `["n"]`                               | Alternate names for the option, available for use in addition to `name`                                                                                                                                          |
+| description | `string`                          | ❎       |          | `"Description of the command"`        | Description for the command, only displayed with `--help` or `printHelp()`                                                                                                                                       |
+| parse       | `function(value, options) => any` | ❎       | `String` | `(value, options) => parseInt(value)` | Function that parses this option. The supplied arguments are the string value from the arg, and other options passed via the CLI and parsed by massarg before this one. Not all options will be available.       |
+| boolean     | `boolean`                         | ❎       | `false`  |                                       | When set to `true`, this option will be treated as a boolean: will accept no value as `true`, or other truthy values as `true`, and the rest as `false`                                                          |
+| array       | `boolean`                         | ❎       | `false`  |                                       | When set to true, you will be able to take multiple values when using the same option more than once. They will all be parsed properly and put into an array.                                                    |
+| required    | `boolean`                         | ❎       | `false`  |                                       | When an option is required, parsing will throw a `RequiredError` if it was not given a proper value. If it is attached to a specific (or several) commands, it will only throw if the relevant command was used. |
 
 ### Example
 
@@ -169,12 +172,13 @@ you may override their defaults to modify the behavior.
 | `highlightColors`      | `string \| string[]` | `"yellow"`             | Colors to use on highlighted text (command names, option names, binary name, etc)                             |
 | `titleColors`          | `string \| string[]` | `"white"`              | Colors to use on title text ("Options", "Usage", etc)                                                         |
 | `subtitleColors`       | `string \| string[]` | `["bold", "dim"]`      | Colors to use on subtitle text (e.g. command titles for non-gloal options)                                    |
-| `header`               | `string`             | `"Header text"`        | Additional content to display below the usage line, and above the rest.                                       |
-| `footer`               | `string`             | `"Footer text"`        | Additional content to display below the commands and options, at the very bottom.                             |
+| `header`               | `string`             |                        | Additional content to display below the usage line, and above the rest.                                       |
+| `footer`               | `string`             |                        | Additional content to display below the commands and options, at the very bottom.                             |
 | `commandNameSeparator` | `string`             | `" \| "`               | Separator for command name & its aliases.                                                                     |
 | `optionNameSeparator`  | `string`             | `"\|"`                 | Separator for option name & its aliases.                                                                      |
 | `useGlobalColumns`     | `boolean`            | `false`                | Decides whether to align the columns of the option/command names and their descriptions globally or per table |
 | `usageExample`         | `string`             | `"[command] [option]"` | Default text to use as suffix for the `binName`, which will be used in the "Usage" line of the help text      |
+| `useColors`            | `boolean`            | `true`                 | When false, no colors will be output in the help. Good for non-supporting systems.                            |
 
 ### Example
 
