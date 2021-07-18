@@ -1,6 +1,6 @@
 import massarg from "../src"
 
-describe("print help", () => {
+describe("Print Help", () => {
   test("should print help without command options", () => {
     const helpStr = massarg()
       .help({ binName: "test", useColors: false })

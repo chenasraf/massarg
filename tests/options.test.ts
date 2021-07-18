@@ -1,6 +1,6 @@
-import chalk from "chalk"
 import massarg from "../src"
 import { OptionDef } from "../src/options"
+
 describe("Options", () => {
   test("should parse properly", () => {
     const options = massarg()
@@ -10,6 +10,32 @@ describe("Options", () => {
       })
       .parseArgs(["--number", "10"])
     expect(options).toHaveProperty("number", 10)
+  })
+
+  test("should read from alias", () => {
+    const options = massarg()
+      .option({
+        name: "number",
+        aliases: ["n"],
+        parse: (v) => parseInt(v),
+      })
+      .parseArgs(["-n", "10"])
+    expect(options).toHaveProperty("number", 10)
+    expect(options).toHaveProperty("n", 10)
+  })
+
+  test("should camelCase names", () => {
+    const options = massarg()
+      .option({
+        name: "is-number",
+        aliases: ["n"],
+        parse: (v) => parseInt(v),
+      })
+      .parseArgs(["--is-number", "10"])
+
+    expect(options).toHaveProperty("isNumber", 10)
+    expect(options).toHaveProperty("is-number", 10)
+    expect(options).toHaveProperty("n", 10)
   })
 
   test("should parse bool in correct forms", () => {
