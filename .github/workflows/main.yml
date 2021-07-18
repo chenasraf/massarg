@@ -2,18 +2,18 @@ name: Releases
 
 on:
   push:
-    tags:
-      - "v*"
-    # branches: [master]
+    branches: [master]
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
           node-version: "12.x"
       - run: yarn install --frozen-lockfile
+      - run: yarn test
       - run: yarn build
       - run: yarn pack --filename=release.tgz
       # - uses: Klemensas/action-autotag@stable
@@ -22,12 +22,13 @@ jobs:
       #     GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
       #     tag_prefix: "v"
       - name: Publish on NPM
+        if: "!contains(github.event.head_commit.message, '[skip publish]')"
         uses: JS-DevTools/npm-publish@v1
         with:
           package: build/package.json
           token: "${{ secrets.NPM_TOKEN }}"
       - name: Create Release
-        if: steps.update_tag.outputs.tagname
+        if: "!contains(github.event.head_commit.message, '[skip publish]') && steps.update_tag.outputs.tagname"
         uses: actions/create-release@v1
         id: create_release
         env:
@@ -36,7 +37,7 @@ jobs:
           tag_name: ${{ steps.update_tag.outputs.tagname }}
           release_name: Release ${{ steps.update_tag.outputs.tagname }}
       - name: Upload Release Asset
-        if: steps.update_tag.outputs.tagname
+        if: "!contains(github.event.head_commit.message, '[skip publish]') && steps.update_tag.outputs.tagname"
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
