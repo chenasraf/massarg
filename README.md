@@ -244,4 +244,4 @@ massarg().help({
 
 #### Shell output
 
-![colored shell output](https://user-images.githubusercontent.com/167217/126082881-bb92d4d2-5d2e-4f7b-a2e5-8098bff1a37c.png)
+![colored shell output](https://user-images.githubusercontent.com/167217/126083361-aa13e091-9839-42e8-af45-ff591d6277ba.png)
