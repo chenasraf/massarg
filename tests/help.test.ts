@@ -3,7 +3,7 @@ import massarg from "../src"
 describe("print help", () => {
   test("should print help without command options", () => {
     const helpStr = massarg()
-      .help({ useColors: false })
+      .help({ binName: "test", useColors: false })
       .option({
         name: "number",
         description: "Number value",
@@ -13,7 +13,7 @@ describe("print help", () => {
       .join("\n")
 
     expect(helpStr).toBe(
-      "Usage: processChild.js [command] [options]" +
+      "Usage: test [command] [options]" +
         "\n\n" +
         "Options:" +
         "\n\n" +
@@ -25,7 +25,7 @@ describe("print help", () => {
   })
   test("should print help correctly with only global options", () => {
     const helpStr = massarg()
-      .help({ useColors: false })
+      .help({ binName: "test", useColors: false })
       .command({
         name: "cmd",
         description: "Command",
@@ -40,7 +40,7 @@ describe("print help", () => {
       .join("\n")
 
     expect(helpStr).toBe(
-      "Usage: processChild.js [command] [options]" +
+      "Usage: test [command] [options]" +
         "\n\n" +
         "Commands:" +
         "\n\n" +
@@ -57,7 +57,7 @@ describe("print help", () => {
 
   test("should print help correctly with command options", () => {
     const helpStr = massarg()
-      .help({ useColors: false })
+      .help({ binName: "test", useColors: false })
       .command({
         name: "cmd",
         description: "Command",
@@ -73,7 +73,7 @@ describe("print help", () => {
       .join("\n")
 
     expect(helpStr).toBe(
-      "Usage: processChild.js [command] [options]" +
+      "Usage: test [command] [options]" +
         "\n\n" +
         "Commands:" +
         "\n\n" +
