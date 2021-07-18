@@ -10,13 +10,14 @@ Yes, there are a lot of arg parsers. But hear us out.
 - Commands to be run from arg
 - Options with flexible parsing
 - Required options
+- Options with multiple values
 - Automatically generated help text:
   - Customizable colors
   - Customizable header and footer text
   - Customizable usage examples
   - Automatic text alignment
   - Add run examples for your args
-- TypeScript-first package: You will always have types
+- TypeScript-first package: You will always have strong types
 
 ## Usage
 
@@ -202,33 +203,7 @@ massarg().help({
 })
 ```
 
-#### Shell
+#### Shell output
 
-```shell
-$ ./mybin --help
+![image](https://user-images.githubusercontent.com/167217/126082783-fccd5688-739b-46aa-b50f-3d7609a979b7.png)
 
-Usage: my-cmd command [options]
-
-This is the app description
-
-Commands:
-  do-something | do | d         This command does something.
-  my-custom-command | cc | c    This is another command that does something. It's a
-                                different one just to see more available. This description is
-                                just to fill more lines.
-
-Command Options:
-
-do-something:
-  --bool|-b                     This is a boolean arg. Supply it without value to set as
-                                true, or set value 0 for false
-  --number|-n                   This is a number arg, if you include this option, you must
-                                supply it with a value.
-
-my-custom-command:
-  --bool|-b                     This is a boolean arg. Supply it without value or with 1 to
-                                set as true, or set value 0 for false
-Global Options:
-
-  --help|-h                     Display help information
-```
