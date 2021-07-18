@@ -8,7 +8,7 @@ describe("Options", () => {
         name: "number",
         parse: (v) => parseInt(v),
       })
-      .parse(["--number", "10"])
+      .parseArgs(["--number", "10"])
     expect(options).toHaveProperty("number", 10)
   })
 
@@ -17,13 +17,13 @@ describe("Options", () => {
       name: "bool",
       boolean: true,
     } as OptionDef<any, any>
-    const noArg = massarg().option(opts).parse(["--bool"])
+    const noArg = massarg().option(opts).parseArgs(["--bool"])
     expect(noArg).toHaveProperty("bool", true)
 
-    const truthyNumArg = massarg().option(opts).parse(["--bool", "1"])
+    const truthyNumArg = massarg().option(opts).parseArgs(["--bool", "1"])
     expect(truthyNumArg).toHaveProperty("bool", true)
 
-    const falsyNumArg = massarg().option(opts).parse(["--bool", "0"])
+    const falsyNumArg = massarg().option(opts).parseArgs(["--bool", "0"])
     expect(falsyNumArg).toHaveProperty("bool", false)
   })
 
@@ -32,7 +32,7 @@ describe("Options", () => {
       name: "number",
       parse: (v) => parseInt(v),
     } as OptionDef<any, any>
-    expect(() => massarg().option(opts).parse(["--number"])).toThrow("Missing value for: number")
+    expect(() => massarg().option(opts).parseArgs(["--number"])).toThrow("Missing value for: number")
   })
 
   test("should parse array in correct forms", () => {
@@ -41,13 +41,13 @@ describe("Options", () => {
       array: true,
     } as OptionDef<any, any>
 
-    const arr0el = massarg().option(opts).parse([])
+    const arr0el = massarg().option(opts).parseArgs([])
     expect(arr0el).toHaveProperty("array", [])
 
-    const arr1el = massarg().option(opts).parse(["--array", "something"])
+    const arr1el = massarg().option(opts).parseArgs(["--array", "something"])
     expect(arr1el).toHaveProperty("array", ["something"])
 
-    const arr2el = massarg().option(opts).parse(["--array", "something", "--array", "another"])
+    const arr2el = massarg().option(opts).parseArgs(["--array", "something", "--array", "another"])
     expect(arr2el).toHaveProperty("array", ["something", "another"])
   })
 })

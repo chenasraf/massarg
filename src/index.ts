@@ -96,6 +96,10 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     console.log(this.getHelpString(args).join("\n"))
   }
 
+  /**
+   * Get the help text as an array of lines. Useful for manipulating the response or querying before displaying
+   * to the user.
+   */
   public getHelpString(args?: string[]): string[] {
     const lines: string[] = []
 
@@ -124,7 +128,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       lines.push(this.color(titleColors, "Commands:"))
       lines.push("")
       lines.push(...this._printCommands())
-      lines.push("")
     }
 
     lines.push(...this._printOptions())
@@ -137,6 +140,12 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     return lines
   }
 
+  /**
+   * Parse the arguments without running the commands related to them. Useful for testing or querying the data from the
+   * args manually, if it is for some reason not enough to parse it normally through defining commands.
+   * @param args Arguments to parse. Defaults to `process.argv`
+   * @returns Parsed options
+   */
   public parseArgs(args = process.argv): Options {
     for (const option of this._options) {
       if (option.defaultValue !== undefined) {
@@ -204,14 +213,13 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
    * Parse the given args, running any relevant commands in the process.
    *
    * @param args args to parse. Defaults to `process.argv`
-   * @returns Parsed options
    */
-  public parse(args?: string[]): Options {
+  public parse(args?: string[]): void {
     this.parseArgs(args)
 
     if (this.data.help) {
       this.printHelp()
-      return this.data
+      return
     }
 
     try {
@@ -232,7 +240,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
         throw e
       }
     }
-    return this.data
+    return
   }
 
   private _ensureRequired(cmd?: CommandDef<Options>) {

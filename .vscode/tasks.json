@@ -24,7 +24,8 @@
       "type": "shell",
       "command": "yarn test --watchAll",
       "group": "test",
-      "label": "test --watchAll"
+      "label": "test --watchAll",
+      "problemMatcher": []
     }
   ]
 }
