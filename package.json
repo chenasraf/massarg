@@ -10,7 +10,7 @@
     "clean": "rm -rf build",
     "build": "yarn clean && tsc && cp package.json README.md src/*.d.ts build",
     "develop": "tsc --watch",
-    "deploy": "yarn build && npm publish build --dry-run"
+    "deploy": "yarn build && npm publish build"
   },
   "devDependencies": {
     "@types/chalk": "^2.2.0",
