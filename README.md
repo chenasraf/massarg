@@ -32,28 +32,17 @@ import massarg from "massarg" // import init function (returns massarg instance)
 import { Massarg } from "massarg" // import class
 ```
 
-## Initializing
+## Quick Start
 
 Call the default export function `massarg`, or create a new instance manually using `new Massarg()`,
 and then you can start chaining commands. Use `.parse()` to do the final parsing and run the
 commands and options.
 
-```typescript
-massarg()
-  .option(...)
-  .command(...)
-  .help(...)
-  .main(...)
-  .parse()
-```
-
-## Quick Start
-
 Here is an example with some commonly used examples to get you started. Keep reading for a complete
 documentation of every option.
 
 ```typescript
-massarg()
+massarg() // or: new Massarg()
   .main((options) => console.log("main command", options))
   .command({
     name: "sub",
@@ -113,7 +102,7 @@ Any arguments that are not taken by options or commands, are automatically passe
 `options.extra`, which you can access when running a command or when using the return value from
 `parseArgs()`.
 
-#### Options
+### Options
 
 | Name          | Type                        | Required | Example                                           | Description                                                                                                          |
 | ------------- | --------------------------- | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
@@ -157,7 +146,7 @@ Any arguments that are not taken by options or commands, are automatically passe
 `options.extra`, which you can access when running a command or when using the return value from
 `parseArgs()`.
 
-#### Options
+### Options
 
 | Name          | Type                              | Required | Default  | Example                               | Description                                                                                                                                                                                                      |
 | ------------- | --------------------------------- | -------- | -------- | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -212,7 +201,7 @@ above the footer.
 The examples consist of inputs, outputs, and optional descriptions. The descriptions are displayed
 atop as titles, if specified.
 
-#### Options
+### Options
 
 | Name          | Type     | Required | Default | Example                                                           | Description                                                                                                                                            |
 | ------------- | -------- | -------- | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -237,7 +226,7 @@ massarg().example({
 You can modify some of the styles and behavior of the help text. None of the options are required,
 you may override their defaults to modify the behavior.
 
-#### Options
+### Options
 
 | Name                   | Type                 | Default                | Description                                                                                                   |
 | ---------------------- | -------------------- | ---------------------- | ------------------------------------------------------------------------------------------------------------- |
