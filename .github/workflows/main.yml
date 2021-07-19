@@ -23,6 +23,7 @@ jobs:
           package: build/package.json
           token: "${{ secrets.NPM_TOKEN }}"
       - uses: Klemensas/action-autotag@stable
+        if: "!contains(github.event.head_commit.message, '[skip publish]')"
         id: update_tag
         with:
           GITHUB_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
