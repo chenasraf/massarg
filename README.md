@@ -216,7 +216,7 @@ atop as titles, if specified.
 | Name          | Type     | Required | Default | Example                                                           | Description                                                                                                                                            |
 | ------------- | -------- | -------- | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `input`       | `string` | ✅       |         | `"my-cmd --number 10"`                                            | The input line, an example of user input that will be displayed as "shell" commands. The prefix is customizable through the `help()` options.          |
-| `outnput`     | `string` | ✅       |         | `"you entered my-cmd with the number 10, which is larger than 5"` | The output line, an example of the command's output that will be displayed as "shell" output. The prefix is customizable through the `help()` options. |
+| `output`      | `string` | ✅       |         | `"you entered my-cmd with the number 10, which is larger than 5"` | The output line, an example of the command's output that will be displayed as "shell" output. The prefix is customizable through the `help()` options. |
 | `description` | `string` |          |         | `"Run the my-cmd command with a number parameter"`                | An explanation of the input/output that will be display as a title above the input if specified.                                                       |
 
 ### Example
