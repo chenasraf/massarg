@@ -1,6 +1,6 @@
 {
   "name": "massarg",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Flexible, powerful, and simple command/argument parser for CLI applications",
   "main": "index.js",
   "repository": "https://github.com/chenasraf/massarg.git",
