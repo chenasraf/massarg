@@ -4,7 +4,7 @@ import chalk from "chalk"
 import merge from "lodash/merge"
 import camelCase from "lodash/camelCase"
 import path from "path"
-import { OptionsBase, CommandDef, HelpDef, MainDef, OptionDef } from "./options"
+import { OptionsBase, CommandDef, HelpDef, MainDef, OptionDef, ExampleDef } from "./options"
 import { ArrayOr, asArray, color, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
 import { RequiredError } from "./errors"
 
@@ -13,6 +13,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   private _options: OptionDef<Options, any>[] = []
   private _commands: CommandDef<Options>[] = []
   private _runCommand?: CommandDef<Options>
+  private _examples: ExampleDef[] = []
   private _maxNameLen = 0
   /**
    * These are the parsed options passed via args. They will only be available after using `parse()` or `printHelp()`,
@@ -35,6 +36,8 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     usageExample: "[command] [options]",
     useColors: true,
     includeDefaults: true,
+    exampleInputPrefix: "$",
+    exampleOutputPrefix: "➜",
   }
   private _requiredOptions: Record<"all" | string, Record<string, boolean>> = {}
 
@@ -48,15 +51,25 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 
   /** Define the main command to run when no commands are passed. */
-  public main(options: MainDef<Options>): Massarg<Options> {
-    this._main = options
+  public main(run: MainDef<Options>): Massarg<Options> {
+    this._main = run
     return this
   }
 
   /** Add option to be parsed */
-  public option<Value>(options: OptionDef<Options, Value>): Massarg<Options> {
-    this._options.push(options)
-    this._prepareRequired(options)
+  public option<Value>(option: OptionDef<Options, Value>): Massarg<Options> {
+    this._options.push(option)
+    this._prepareRequired(option)
+    return this
+  }
+
+  /** Add example line to be added to the help text. */
+  public example(example: ExampleDef | [string, string] | string[]): Massarg<Options> {
+    if (Array.isArray(example)) {
+      this._examples.push({ input: example[0], output: example[1] })
+    } else {
+      this._examples.push(example as ExampleDef)
+    }
     return this
   }
 
@@ -134,11 +147,59 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
     lines.push(...this._printOptions())
 
+    if (this._examples.length) {
+      lines.push(this.color(titleColors, "Examples:"))
+      lines.push("")
+      lines.push(...this._printExamples())
+    }
+
     if (this._help.footer) {
       lines.push("")
       lines.push(this.color(bodyColors, this._help.footer))
     }
 
+    return lines
+  }
+
+  private _printExamples(): string[] {
+    const lines: string[] = []
+    const { normalColors, highlightColors, bodyColors, titleColors } = this._help
+    for (const example of this._examples) {
+      if (example.description) {
+        lines.push(
+          ...wrap(this.color(titleColors, example.description), {
+            colorCount: this._help.useColors ? colorCount(titleColors) : 0,
+            firstLineIndent: 2,
+            printWidth: this._help.printWidth,
+          })
+        )
+        lines.push("")
+      }
+
+      lines.push(
+        ...wrap(
+          [this.color(normalColors, this._help.exampleInputPrefix), this.color(highlightColors, example.input)].join(
+            " "
+          ),
+          {
+            colorCount: this._help.useColors ? colorCount(highlightColors) : 0,
+            firstLineIndent: 2,
+            printWidth: this._help.printWidth,
+          }
+        )
+      )
+      lines.push(
+        ...wrap(
+          [this.color(normalColors, this._help.exampleOutputPrefix), this.color(bodyColors, example.output)].join(" "),
+          {
+            colorCount: this._help.useColors ? colorCount(bodyColors) : 0,
+            firstLineIndent: 2,
+            printWidth: this._help.printWidth,
+          }
+        )
+      )
+      lines.push("")
+    }
     return lines
   }
 

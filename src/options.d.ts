@@ -226,4 +226,25 @@ export interface HelpDef {
    * When disabled, the default values will not be appended to the help text of each option.
    */
   includeDefaults?: boolean
+
+  /**
+   * The prefix at the start of the line when presenting examples, at the input (top) line.
+   */
+  exampleInputPrefix?: string
+
+  /**
+   * The prefix at the start of the line when presenting examples, at the output (bottom) line.
+   */
+  exampleOutputPrefix?: string
+}
+
+export interface ExampleDef {
+  /** The input line - to show examples of parameters, commands, etc */
+  input: string
+
+  /** The output line - to show the output of whatever `input` is regarding. */
+  output: string
+
+  /** An optional description which will be used as a title. */
+  description?: string
 }

@@ -41,6 +41,11 @@ massarg()
     run: console.log.bind(undefined, "do"),
   })
   .main(console.log.bind(undefined, "main"))
+  .example({
+    input: "my-cmd test --one --two",
+    description: "This is how you do it",
+    output: "42",
+  })
   // .command({
   //   name: "cmd",
   //   description: "Command",
