@@ -25,14 +25,25 @@ Yes, there are a lot of arg parsers. But hear us out.
 
 ## Usage
 
-## Importing
+## Quick Start
+
+### Installing
+
+```shell
+# npm
+npm install --save massarg
+# yarn
+yarn add massarg
+```
+
+### Importing
 
 ```typescript
 import massarg from "massarg" // import init function (returns massarg instance)
 import { Massarg } from "massarg" // import class
 ```
 
-## Quick Start
+### Using
 
 Call the default export function `massarg`, or create a new instance manually using `new Massarg()`,
 and then you can start chaining commands. Use `.parse()` to do the final parsing and run the
