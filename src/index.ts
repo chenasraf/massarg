@@ -265,7 +265,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       }
 
       if (!option && !command) {
-        const defOpts = this._options.filter((o) => o.default)
+        const defOpts = this._options.filter((o) => o.isDefault)
         if (defOpts.length) {
           for (const option of defOpts) {
             this._addOptionToData(option, option.parse!(arg, this.data))

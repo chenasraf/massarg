@@ -88,22 +88,58 @@ describe("Options", () => {
       ).toThrow("Missing value for: number")
     })
 
-    test("should parse default", () => {
-      const options = massarg()
-        .option({
-          name: "number",
-          default: true,
-          parse: (v) => parseInt(v),
-        })
-        .option({
-          name: "bool",
-          default: true,
-          boolean: true,
-        })
-        .parseArgs(["1"])
+    describe("isDefault", () => {
+      test("should parse default with one default", () => {
+        const options = massarg()
+          .option({
+            name: "number",
+            isDefault: true,
+            parse: (v) => parseInt(v),
+          })
+          .option({
+            name: "bool",
+            isDefault: false,
+            boolean: true,
+          })
+          .parseArgs(["1"])
 
-      expect(options).toHaveProperty("number", 1)
-      expect(options).toHaveProperty("bool", true)
+        expect(options).toHaveProperty("number", 1)
+        expect(options).not.toHaveProperty("bool", true)
+      })
+
+      test("should parse default with multiple defaults", () => {
+        const options = massarg()
+          .option({
+            name: "number",
+            isDefault: true,
+            parse: (v) => parseInt(v),
+          })
+          .option({
+            name: "bool",
+            isDefault: true,
+            boolean: true,
+          })
+          .parseArgs(["1"])
+
+        expect(options).toHaveProperty("number", 1)
+        expect(options).toHaveProperty("bool", true)
+      })
+
+      test("should parse default with command", () => {
+        const options = massarg()
+          .command({
+            name: "cmd",
+            run: () => void 0,
+          })
+          .option({
+            name: "number",
+            isDefault: true,
+            parse: (v) => parseInt(v),
+          })
+          .parseArgs(["cmd", "1"])
+
+        expect(options).toHaveProperty("number", 1)
+      })
     })
 
     describe("required", () => {
