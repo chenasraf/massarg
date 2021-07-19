@@ -5,8 +5,9 @@ import merge from "lodash/merge"
 import camelCase from "lodash/camelCase"
 import path from "path"
 import { OptionsBase, CommandDef, HelpDef, MainDef, OptionDef, ExampleDef } from "./options"
-import { ArrayOr, asArray, color, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
+import { ArrayOr, asArray, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
 import { RequiredError } from "./errors"
+import { assertCommand, assertExample, assertHelp, assertMain, assertOption } from "./assertions"
 
 export class Massarg<Options extends OptionsBase = OptionsBase> {
   private _main?: MainDef<Options>
@@ -52,6 +53,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
   /** Define the main command to run when no commands are passed. */
   public main(run: MainDef<Options>): Massarg<Options> {
+    assertMain(run)
     this._main = run
     return this
   }
@@ -59,10 +61,15 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   /** Add option to be parsed */
   public option<Value>(option: OptionDef<Options, Value>): Massarg<Options> {
     let defaultValue = option.defaultValue as any
+
     // detect boolean values
     option.boolean ??= (option.parse as any) === Boolean || [true, false].includes(defaultValue)
+    // detect array values
     option.array ??= Array.isArray(defaultValue)
+    // default parser
     option.parse ??= (option.boolean ? this._isTruthy : (a: any) => a) as any
+
+    assertOption(option, this._options)
 
     if (option.array && defaultValue === undefined) {
       defaultValue = []
@@ -74,31 +81,17 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 
   /** Add example line to be added to the help text. */
-  public example(example: ExampleDef | [string, string] | string[]): Massarg<Options> {
-    if (Array.isArray(example)) {
-      this._examples.push({ input: example[0], output: example[1] })
-    } else {
-      this._examples.push(example as ExampleDef)
-    }
-    return this
-  }
+  public example(example: ExampleDef): Massarg<Options> {
+    assertExample(example)
 
-  private _prepareRequired(options: OptionDef<Options, any>) {
-    if (options.required) {
-      if (options.commands?.length) {
-        for (const command of this._optionCommands(options)) {
-          this._requiredOptions[command.name] ??= {}
-          this._requiredOptions[command.name][options.name] = true
-        }
-      } else {
-        this._requiredOptions["all"] ??= {}
-        this._requiredOptions["all"][options.name] = true
-      }
-    }
+    this._examples.push(example as ExampleDef)
+    return this
   }
 
   /** Add command to be run */
   public command(command: CommandDef<Options>): Massarg<Options> {
+    assertCommand(command, this._commands)
+
     this._commands.push(command)
     for (const opt of this._commandOptions(command)) {
       this._prepareRequired(opt)
@@ -107,8 +100,10 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 
   /** Set options for behavior of the help text print. */
-  public help(options: HelpDef): Massarg<Options> {
-    this._help = merge(this._help, options)
+  public help(help: HelpDef): Massarg<Options> {
+    assertHelp(help)
+
+    this._help = merge(this._help, help)
     return this
   }
 
@@ -168,48 +163,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       lines.push(this.color(bodyColors, this._help.footer))
     }
 
-    return lines
-  }
-
-  private _printExamples(): string[] {
-    const lines: string[] = []
-    const { normalColors, highlightColors, bodyColors, titleColors } = this._help
-    for (const example of this._examples) {
-      if (example.description) {
-        lines.push(
-          ...wrap(this.color(titleColors, example.description), {
-            colorCount: this._help.useColors ? colorCount(titleColors) : 0,
-            firstLineIndent: 2,
-            printWidth: this._help.printWidth,
-          })
-        )
-        lines.push("")
-      }
-
-      lines.push(
-        ...wrap(
-          [this.color(normalColors, this._help.exampleInputPrefix), this.color(highlightColors, example.input)].join(
-            " "
-          ),
-          {
-            colorCount: this._help.useColors ? colorCount(highlightColors) : 0,
-            firstLineIndent: 2,
-            printWidth: this._help.printWidth,
-          }
-        )
-      )
-      lines.push(
-        ...wrap(
-          [this.color(normalColors, this._help.exampleOutputPrefix), this.color(bodyColors, example.output)].join(" "),
-          {
-            colorCount: this._help.useColors ? colorCount(bodyColors) : 0,
-            firstLineIndent: 2,
-            printWidth: this._help.printWidth,
-          }
-        )
-      )
-      lines.push("")
-    }
     return lines
   }
 
@@ -278,10 +231,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     return this.data
   }
 
-  private _isTruthy(v: any): boolean {
-    return [true, "1", "true", "yes", "on"].includes(v)
-  }
-
   /**
    * Parse the given args, running any relevant commands in the process.
    *
@@ -314,6 +263,66 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       throw e
     }
     return
+  }
+
+  private _prepareRequired(options: OptionDef<Options, any>) {
+    if (options.required) {
+      if (options.commands?.length) {
+        for (const command of this._optionCommands(options)) {
+          this._requiredOptions[command.name] ??= {}
+          this._requiredOptions[command.name][options.name] = true
+        }
+      } else {
+        this._requiredOptions["all"] ??= {}
+        this._requiredOptions["all"][options.name] = true
+      }
+    }
+  }
+
+  private _printExamples(): string[] {
+    const lines: string[] = []
+    const { normalColors, highlightColors, bodyColors, titleColors } = this._help
+    for (const example of this._examples) {
+      if (example.description) {
+        lines.push(
+          ...wrap(this.color(titleColors, example.description), {
+            colorCount: this._help.useColors ? colorCount(titleColors) : 0,
+            firstLineIndent: 2,
+            printWidth: this._help.printWidth,
+          })
+        )
+        lines.push("")
+      }
+
+      lines.push(
+        ...wrap(
+          [this.color(normalColors, this._help.exampleInputPrefix), this.color(highlightColors, example.input)].join(
+            " "
+          ),
+          {
+            colorCount: this._help.useColors ? colorCount(highlightColors) : 0,
+            firstLineIndent: 2,
+            printWidth: this._help.printWidth,
+          }
+        )
+      )
+      lines.push(
+        ...wrap(
+          [this.color(normalColors, this._help.exampleOutputPrefix), this.color(bodyColors, example.output)].join(" "),
+          {
+            colorCount: this._help.useColors ? colorCount(bodyColors) : 0,
+            firstLineIndent: 2,
+            printWidth: this._help.printWidth,
+          }
+        )
+      )
+      lines.push("")
+    }
+    return lines
+  }
+
+  private _isTruthy(v: any): boolean {
+    return [true, "1", "true", "yes", "on"].includes(v)
   }
 
   private _ensureRequired(cmd?: CommandDef<Options>) {
