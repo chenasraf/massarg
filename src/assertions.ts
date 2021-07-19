@@ -7,75 +7,75 @@ export function assert(condition: any, message?: string): void {
   }
 }
 
+function nullOr(condition: any, condition2: any): boolean {
+  return [null, undefined].includes(condition) || condition2
+}
+
 export function assertHelp(help: HelpDef) {
+  assert(nullOr(help.binName, typeof help.binName === "string"), "Binary Name must be string")
   assert(
-    [null, undefined].includes(help.binName as any) || typeof help.binName === "string",
-    "Binary Name must be string"
-  )
-  assert(
-    [null, undefined].includes(help.normalColors as any) ||
-      asArray(help.normalColors).every((c) => typeof c === "string"),
+    nullOr(
+      help.normalColors,
+      asArray(help.normalColors).every((c) => typeof c === "string")
+    ),
     "Normal colors must be string or list of strings"
   )
   assert(
-    [null, undefined].includes(help.bodyColors as any) || asArray(help.bodyColors).every((c) => typeof c === "string"),
+    nullOr(
+      help.bodyColors,
+      asArray(help.bodyColors).every((c) => typeof c === "string")
+    ),
     "Body colors must be string or list of strings"
   )
   assert(
-    [null, undefined].includes(help.titleColors as any) ||
-      asArray(help.titleColors).every((c) => typeof c === "string"),
+    nullOr(
+      help.titleColors,
+      asArray(help.titleColors).every((c) => typeof c === "string")
+    ),
     "Title colors must be string or list of strings"
   )
   assert(
-    [null, undefined].includes(help.subtitleColors as any) ||
-      asArray(help.subtitleColors).every((c) => typeof c === "string"),
+    nullOr(
+      help.subtitleColors,
+      asArray(help.subtitleColors).every((c) => typeof c === "string")
+    ),
     "Subtitle colors must be string or list of strings"
   )
   assert(
-    [null, undefined].includes(help.highlightColors as any) ||
-      asArray(help.highlightColors).every((c) => typeof c === "string"),
+    nullOr(
+      help.highlightColors,
+      asArray(help.highlightColors).every((c) => typeof c === "string")
+    ),
     "Highlight colors must be string or list of strings"
   )
-  assert([null, undefined].includes(help.footer as any) || typeof help.footer === "string", "Footer must be string")
-  assert([null, undefined].includes(help.header as any) || typeof help.header === "string", "Header must be string")
+  assert(nullOr(help.footer, typeof help.footer === "string"), "Footer must be string")
+  assert(nullOr(help.header, typeof help.header === "string"), "Header must be string")
   assert(
-    [null, undefined].includes(help.optionNameSeparator as any) || typeof help.optionNameSeparator === "string",
+    nullOr(help.optionNameSeparator, typeof help.optionNameSeparator === "string"),
     "Option Name Separator must be string"
   )
   assert(
-    [null, undefined].includes(help.commandNameSeparator as any) || typeof help.commandNameSeparator === "string",
+    nullOr(help.commandNameSeparator, typeof help.commandNameSeparator === "string"),
     "Command Name Separator must be string"
   )
   assert(
-    [null, undefined].includes(help.printWidth as any) || (typeof help.printWidth === "number" && help.printWidth >= 0),
+    nullOr(help.printWidth, typeof help.printWidth === "number" && help.printWidth >= 0),
     "Print Width must be a number ≥ 0"
   )
   assert(
-    [null, undefined].includes(help.exampleInputPrefix as any) || typeof help.exampleInputPrefix === "string",
+    nullOr(help.exampleInputPrefix, typeof help.exampleInputPrefix === "string"),
     "Example Input Prefix must be string"
   )
   assert(
-    [null, undefined].includes(help.exampleOutputPrefix as any) || typeof help.exampleOutputPrefix === "string",
+    nullOr(help.exampleOutputPrefix, typeof help.exampleOutputPrefix === "string"),
     "Example Output Prefix must be string"
   )
+  assert(nullOr(help.usageExample, typeof help.usageExample === "string"), "Usage Example must be string")
+  assert(nullOr(help.useGlobalColumns, typeof help.useGlobalColumns === "boolean"), "Usage Example must be boolean")
+  assert(nullOr(help.includeDefaults, typeof help.includeDefaults === "boolean"), "Include Defaults must be boolean")
+  assert(nullOr(help.useColors, typeof help.useColors === "boolean"), "Use Colors must be boolean")
   assert(
-    [null, undefined].includes(help.usageExample as any) || typeof help.usageExample === "string",
-    "Usage Example must be string"
-  )
-  assert(
-    [null, undefined].includes(help.useGlobalColumns as any) || typeof help.useGlobalColumns === "boolean",
-    "Usage Example must be boolean"
-  )
-  assert(
-    [null, undefined].includes(help.includeDefaults as any) || typeof help.includeDefaults === "boolean",
-    "Include Defaults must be boolean"
-  )
-  assert(
-    [null, undefined].includes(help.useColors as any) || typeof help.useColors === "boolean",
-    "Use Colors must be boolean"
-  )
-  assert(
-    [null, undefined].includes(help.useGlobalColumns as any) || typeof help.useGlobalColumns === "boolean",
+    nullOr(help.useGlobalColumns, typeof help.useGlobalColumns === "boolean"),
     "Use Global Columns must be boolean"
   )
 }
