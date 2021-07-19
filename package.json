@@ -13,7 +13,6 @@
     "test": "jest && jest-coverage-badges"
   },
   "devDependencies": {
-    "@types/chalk": "^2.2.0",
     "@types/jest": "^26.0.24",
     "@types/lodash": "^4.14.171",
     "@types/node": "^16.3.2",
