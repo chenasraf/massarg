@@ -19,7 +19,7 @@ Yes, there are a lot of arg parsers. But hear us out.
   - Customizable header and footer text
   - Customizable usage examples
   - Automatic text alignment
-  - Add run examples for your args (TBD)
+  - Add run examples for your args
   - Shows default value and type next to description
 - TypeScript-first package: You will always have strong types
 
