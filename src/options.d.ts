@@ -16,6 +16,12 @@ export interface OptionDef<Options, Value> {
   name: string
 
   /**
+   * When `true`, any args placed without name will be applied to this option. When more than one arg is supplied
+   * this way, only the last given will be used (unless the option is an array type).
+   * When more than one option has this turned on, they will all be given these values. Use carefully. */
+  default?: boolean
+
+  /**
    * In addition to primary name, you may also define aliases. Aliases when used in CLI should only be prefixed with
    * 1 hypen, as such: `-o`
    */

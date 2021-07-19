@@ -42,7 +42,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   private _requiredOptions: Record<"all" | string, Record<string, boolean>> = {}
 
   constructor() {
-    this._options.push({
+    this.option({
       name: "help",
       aliases: ["h"],
       description: "Display help information",
@@ -58,6 +58,16 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
   /** Add option to be parsed */
   public option<Value>(option: OptionDef<Options, Value>): Massarg<Options> {
+    let defaultValue = option.defaultValue as any
+    // detect boolean values
+    option.boolean ??= (option.parse as any) === Boolean || [true, false].includes(defaultValue)
+    option.array ??= Array.isArray(defaultValue)
+    option.parse ??= (option.boolean ? this._isTruthy : (a: any) => a) as any
+
+    if (option.array && defaultValue === undefined) {
+      defaultValue = []
+    }
+
     this._options.push(option)
     this._prepareRequired(option)
     return this
@@ -223,20 +233,9 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       const option = this._options.find((o) => `--${o.name}` === arg || o.aliases?.map((a) => `-${a}`).includes(arg))
 
       if (option) {
-        let defaultValue = option.defaultValue
-        // detect boolean values
-        option.boolean ??= option.parse === Boolean || [true, false].includes(defaultValue)
-        option.array ??= Array.isArray(defaultValue)
-
-        if (option.array && defaultValue === undefined) {
-          defaultValue = []
-        }
-
         let tempValue: any
         const hasNextToken = args.length > i + 1
         const nextTokenIsValue = hasNextToken && !args[i + 1].startsWith("-")
-        const parse: NonNullable<OptionDef<Options, unknown>["parse"]> =
-          option.parse ?? (option.boolean ? this._isTruthy : (a) => a)
 
         if (option.boolean && (!hasNextToken || !nextTokenIsValue)) {
           // parse boolean args w/o value
@@ -249,7 +248,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
           tempValue = args[i + 1]
           args.shift()
         }
-        const value = parse(tempValue, this.data)
+        const value = option.parse!(tempValue, this.data)
         this._addOptionToData(option, value)
 
         continue
@@ -266,7 +265,14 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       }
 
       if (!option && !command) {
-        this.data.extras.push(arg)
+        const defOpts = this._options.filter((o) => o.default)
+        if (defOpts.length) {
+          for (const option of defOpts) {
+            this._addOptionToData(option, option.parse!(arg, this.data))
+          }
+        } else {
+          this.data.extras.push(arg)
+        }
       }
     }
     return this.data

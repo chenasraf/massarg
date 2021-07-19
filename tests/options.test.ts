@@ -88,6 +88,24 @@ describe("Options", () => {
       ).toThrow("Missing value for: number")
     })
 
+    test("should parse default", () => {
+      const options = massarg()
+        .option({
+          name: "number",
+          default: true,
+          parse: (v) => parseInt(v),
+        })
+        .option({
+          name: "bool",
+          default: true,
+          boolean: true,
+        })
+        .parseArgs(["1"])
+
+      expect(options).toHaveProperty("number", 1)
+      expect(options).toHaveProperty("bool", true)
+    })
+
     describe("required", () => {
       test("should throw on missing required value", () => {
         const mockConsoleError = jest.spyOn(console, "error").mockImplementation(() => void 0)
