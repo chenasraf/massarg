@@ -203,6 +203,34 @@ $ ./mybin my-command --my-string "Some string" --my-number 1 --my-bool
 # Specified "my-command" runs with option { myString: "Some string", myNumber: 1, myBool: true }
 ```
 
+## Example Lines
+
+Example lines are annotated samples you can add to your help text. They will be added at the end,
+above the footer.
+
+The examples consist of inputs, outputs, and optional descriptions. The descriptions are displayed
+atop as titles, if specified.
+
+#### Options
+
+| Name          | Type     | Required | Default | Example                                                           | Description                                                                                                                                            |
+| ------------- | -------- | -------- | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `input`       | `string` | ✅       |         | `"my-cmd --number 10"`                                            | The input line, an example of user input that will be displayed as "shell" commands. The prefix is customizable through the `help()` options.          |
+| `outnput`     | `string` | ✅       |         | `"you entered my-cmd with the number 10, which is larger than 5"` | The output line, an example of the command's output that will be displayed as "shell" output. The prefix is customizable through the `help()` options. |
+| `description` | `string` | ❎       |         | `"Run the my-cmd command with a number parameter"`                | An explanation of the input/output that will be display as a title above the input if specified.                                                       |
+
+### Example
+
+#### JS/TS
+
+```typescript
+massarg().example({
+  input: "my-cmd --number 10",
+  output: "you entered my-cmd with the number 10, which is larger than 5",
+  description: "Run the my-cmd command with a number parameter",
+})
+```
+
 ## Help/Usage Command
 
 You can modify some of the styles and behavior of the help text. None of the options are required,
@@ -252,4 +280,3 @@ massarg().help({
 #### Shell output
 
 ![colored shell output](https://user-images.githubusercontent.com/167217/126086652-433a523f-2f0a-427c-b58a-18b2131489f4.png)
-
