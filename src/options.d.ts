@@ -11,7 +11,12 @@ export type OptionsBase = {
 
 export type MainDef<Options> = (options: Options) => void
 
-export interface OptionDef<Options, Value> {
+export interface Named {
+  name: string
+  aliases?: string[]
+}
+
+export interface OptionDef<Options, Value> extends Named {
   /** Option name. When using in CLI, you will use `--name`, e.g. `--my-option`. */
   name: string
 
@@ -76,7 +81,7 @@ export interface OptionDef<Options, Value> {
   parse?(value: string, options: Options): Value
 }
 
-export interface CommandDef<T> {
+export interface CommandDef<T> extends Named {
   /**
    * Command name. When using in CLI, you will use `name` without any prefixes, unlike options.
    * Also, the first command that was parsed will run, and the others will be skipped.

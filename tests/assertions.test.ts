@@ -5,8 +5,8 @@ import { HelpDef } from "../src/options"
 
 describe("Assertions", () => {
   test("should assert main command input", () => {
-    expect(() => massarg().main(undefined as any)).toThrow("Main: Main function must be provided")
-    expect(() => massarg().main(1 as any)).toThrow("Main: Main must be a function")
+    expect(() => massarg().main(undefined as any)).toThrow("Main: Main must be provided")
+    expect(() => massarg().main(1 as any)).toThrow("Main: Main must be function")
   })
 
   test("should assert command input", () => {
@@ -29,14 +29,14 @@ describe("Assertions", () => {
         name: "cmd",
         run: undefined as any,
       })
-    ).toThrow("Command: Run function must be provided")
+    ).toThrow("Command: Run must be provided")
 
     expect(() =>
       massarg().command({
         name: "cmd",
         run: 1 as any,
       })
-    ).toThrow("Command: Run must be a function")
+    ).toThrow("Command: Run must be function")
 
     expect(() =>
       massarg()
@@ -70,7 +70,7 @@ describe("Assertions", () => {
         name: "opt",
         parse: 1 as any,
       })
-    ).toThrow("Option: Parse must be a function")
+    ).toThrow("Option: Parse must be function")
 
     expect(() =>
       massarg()
@@ -84,18 +84,7 @@ describe("Assertions", () => {
     ).toThrow("Option: Aliases must be unique")
   })
 
-  test("should assert help input", () => {
-    const colors = ["normal", "body", "title", "subtitle", "highlight"]
-    for (const color of colors) {
-      expect(() =>
-        massarg().help({
-          [color + "Colors"]: [1],
-        })
-      ).toThrow(
-        `Help: ${capitalize(color)} colors must be string or array of strings. Accepted values: ` + colorList.join(", ")
-      )
-    }
-
+  describe("help input assertions", () => {
     const strings: Partial<Record<keyof HelpDef, string>> = {
       binName: "Binary Name",
       optionNameSeparator: "Option Name Separator",
@@ -114,18 +103,36 @@ describe("Assertions", () => {
     }
 
     for (const k of Object.getOwnPropertyNames(strings)) {
-      expect(() => massarg().help({ [k as keyof HelpDef]: 1 as any })).toThrow(
-        `Help: ${strings[k as keyof HelpDef]} must be string`
-      )
+      test(`should assert string ${k}`, () => {
+        expect(() => massarg().help({ [k as keyof HelpDef]: 1 as any })).toThrow(
+          `Help: ${strings[k as keyof HelpDef]} must be string`
+        )
+      })
     }
 
     for (const k of Object.getOwnPropertyNames(bools)) {
-      expect(() => massarg().help({ [k as keyof HelpDef]: 1 as any })).toThrow(
-        `Help: ${bools[k as keyof HelpDef]} must be bool`
-      )
+      test(`should assert bool ${k}`, () => {
+        expect(() => massarg().help({ [k as keyof HelpDef]: 1 as any })).toThrow(
+          `Help: ${bools[k as keyof HelpDef]} must be bool`
+        )
+      })
     }
 
-    expect(() => massarg().help({ printWidth: -1 })).toThrow("Help: Print Width must be a number ≥ 0")
-    expect(() => massarg().help({ printWidth: "a" as any })).toThrow("Help: Print Width must be a number ≥ 0")
+    test("should assert other help input params", () => {
+      const colors = ["normal", "body", "title", "subtitle", "highlight"]
+      for (const color of colors) {
+        expect(() =>
+          massarg().help({
+            [color + "Colors"]: [1],
+          })
+        ).toThrow(
+          `Help: ${capitalize(color)} colors must be string or array of strings. Accepted values: ` +
+            colorList.join(", ")
+        )
+      }
+
+      expect(() => massarg().help({ printWidth: -1 })).toThrow("Help: Print Width must be ≥ 0")
+      expect(() => massarg().help({ printWidth: "a" as any })).toThrow("Help: Print Width must be number")
+    })
   })
 })
