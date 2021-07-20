@@ -8,9 +8,11 @@ export const colorList = [
   "bgMagenta", "bgCyan", "bgWhite",
 ]
 
+class AssertionError extends Error {}
+
 function assert(condition: any, message?: string): void {
   if (!condition) {
-    throw new Error(message)
+    throw new AssertionError(message)
   }
 }
 
@@ -18,11 +20,19 @@ function nullOr(condition: any, condition2: any): boolean {
   return [null, undefined].includes(condition) || condition2
 }
 
+function assertRequired(obj: any, prefix: string, name: string): void {
+  assert(![undefined, null].includes(obj), `${prefix}: ${name} must be provided`)
+}
+
 function assertType(obj: any, prefix: string, name: string, options: { type: string; required?: boolean }): void {
   if (options.required) {
-    assert(![undefined, null].includes(obj), `${prefix}: ${name} must be provided`)
-  } else if ([null, undefined].includes(obj)) {
-    return
+    assertRequired(obj, prefix, name)
+  } else {
+    try {
+      assertRequired(obj, prefix, name)
+    } catch (e) {
+      return
+    }
   }
 
   assert(typeof obj === options.type, `${prefix}: ${name} must be ${options.type}`)
