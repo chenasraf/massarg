@@ -1,7 +1,15 @@
 {
   "name": "massarg",
-  "version": "0.1.3",
+  "version": "1.0.0",
   "description": "Flexible, powerful, and simple command/argument parser for CLI applications",
+  "keywords": [
+    "shell",
+    "cli",
+    "parser",
+    "typescript",
+    "args",
+    "command-line"
+  ],
   "main": "index.js",
   "repository": "https://github.com/chenasraf/massarg.git",
   "author": "Chen Asraf <chenasrafil@gmail.com>",
