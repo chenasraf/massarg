@@ -161,6 +161,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     if (this._help.footer) {
       lines.push("")
       lines.push(this.color(bodyColors, this._help.footer))
+      lines.push("")
     }
 
     return lines
@@ -334,7 +335,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 
   private _ensureRequired(cmd?: CommandDef<Options>) {
-    const cmdName = cmd ? cmd.name : "all"
+    const cmdName = cmd?.name ?? "all"
 
     for (const optName in this._requiredOptions[cmdName]) {
       if (this._requiredOptions[cmdName][optName]) {
