@@ -1,27 +1,55 @@
 import massarg from "../src"
 
 describe("Examples", () => {
-  test("should parse examples", () => {
-    const helpStr = massarg()
-      .help({ binName: "test", useColors: false })
-      .example({
-        input: "my-cmd --number 10",
-      })
-      .getHelpString()
-      .join("\n")
+  describe("basic parse", () => {
+    test("should parse input only", () => {
+      const helpStr = massarg()
+        .help({ binName: "test", useColors: false })
+        .example({
+          input: "my-cmd --number 10",
+        })
+        .getHelpString()
+        .join("\n")
 
-    expect(helpStr).toBe(
-      "Usage: test [command] [options]" +
-        "\n\n" +
-        "Options:" +
-        "\n\n" +
-        "  --help|-h    Display help information" +
-        "\n\n" +
-        "Examples:" +
-        "\n\n" +
-        "  $ my-cmd --number 10" +
-        "\n"
-    )
+      expect(helpStr).toBe(
+        "Usage: test [command] [options]" +
+          "\n\n" +
+          "Options:" +
+          "\n\n" +
+          "  --help|-h    Display help information" +
+          "\n\n" +
+          "Examples:" +
+          "\n\n" +
+          "  $ my-cmd --number 10" +
+          "\n"
+      )
+    })
+
+    test("should parse output", () => {
+      const helpStr = massarg()
+        .help({ binName: "test", useColors: false })
+        .example({
+          input: "my-cmd --number 10",
+          output: "Your number is 10 which is an integer",
+        })
+        .getHelpString()
+        .join("\n")
+
+      expect(helpStr).toBe(
+        "Usage: test [command] [options]" +
+          "\n\n" +
+          "Options:" +
+          "\n\n" +
+          "  --help|-h    Display help information" +
+          "\n\n" +
+          "Examples:" +
+          "\n\n" +
+          "  $ my-cmd --number 10" +
+          "\n" +
+          "  ➜ Your number is 10 which is an integer" +
+          "\n"
+      )
+    })
   })
 
   test("should wrap input properly", () => {

@@ -154,7 +154,7 @@ describe("Options", () => {
               required: true,
             })
             .parse(["--not-number", "abcdefg"])
-        ).toThrow("number is required, but was not defined")
+        ).toThrow("Option: `number` is required, but was not defined. Try using: `--number {value}`")
         mockConsoleError.mockRestore()
         mockConsoleLog.mockRestore()
       })
@@ -175,7 +175,7 @@ describe("Options", () => {
               run: () => void 0,
             })
             .parse(["cmd", "--number", "10"])
-        ).not.toThrow("number is required, but was not defined")
+        ).not.toThrow("Option: `number` is required, but was not defined. Try using: `--number {value}`")
         mockConsoleError.mockRestore()
         mockConsoleLog.mockRestore()
       })
@@ -196,7 +196,7 @@ describe("Options", () => {
               run: () => void 0,
             })
             .parse(["cmd"])
-        ).toThrow("number is required, but was not defined")
+        ).toThrow("Option: `number` is required for command: `cmd`, but was not defined. Try using: `--number {value}`")
         mockConsoleError.mockRestore()
         mockConsoleLog.mockRestore()
       })

@@ -37,7 +37,6 @@ export function wrap(text: string, options?: WrapOptions): string[] {
   const maxLineLength = _opts.printWidth - firstIndentSize + COLOR_CODE_LEN * _opts.colorCount
 
   function indent(i: number, l: string): string {
-    const INDENT_FIX = -2
     return repeat(" ", i === 0 ? firstIndentSize : indentSize) + l
   }
 
