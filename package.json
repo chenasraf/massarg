@@ -18,7 +18,7 @@
     "clean": "rm -rf build",
     "build": "echo $(pwd); yarn clean && tsc -p tsconfig.build.json && cp package.json README.md src/*.d.ts build",
     "develop": "tsc --watch",
-    "test": "jest && jest-coverage-badges"
+    "test": "jest"
   },
   "devDependencies": {
     "@types/jest": "^26.0.24",

@@ -111,7 +111,7 @@ export function assertOption(option: OptionDef<any, any>, allOptions: OptionDef<
 
 export function assertExample(example: ExampleDef) {
   assertType(example.input, "Example", "Input", { required: true, type: "string" })
-  assertType(example.output, "Example", "Output", { required: true, type: "string" })
+  assertType(example.output, "Example", "Output", { type: "string" })
   assertType(example.description, "Example", "Description", { type: "string" })
 }
 
