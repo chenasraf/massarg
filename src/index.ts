@@ -9,7 +9,7 @@ import { ArrayOr, asArray, colorCount, COLOR_CODE_LEN, wrap } from "./utils"
 import { RequiredError } from "./errors"
 import { assertCommand, assertExample, assertHelp, assertMain, assertOption } from "./assertions"
 
-export class Massarg<Options extends OptionsBase = OptionsBase> {
+export class Massarg<Options> {
   private _main?: MainDef<Options>
   private _options: OptionDef<Options, any>[] = []
   private _commands: CommandDef<Options>[] = []
@@ -19,7 +19,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   /**
    * These are the parsed options passed via args. They will only be available after using `parse()` or `printHelp()`,
    * or when retured by `parseArgs()`. */
-  public data: Options = { help: false, extras: [] as string[] } as Options
+  public data: Options & OptionsBase = { help: false, extras: [] as string[] } as Options & OptionsBase
 
   private _help: Required<HelpDef> = {
     binName: undefined as any,
@@ -159,7 +159,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
     }
 
     if (this._help.footer) {
-      lines.push("")
       lines.push(this.color(bodyColors, this._help.footer))
       lines.push("")
     }
@@ -173,7 +172,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
    * @param args Arguments to parse. Defaults to `process.argv`
    * @returns Parsed options
    */
-  public parseArgs(args = process.argv): Options {
+  public parseArgs(args = process.argv): Options & OptionsBase {
     for (const option of this._options) {
       if (option.defaultValue !== undefined) {
         this._addOptionToData(option, option.defaultValue)
@@ -212,7 +211,6 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
       if (command) {
         if (this._runCommand) {
-          // TODO add to extras?
           continue
         }
         this._runCommand = command
@@ -548,7 +546,7 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
   }
 }
 
-export function massarg<T extends OptionsBase = OptionsBase>() {
+export function massarg<T>() {
   return new Massarg<T>()
 }
 
