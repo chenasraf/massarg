@@ -286,8 +286,8 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       if (example.description) {
         lines.push(
           ...wrap(this.color(titleColors, example.description), {
-            colorCount: this._help.useColors ? colorCount(titleColors) : 0,
-            firstLineIndent: 2,
+            colorCount: this.colorCount(titleColors),
+            indent: 2,
             printWidth: this._help.printWidth,
           })
         )
@@ -300,22 +300,30 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
             " "
           ),
           {
-            colorCount: this._help.useColors ? colorCount(highlightColors) : 0,
+            colorCount: this.colorCount(highlightColors),
             firstLineIndent: 2,
+            indent: 3 + this._help.exampleInputPrefix.length,
+            // indent: this.colorCount(normalColors) + 4,
             printWidth: this._help.printWidth,
           }
         )
       )
-      lines.push(
-        ...wrap(
-          [this.color(normalColors, this._help.exampleOutputPrefix), this.color(bodyColors, example.output)].join(" "),
-          {
-            colorCount: this._help.useColors ? colorCount(bodyColors) : 0,
-            firstLineIndent: 2,
-            printWidth: this._help.printWidth,
-          }
+      if (example.output) {
+        lines.push(
+          ...wrap(
+            [this.color(normalColors, this._help.exampleOutputPrefix), this.color(bodyColors, example.output)].join(
+              " "
+            ),
+            {
+              colorCount: this.colorCount(bodyColors),
+              firstLineIndent: 2,
+              indent: 3 + this._help.exampleOutputPrefix.length,
+              // indent: this.colorCount(normalColors) + 4,
+              printWidth: this._help.printWidth,
+            }
+          )
         )
-      )
+      }
       lines.push("")
     }
     return lines
@@ -405,20 +413,18 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
 
     for (const item of list) {
       const cmdName = this.color(highlightColors, `${item.name}`).padEnd(
-        nameFullSize + (this._help.useColors ? colorCount(highlightColors) : 0) * COLOR_CODE_LEN,
+        nameFullSize + this.colorCount(highlightColors) * COLOR_CODE_LEN,
         " "
       )
       const cmdDescr = this.color(normalColors, item.description ?? "")
 
       for (const line of wrap(cmdName + cmdDescr, {
         indent: nameFullSize + INDENT_LEN,
-        colorCount: this._help.useColors
-          ? colorCount(
-              normalColors,
-              highlightColors,
-              item.additionalColorCount ? new Array({ length: item.additionalColorCount }) : []
-            )
-          : 0,
+        colorCount: this.colorCount(
+          normalColors,
+          highlightColors,
+          item.additionalColorCount ? new Array({ length: item.additionalColorCount }) : []
+        ),
         firstLineIndent: INDENT_LEN,
         printWidth: this._help.printWidth,
       })) {
@@ -531,6 +537,13 @@ export class Massarg<Options extends OptionsBase = OptionsBase> {
       output = (chalk[c as keyof typeof chalk] as typeof chalk.dim)(...(output ? [output] : text))
     }
     return chalk.reset(output)
+  }
+
+  private colorCount(...colors: any[]): number {
+    if (!this._help.useColors) {
+      return 0
+    }
+    return colorCount(...colors)
   }
 }
 

@@ -254,7 +254,7 @@ export interface ExampleDef {
   input: string
 
   /** The output line - to show the output of whatever `input` is regarding. */
-  output: string
+  output?: string
 
   /** An optional description which will be used as a title. */
   description?: string
