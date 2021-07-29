@@ -1,4 +1,4 @@
-import { CommandDef, ExampleDef, HelpDef, MainDef, Named, OptionDef } from "./options"
+import { CommandDef, ExampleDef, HelpDef, MainDef, Named, OptionDef } from "./types"
 import { ArrayOr, asArray } from "./utils"
 
 // prettier-ignore

@@ -1,7 +1,7 @@
 import capitalize from "lodash/capitalize"
 import massarg from "../src"
 import { colorList } from "../src/assertions"
-import { HelpDef } from "../src/options"
+import { HelpDef } from "../src/types"
 
 describe("Assertions", () => {
   test("should assert main command input", () => {
