@@ -9,7 +9,7 @@ export type OptionsBase = {
   extras: string[]
 }
 
-export type MainDef<Options> = (options: Options) => void
+export type MainDef<Options> = (options: Options & OptionsBase) => void
 
 export interface Named {
   name: string
@@ -78,7 +78,7 @@ export interface OptionDef<Options, Value> extends Named {
    * @param options Any already-parsed options in the current context. The order is not guaranteed, so some args will
    * not necessarily be parsed before this one.
    */
-  parse?(value: string, options: Options): Value
+  parse?(value: string, options: Options & OptionsBase): Value
 }
 
 export interface CommandDef<T> extends Named {
@@ -99,7 +99,7 @@ export interface CommandDef<T> extends Named {
    *
    * @param options All the parsed options (or defaults) that were passed in the CLI will be available here.
    */
-  run(options: T): void
+  run(options: T & OptionsBase): void
 }
 
 export interface HelpDef {

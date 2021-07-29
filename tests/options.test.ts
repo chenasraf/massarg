@@ -1,5 +1,5 @@
 import massarg from "../src"
-import { OptionDef } from "../src/options"
+import { OptionDef } from "../src/types"
 
 describe("Options", () => {
   describe("basics", () => {
