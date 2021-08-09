@@ -209,16 +209,16 @@ export class Massarg<Options> {
 
       const command = this._commands.find((o) => o.name === arg || o.aliases?.includes(arg))
 
+      let justFoundCommand = false
+
       if (command) {
-        if (this._runCommand) {
-          this.data.extras.push(arg)
-          // continue
-        } else {
+        if (!this._runCommand) {
           this._runCommand = command
+          justFoundCommand = true
         }
       }
 
-      if (!option && !command) {
+      if (!option && (!command || (command && !justFoundCommand))) {
         const defOpts = this._options.filter((o) => o.isDefault)
         if (defOpts.length) {
           for (const option of defOpts) {
