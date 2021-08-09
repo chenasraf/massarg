@@ -204,16 +204,18 @@ export class Massarg<Options> {
         const value = option.parse!(tempValue, this.data)
         this._addOptionToData(option, value)
 
-        continue
+        // continue
       }
 
       const command = this._commands.find((o) => o.name === arg || o.aliases?.includes(arg))
 
       if (command) {
         if (this._runCommand) {
-          continue
+          this.data.extras.push(arg)
+          // continue
+        } else {
+          this._runCommand = command
         }
-        this._runCommand = command
       }
 
       if (!option && !command) {
