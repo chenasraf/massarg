@@ -21,17 +21,16 @@
     "test": "jest"
   },
   "devDependencies": {
-    "@types/jest": "^26.0.24",
-    "@types/lodash": "^4.14.171",
-    "@types/node": "^16.3.2",
-    "jest": "^27.0.6",
-    "jest-coverage-badges": "^1.1.2",
-    "ts-jest": "^27.0.3",
+    "@types/jest": "^27.0.3",
+    "@types/lodash": "^4.14.177",
+    "@types/node": "^16.11.11",
+    "jest": "^27.4.3",
+    "ts-jest": "^27.0.7",
     "ts-node": "^10.1.0",
-    "typescript": "^4.3.5"
+    "typescript": "^4.5.2"
   },
   "dependencies": {
-    "chalk": "^4.1.1",
+    "chalk": "^5.0.0",
     "lodash": "^4.17.21"
   }
 }
