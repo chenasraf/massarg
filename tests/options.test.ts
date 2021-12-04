@@ -1,3 +1,4 @@
+import chalk from "chalk"
 import massarg from "../src"
 import { OptionDef } from "../src/types"
 
@@ -143,9 +144,17 @@ describe("Options", () => {
     })
 
     describe("required", () => {
+      const mockProcessExit = jest.spyOn(process, "exit").mockImplementation((code) => {
+        throw new Error(`Process.exit(${code})`) // Forces the code to throw instead of exit
+      })
+      beforeEach(() => {
+        mockProcessExit.mockClear()
+      })
+
       test("should throw on missing required value", () => {
         const mockConsoleError = jest.spyOn(console, "error").mockImplementation(() => void 0)
         const mockConsoleLog = jest.spyOn(console, "log").mockImplementation(() => void 0)
+
         expect(() =>
           massarg()
             .option({
@@ -154,7 +163,10 @@ describe("Options", () => {
               required: true,
             })
             .parse(["--not-number", "abcdefg"])
-        ).toThrow("Option: `number` is required, but was not defined. Try using: `--number {value}`")
+        ).toThrow("Process.exit(1)")
+        expect(mockConsoleError).toBeCalledWith(
+          chalk.red`Option: \`number\` is required, but was not defined. Try using: \`--number \{value\}\``
+        )
         mockConsoleError.mockRestore()
         mockConsoleLog.mockRestore()
       })
@@ -196,7 +208,10 @@ describe("Options", () => {
               run: () => void 0,
             })
             .parse(["cmd"])
-        ).toThrow("Option: `number` is required for command: `cmd`, but was not defined. Try using: `--number {value}`")
+        ).toThrow("Process.exit(1)")
+        expect(mockConsoleError).toBeCalledWith(
+          chalk.red`Option: \`number\` is required for command: \`cmd\`, but was not defined. Try using: \`--number \{value\}\``
+        )
         mockConsoleError.mockRestore()
         mockConsoleLog.mockRestore()
       })

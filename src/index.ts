@@ -18,7 +18,7 @@ export class Massarg<Options> {
   private _maxNameLen = 0
   /**
    * These are the parsed options passed via args. They will only be available after using `parse()` or `printHelp()`,
-   * or when retured by `parseArgs()`. */
+   * or when returned by `parseArgs()`. */
   public data: Options & OptionsBase = { help: false, extras: [] as string[] } as Options & OptionsBase
 
   private _help: Required<HelpDef> = {
@@ -255,11 +255,10 @@ export class Massarg<Options> {
       } else {
         this._ensureRequired()
       }
-    } catch (e) {
-      if (e.cmdName && e.fieldName) {
-        console.log()
-        console.error("Error")
+    } catch (e: any) {
+      if (RequiredError.isRequiredError(e)) {
         console.error(chalk.red`${e.message}`)
+        process.exit(1)
       }
       throw e
     }
@@ -417,9 +416,9 @@ export class Massarg<Options> {
         nameFullSize + this.colorCount(highlightColors) * COLOR_CODE_LEN,
         " "
       )
-      const cmdDescr = this.color(normalColors, item.description ?? "")
+      const cmdDesc = this.color(normalColors, item.description ?? "")
 
-      for (const line of wrap(cmdName + cmdDescr, {
+      for (const line of wrap(cmdName + cmdDesc, {
         indent: nameFullSize + INDENT_LEN,
         colorCount: this.colorCount(
           normalColors,

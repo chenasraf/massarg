@@ -11,4 +11,8 @@ export class RequiredError extends Error {
     this.fieldName = fieldName
     this.cmdName = cmdName
   }
+
+  public static isRequiredError(e: any): e is RequiredError {
+    return e.fieldName && e.cmdName
+  }
 }
