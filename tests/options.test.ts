@@ -57,6 +57,33 @@ describe("Options", () => {
 
         const falsyNumArg = massarg().option(opts).parseArgs(["--bool", "0"])
         expect(falsyNumArg).toHaveProperty("bool", false)
+
+        const truthyStrArg = massarg().option(opts).parseArgs(["--bool", "true"])
+        expect(truthyStrArg).toHaveProperty("bool", true)
+
+        const truthyStrArg2 = massarg().option(opts).parseArgs(["--bool", "on"])
+        expect(truthyStrArg2).toHaveProperty("bool", true)
+
+        const truthyStrArg3 = massarg().option(opts).parseArgs(["--bool", "yes"])
+        expect(truthyStrArg3).toHaveProperty("bool", true)
+
+        const falsyStrArg = massarg().option(opts).parseArgs(["--bool", "false"])
+        expect(falsyStrArg).toHaveProperty("bool", false)
+
+        const falsyStrArg2 = massarg().option(opts).parseArgs(["--bool", "off"])
+        expect(falsyStrArg2).toHaveProperty("bool", false)
+
+        const falsyStrArg3 = massarg().option(opts).parseArgs(["--bool", "no"])
+        expect(falsyStrArg3).toHaveProperty("bool", false)
+
+        const otherStrArg = massarg()
+          .option(opts)
+          .option({
+            name: "other",
+            isDefault: true,
+          })
+          .parseArgs(["--bool", "someName"])
+        expect(otherStrArg).toHaveProperty("bool", true)
       })
     })
 

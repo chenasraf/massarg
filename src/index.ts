@@ -330,7 +330,8 @@ export class Massarg<Options> {
   }
 
   private _isTruthy(v: any): boolean {
-    return [true, "1", "true", "yes", "on"].includes(v)
+    v = String(v).toLowerCase()
+    return ["1", "true", "yes", "y", "on"].includes(v) || !["0", "false", "no", "n", "off"].includes(v)
   }
 
   private _ensureRequired(cmd?: CommandDef<Options>) {
