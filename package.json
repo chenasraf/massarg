@@ -1,6 +1,6 @@
 {
   "name": "massarg",
-  "version": "1.0.6",
+  "version": "1.0.7-pre.1",
   "description": "Flexible, powerful, and simple command/argument parser for CLI applications",
   "keywords": [
     "shell",
@@ -16,8 +16,9 @@
   "license": "Apache",
   "scripts": {
     "clean": "rm -rf build",
-    "build": "echo $(pwd); yarn clean && tsc -p tsconfig.build.json && cp package.json README.md build",
+    "build": "yarn clean && tsc -p tsconfig.build.json && cp package.json README.md build",
     "develop": "tsc --watch",
+    "sample": "node build/sample.js",
     "test": "jest"
   },
   "devDependencies": {

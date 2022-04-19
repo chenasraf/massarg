@@ -44,46 +44,67 @@ describe("Options", () => {
 
     describe("bool", () => {
       test("should parse bool in correct forms", () => {
-        const opts = {
+        const boolOpt = {
           name: "bool",
+          aliases: ["b"],
           boolean: true,
         } as OptionDef<any, any>
+        const defOpt = {
+          name: "default",
+          aliases: ["d"],
+          isDefault: true,
+        }
+        const numOpt = {
+          name: "num",
+          aliases: ["n"],
+          parse: Number,
+        }
 
-        const noArg = massarg().option(opts).parseArgs(["--bool"])
-        expect(noArg).toHaveProperty("bool", true)
+        expect(massarg().option(boolOpt).parseArgs(["--bool"])).toHaveProperty("bool", true)
 
-        const truthyNumArg = massarg().option(opts).parseArgs(["--bool", "1"])
-        expect(truthyNumArg).toHaveProperty("bool", true)
+        // 1/0
+        expect(massarg().option(boolOpt).parseArgs(["--bool", "1"])).toHaveProperty("bool", true)
+        expect(massarg().option(boolOpt).option(defOpt).parseArgs(["--bool", "1", "def"])).toHaveProperty("bool", true)
+        expect(massarg().option(boolOpt).parseArgs(["--bool", "0"])).toHaveProperty("bool", false)
 
-        const falsyNumArg = massarg().option(opts).parseArgs(["--bool", "0"])
-        expect(falsyNumArg).toHaveProperty("bool", false)
+        // on/off
+        expect(massarg().option(boolOpt).parseArgs(["--bool", "on"])).toHaveProperty("bool", true)
+        expect(massarg().option(boolOpt).option(defOpt).parseArgs(["--bool", "on", "def"])).toHaveProperty("bool", true)
+        expect(massarg().option(boolOpt).parseArgs(["--bool", "off"])).toHaveProperty("bool", false)
 
-        const truthyStrArg = massarg().option(opts).parseArgs(["--bool", "true"])
-        expect(truthyStrArg).toHaveProperty("bool", true)
+        // true/false
+        expect(massarg().option(boolOpt).parseArgs(["--bool", "true"])).toHaveProperty("bool", true)
+        expect(massarg().option(boolOpt).option(defOpt).parseArgs(["--bool", "true", "def"])).toHaveProperty(
+          "bool",
+          true
+        )
+        expect(massarg().option(boolOpt).parseArgs(["--bool", "false"])).toHaveProperty("bool", false)
 
-        const truthyStrArg2 = massarg().option(opts).parseArgs(["--bool", "on"])
-        expect(truthyStrArg2).toHaveProperty("bool", true)
+        // yes/no
+        expect(massarg().option(boolOpt).parseArgs(["--bool", "yes"])).toHaveProperty("bool", true)
+        expect(massarg().option(boolOpt).option(defOpt).parseArgs(["--bool", "yes", "def"])).toHaveProperty(
+          "bool",
+          true
+        )
+        expect(massarg().option(boolOpt).parseArgs(["--bool", "no"])).toHaveProperty("bool", false)
 
-        const truthyStrArg3 = massarg().option(opts).parseArgs(["--bool", "yes"])
-        expect(truthyStrArg3).toHaveProperty("bool", true)
+        // [none]
+        expect(
+          massarg().option(boolOpt).option(defOpt).option(numOpt).parseArgs(["--bool", "someName"])
+        ).toHaveProperty("bool", true)
 
-        const falsyStrArg = massarg().option(opts).parseArgs(["--bool", "false"])
-        expect(falsyStrArg).toHaveProperty("bool", false)
+        expect(
+          massarg().option(boolOpt).option(defOpt).option(numOpt).parseArgs(["--bool", "--num", "1", "someName"])
+        ).toHaveProperty("bool", true)
 
-        const falsyStrArg2 = massarg().option(opts).parseArgs(["--bool", "off"])
-        expect(falsyStrArg2).toHaveProperty("bool", false)
+        // [none] - negation
+        expect(
+          massarg().option(boolOpt).option(defOpt).option(numOpt).parseArgs(["--no-bool", "--num", "1", "someName"])
+        ).toHaveProperty("bool", true)
 
-        const falsyStrArg3 = massarg().option(opts).parseArgs(["--bool", "no"])
-        expect(falsyStrArg3).toHaveProperty("bool", false)
-
-        const otherStrArg = massarg()
-          .option(opts)
-          .option({
-            name: "other",
-            isDefault: true,
-          })
-          .parseArgs(["--bool", "someName"])
-        expect(otherStrArg).toHaveProperty("bool", true)
+        expect(
+          massarg().option(boolOpt).option(defOpt).option(numOpt).parseArgs(["-!b", "--num", "1", "someName"])
+        ).toHaveProperty("bool", true)
       })
     })
 
