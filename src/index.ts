@@ -183,16 +183,31 @@ export class Massarg<Options> {
 
     for (let i = 0; i < args.length; i++) {
       const arg = args[i]
-      const option = this._options.find((o) => `--${o.name}` === arg || o.aliases?.map((a) => `-${a}`).includes(arg))
+      const option = this._options.find(
+        (o) =>
+          // long format
+          `--${o.name}` === arg ||
+          // short format - boolean negate
+          (o.boolean && `--no-${o.name}` === arg) ||
+          // short format
+          o.aliases?.map((a) => `-${a}`).includes(arg) ||
+          // short format - boolean negate
+          (o.boolean && o.aliases?.map((a) => `-!${a}`).includes(arg))
+        //
+      )
+
+      const mightContainDefaultValue = this._options.some((o) => o.isDefault)
 
       if (option) {
         let tempValue: any
         const hasNextToken = args.length > i + 1
-        const nextTokenIsValue = hasNextToken && !args[i + 1].startsWith("-")
+        const nextTokenIsValue =
+          hasNextToken &&
+          (option.boolean ? mightContainDefaultValue || !args[i + 1].startsWith("-") : !args[i + 1].startsWith("-"))
 
         if (option.boolean && (!hasNextToken || !nextTokenIsValue)) {
           // parse boolean args w/o value
-          tempValue = true
+          tempValue = !arg.replace(/^-+/, "").startsWith("!")
         } else if (!hasNextToken || !nextTokenIsValue) {
           // non-boolean args with no value
           throw new TypeError(`Missing value for: ${option.name}`)
