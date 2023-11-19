@@ -62,6 +62,8 @@ const removeCmd = new MassargCommand<{ component: string }>({
 const args = massarg<A>({
   name: "my-cli",
   description: "This is an example CLI",
+  bindHelpOption: true,
+  bindHelpCommand: true,
 })
   .main((opts, parser) => {
     console.log("Main command - printing all opts")

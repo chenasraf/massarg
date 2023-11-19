@@ -1,7 +1,12 @@
 import { z } from "zod"
-import { isZodError, ValidationError } from "./error"
+import { isZodError, ParseError, ValidationError } from "./error"
 import { HelpGenerator } from "./help"
-import MassargOption, { MassargFlag, OptionConfig, TypedOptionConfig } from "./option"
+import MassargOption, {
+  MassargFlag,
+  OptionConfig,
+  TypedOptionConfig,
+  MassargHelpFlag,
+} from "./option"
 import { setOrPush } from "./utils"
 
 export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
@@ -13,6 +18,9 @@ export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
       .function()
       .args(args, z.any())
       .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<z.infer<RunArgs>>>,
+    bindHelpCommand: z.boolean().optional(),
+    bindHelpOption: z.boolean().optional(),
+    // argsHint: z.string().optional(),
   })
 
 export type CommandConfig<T = unknown> = z.infer<ReturnType<typeof CommandConfig<z.ZodType<T>>>>
@@ -39,6 +47,12 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     this.description = options.description
     this.aliases = options.aliases ?? []
     this._run = options.run
+    if (options.bindHelpCommand) {
+      this.command(new MassargHelpCommand())
+    }
+    if (options.bindHelpOption) {
+      this.option(new MassargHelpFlag())
+    }
   }
 
   command<A extends ArgsObject = Args>(config: CommandConfig<A>): MassargCommand<Args>
@@ -122,7 +136,12 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
       if (command) {
         return command.parse(_argv, this.args, parent ?? this)
       }
-      // TODO pass all un-handled args to an "args" option
+      const defaultOption = this.options.find((o) => o.isDefault)
+      if (defaultOption) {
+        console.log("Parsing default option")
+        _argv = this.parseOption(`--${defaultOption.name}`, [arg, ..._argv])
+        continue
+      }
     }
     if (this._run) {
       this._run({ ...args, ...this.args } as Args, parent ?? this)
@@ -138,6 +157,7 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
         message: "Unknown option",
       })
     }
+    console.log("parseOption", [arg, ...argv])
     const res = option._parseDetails([arg, ...argv])
     this.args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
       res.value,
@@ -189,11 +209,12 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
 }
 
 export class MassargHelpCommand<T extends ArgsObject = ArgsObject> extends MassargCommand<T> {
-  constructor(config: Partial<Omit<CommandConfig<T>, "run">>) {
+  constructor(config: Partial<Omit<CommandConfig<T>, "run">> = {}) {
     super({
       name: "help",
       aliases: ["h"],
-      description: "Print help",
+      description: "Print help for this command, or a subcommand if specified",
+      // argsHint: "[command]",
       run: (args, parent) => {
         if (args.command) {
           const command = parent.commands.find((c) => c.name === args.command)
@@ -201,10 +222,11 @@ export class MassargHelpCommand<T extends ArgsObject = ArgsObject> extends Massa
             command.printHelp()
             return
           } else {
-            throw new ValidationError({
+            throw new ParseError({
               path: ["command"],
               code: "unknown_command",
               message: "Unknown command",
+              received: args.command,
             })
           }
         }
