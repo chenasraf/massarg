@@ -15,11 +15,11 @@
   "author": "Chen Asraf <chenasrafil@gmail.com>",
   "license": "Apache",
   "scripts": {
-    "clean": "rm -rf build",
-    "build": "yarn clean && tsc -p tsconfig.build.json && cp package.json README.md build",
-    "develop": "tsc --watch",
-    "sample": "node build/sample.js",
-    "test": "jest"
+    "build": "tsc -p tsconfig.build.json && cp package.json README.md build",
+    "dev": "tsc --watch",
+    "example": "ts-node src/example.ts",
+    "test": "jest",
+    "docs": "typedoc --out docs src --plugin typedoc-plugin-zod --theme default"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
@@ -27,6 +27,8 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.1.1",
     "ts-node": "^10.9.1",
+    "typedoc": "^0.25.3",
+    "typedoc-plugin-zod": "^1.1.0",
     "typescript": "^5.2.2"
   },
   "dependencies": {
