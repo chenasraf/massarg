@@ -49,6 +49,7 @@ export default class MassargOption<T = unknown> {
   aliases: string[]
   parse: (value: string) => T
   isArray: boolean
+  isDefault: boolean
 
   constructor(options: OptionConfig<T>) {
     OptionConfig(z.any()).parse(options)
@@ -58,6 +59,7 @@ export default class MassargOption<T = unknown> {
     this.aliases = options.aliases
     this.parse = options.parse ?? ((x) => x as unknown as T)
     this.isArray = options.array ?? false
+    this.isDefault = options.isDefault ?? false
   }
 
   static fromTypedConfig<T = unknown>(config: TypedOptionConfig<T>): MassargOption<T> {
@@ -70,10 +72,8 @@ export default class MassargOption<T = unknown> {
 
   _parseDetails(argv: string[]): ArgvValue<T> {
     // TODO: support --option=value
-    argv.shift()
     let input = ""
     try {
-      input = argv.shift()!
       if (!this._match(argv[0])) {
         throw new ParseError({
           path: [this.name],
@@ -82,6 +82,8 @@ export default class MassargOption<T = unknown> {
           received: JSON.stringify(argv[0]),
         })
       }
+      argv.shift()
+      input = argv.shift()!
       const value = this.parse(input)
       return { key: this.name, value, argv }
     } catch (e) {
@@ -103,6 +105,7 @@ export default class MassargOption<T = unknown> {
   }
 
   _match(arg: string): boolean {
+    if (!arg) return false
     // full prefix
     if (arg.startsWith(OPT_FULL_PREFIX)) {
       // negate full prefix
@@ -225,7 +228,7 @@ export class MassargFlag extends MassargOption<boolean> {
 }
 
 export class MassargHelpFlag extends MassargFlag {
-  constructor(config: Partial<Omit<OptionConfig<boolean>, "parse">>) {
+  constructor(config: Partial<Omit<OptionConfig<boolean>, "parse">> = {}) {
     super({
       name: "help",
       description: "Show this help message",
