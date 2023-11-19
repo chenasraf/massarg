@@ -1,3 +1,5 @@
+import { z } from "zod"
+
 export class ValidationError extends Error {
   path: string[]
   code: string
@@ -40,4 +42,8 @@ export class ParseError extends Error {
     this.name = "ParseError"
     this.received = received
   }
+}
+
+export function isZodError(e: unknown): e is z.ZodError {
+  return e instanceof z.ZodError
 }
