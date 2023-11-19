@@ -11,14 +11,31 @@ import { setOrPush } from "./utils"
 
 export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
   z.object({
+    /** Command name */
     name: z.string(),
+    /** Command description, displayed in the help output */
     description: z.string(),
+    /** Command aliases */
     aliases: z.string().array().optional(),
+    /**
+     * Function used when invoking this command. It receives the parsed options and the primary
+     * instance of Massarg used to invoke this command (the top-level instance)
+     */
     run: z
       .function()
       .args(args, z.any())
       .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<z.infer<RunArgs>>>,
+    /**
+     * Whether to bind the help command to this command
+     *
+     * Set this to `true` to automatically add a `help` command to this command's subcommands.
+     */
     bindHelpCommand: z.boolean().optional(),
+    /**
+     * Whether to bind the help option to this command
+     *
+     * Set this to `true` to automatically add a `--help` option to this command's options.
+     */
     bindHelpOption: z.boolean().optional(),
     // argsHint: z.string().optional(),
   })
@@ -138,7 +155,6 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
       }
       const defaultOption = this.options.find((o) => o.isDefault)
       if (defaultOption) {
-        console.log("Parsing default option")
         _argv = this.parseOption(`--${defaultOption.name}`, [arg, ..._argv])
         continue
       }
@@ -157,7 +173,6 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
         message: "Unknown option",
       })
     }
-    console.log("parseOption", [arg, ...argv])
     const res = option._parseDetails([arg, ...argv])
     this.args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
       res.value,
