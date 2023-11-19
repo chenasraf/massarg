@@ -19,7 +19,9 @@ export const TypedOptionConfig = <T extends z.ZodType>(type: T) =>
       type: z.enum(["string", "number", "boolean"]).optional(),
     }),
   )
-export type TypedOptionConfig<T = unknown> = z.infer<ReturnType<typeof TypedOptionConfig<z.ZodType<T>>>>
+export type TypedOptionConfig<T = unknown> = z.infer<
+  ReturnType<typeof TypedOptionConfig<z.ZodType<T>>>
+>
 
 export const ArrayOptionConfig = <T extends z.ZodType>(type: T) =>
   TypedOptionConfig(z.array(type)).merge(
@@ -27,8 +29,11 @@ export const ArrayOptionConfig = <T extends z.ZodType>(type: T) =>
       defaultValue: z.array(type).optional(),
     }),
   )
-export type ArrayOptionConfig<T = unknown> = z.infer<ReturnType<typeof ArrayOptionConfig<z.ZodType<T>>>>
+export type ArrayOptionConfig<T = unknown> = z.infer<
+  ReturnType<typeof ArrayOptionConfig<z.ZodType<T>>>
+>
 
+// TODO turn to options
 const OPT_FULL_PREFIX = "--"
 const OPT_SHORT_PREFIX = "-"
 const NEGATE_FULL_PREFIX = "no-"
@@ -64,11 +69,13 @@ export default class MassargOption<T = unknown> {
     return new MassargOption(config as OptionConfig<T>)
   }
 
-  valueFromArgv(argv: string[]): ArgvValue<T> {
+  _parseDetails(argv: string[]): ArgvValue<T> {
     // TODO: support --option=value
     argv.shift()
+    let input = ""
     try {
-      const value = this.parse(argv.shift()!)
+      input = argv.shift()!
+      const value = this.parse(input)
       return { key: this.name, value, argv }
     } catch (e) {
       if (isZodError(e)) {
@@ -76,6 +83,7 @@ export default class MassargOption<T = unknown> {
           path: [this.name, ...e.issues[0].path.map((p) => p.toString())],
           code: e.issues[0].code,
           message: e.issues[0].message,
+          received: JSON.stringify(input),
         })
       }
       throw e
@@ -109,7 +117,11 @@ export default class MassargOption<T = unknown> {
   }
 
   _isOption(arg: string): boolean {
-    return arg.startsWith(OPT_FULL_PREFIX) || arg.startsWith(OPT_SHORT_PREFIX) || arg.startsWith(NEGATE_SHORT_PREFIX)
+    return (
+      arg.startsWith(OPT_FULL_PREFIX) ||
+      arg.startsWith(OPT_SHORT_PREFIX) ||
+      arg.startsWith(NEGATE_SHORT_PREFIX)
+    )
   }
 }
 
@@ -121,14 +133,15 @@ export class MassargNumber extends MassargOption<number> {
     })
   }
 
-  valueFromArgv(argv: string[]): ArgvValue<number> {
+  _parseDetails(argv: string[]): ArgvValue<number> {
     try {
-      const { argv: _argv, value } = super.valueFromArgv(argv)
+      const { argv: _argv, value } = super._parseDetails(argv)
       if (isNaN(value)) {
         throw new ParseError({
           path: [this.name],
           code: "invalid_type",
           message: "Expected a number",
+          received: JSON.stringify(argv[0]),
         })
       }
       return { key: this.name, value, argv: _argv }
@@ -138,6 +151,7 @@ export class MassargNumber extends MassargOption<number> {
           path: [this.name, ...e.issues[0].path.map((p) => p.toString())],
           code: e.issues[0].code,
           message: e.issues[0].message,
+          received: JSON.stringify(argv[0]),
         })
       }
       throw e
@@ -153,7 +167,7 @@ export class MassargFlag extends MassargOption<boolean> {
     })
   }
 
-  valueFromArgv(argv: string[]): ArgvValue<boolean> {
+  _parseDetails(argv: string[]): ArgvValue<boolean> {
     try {
       const isNegation = argv[0]?.startsWith("^")
       argv.shift()

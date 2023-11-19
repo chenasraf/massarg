@@ -7,10 +7,11 @@ const args = massarg<A>({
   name: "my-cli",
   description: "This is an example CLI",
 })
-  // .main((opts) => {
-  //   console.log("Main command - printing all opts")
-  //   console.log(opts)
-  // })
+  .main((opts, parser) => {
+    console.log("Main command - printing all opts")
+    console.log(opts, "\n")
+    parser.printHelp()
+  })
   .command(
     massarg<{ component: string }>({
       name: "add",
@@ -70,7 +71,7 @@ const args = massarg<A>({
   )
   .option({
     name: "bool",
-    description: "Example number option",
+    description: "Example boolean option",
     aliases: ["b"],
     type: "boolean",
   })
@@ -83,6 +84,6 @@ const args = massarg<A>({
 
 const opts = args.getArgs(process.argv.slice(2))
 
-console.log("Opts:", opts)
+console.log("Opts:", opts, "\n")
 
 args.parse(process.argv.slice(2))
