@@ -1,6 +1,5 @@
 import { z } from "zod"
-import { ParseError } from "./error"
-import { isZodError } from "./utils"
+import { isZodError, ParseError } from "./error"
 
 export const OptionConfig = <T extends z.ZodType>(type: T) =>
   z.object({
@@ -10,13 +9,15 @@ export const OptionConfig = <T extends z.ZodType>(type: T) =>
     aliases: z.string().array(),
     parse: z.function().args(z.string()).returns(type).optional(),
     array: z.boolean().optional(),
+    required: z.boolean().optional(),
+    isDefault: z.boolean().optional(),
   })
 export type OptionConfig<T = unknown> = z.infer<ReturnType<typeof OptionConfig<z.ZodType<T>>>>
 
 export const TypedOptionConfig = <T extends z.ZodType>(type: T) =>
   OptionConfig(type).merge(
     z.object({
-      type: z.enum(["string", "number", "boolean"]).optional(),
+      type: z.enum(["number"]).optional(),
     }),
   )
 export type TypedOptionConfig<T = unknown> = z.infer<
@@ -63,8 +64,6 @@ export default class MassargOption<T = unknown> {
     switch (config.type) {
       case "number":
         return new MassargNumber(config as OptionConfig<number>) as MassargOption<T>
-      case "boolean":
-        return new MassargFlag(config) as MassargOption<T>
     }
     return new MassargOption(config as OptionConfig<T>)
   }
@@ -75,6 +74,14 @@ export default class MassargOption<T = unknown> {
     let input = ""
     try {
       input = argv.shift()!
+      if (!this._match(argv[0])) {
+        throw new ParseError({
+          path: [this.name],
+          code: "invalid_option",
+          message: `Expected option ${this.name}`,
+          received: JSON.stringify(argv[0]),
+        })
+      }
       const value = this.parse(input)
       return { key: this.name, value, argv }
     } catch (e) {
@@ -123,6 +130,25 @@ export default class MassargOption<T = unknown> {
       arg.startsWith(NEGATE_SHORT_PREFIX)
     )
   }
+
+  static getName(arg: string): string {
+    if (arg.startsWith(OPT_FULL_PREFIX)) {
+      // negate full prefix
+      if (arg.startsWith(`--${NEGATE_FULL_PREFIX}`)) {
+        return arg.slice(`--${NEGATE_FULL_PREFIX}`.length)
+      }
+      return arg.slice(OPT_FULL_PREFIX.length)
+    }
+    // short prefix
+    if (arg.startsWith(OPT_SHORT_PREFIX) || arg.startsWith(NEGATE_SHORT_PREFIX)) {
+      return arg.slice(OPT_SHORT_PREFIX.length)
+    }
+    // negate short prefix
+    if (arg.startsWith(NEGATE_SHORT_PREFIX)) {
+      return arg.slice(NEGATE_SHORT_PREFIX.length)
+    }
+    return "<blank>"
+  }
 }
 
 export class MassargNumber extends MassargOption<number> {
@@ -169,7 +195,17 @@ export class MassargFlag extends MassargOption<boolean> {
 
   _parseDetails(argv: string[]): ArgvValue<boolean> {
     try {
-      const isNegation = argv[0]?.startsWith("^")
+      const isNegation =
+        argv[0]?.startsWith(NEGATE_SHORT_PREFIX) || argv[0]?.startsWith(NEGATE_FULL_PREFIX)
+      if (!this._match(argv[0])) {
+        throw new ParseError({
+          path: [this.name],
+          code: "invalid_option",
+          message: `Expected option ${this.name}`,
+          received: JSON.stringify(argv[0]),
+        })
+      }
+
       argv.shift()
       if (isNegation) {
         return { key: this.name, value: false, argv }
@@ -185,6 +221,17 @@ export class MassargFlag extends MassargOption<boolean> {
       }
       throw e
     }
+  }
+}
+
+export class MassargHelpFlag extends MassargFlag {
+  constructor(config: Partial<Omit<OptionConfig<boolean>, "parse">>) {
+    super({
+      name: "help",
+      description: "Show this help message",
+      aliases: ["h"],
+      ...config,
+    })
   }
 }
 
