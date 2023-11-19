@@ -19,7 +19,7 @@ export default class Massarg<Args extends ArgsObject = ArgsObject> extends Massa
 export { Massarg }
 
 export function massarg<Args extends ArgsObject = ArgsObject>(
-  options: MinimalCommandConfig<Args>,
+  options: MinimalCommandConfig<Args>
 ): MassargCommand<Args> {
   return new Massarg(options)
 }

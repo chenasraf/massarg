@@ -50,7 +50,10 @@ export function generateHelpTable(
   return table.join("\n")
 }
 
-export function generateOptionsHelpTable(options: MassargOption<unknown>[], config?: GenerateTableOptions): string {
+export function generateOptionsHelpTable(
+  options: MassargOption<unknown>[],
+  config?: GenerateTableOptions,
+): string {
   return generateHelpTable(options, {
     namePrefix: "--",
     aliasPrefix: "-",
@@ -58,10 +61,24 @@ export function generateOptionsHelpTable(options: MassargOption<unknown>[], conf
   })
 }
 
-export function generateCommandsHelpTable(commands: MassargCommand[], config?: GenerateTableOptions): string {
+export function generateCommandsHelpTable(
+  commands: MassargCommand[],
+  config?: GenerateTableOptions,
+): string {
   return generateHelpTable(commands, {
     namePrefix: "",
     aliasPrefix: "",
     ...config,
   })
+}
+
+export function setOrPush<T>(
+  newValue: unknown,
+  currentValue: T[] | T | undefined,
+  isArray: boolean,
+): T {
+  if (isArray) {
+    return [...((currentValue as unknown[]) ?? []), newValue] as T
+  }
+  return newValue as T
 }
