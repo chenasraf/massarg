@@ -1,5 +1,5 @@
-import { z } from "zod"
-import { isZodError, ParseError } from "./error"
+import { z } from 'zod'
+import { isZodError, ParseError } from './error'
 
 export const OptionConfig = <T extends z.ZodType>(type: T) =>
   z.object({
@@ -17,7 +17,7 @@ export type OptionConfig<T = unknown> = z.infer<ReturnType<typeof OptionConfig<z
 export const TypedOptionConfig = <T extends z.ZodType>(type: T) =>
   OptionConfig(type).merge(
     z.object({
-      type: z.enum(["number"]).optional(),
+      type: z.enum(['number']).optional(),
     }),
   )
 export type TypedOptionConfig<T = unknown> = z.infer<
@@ -35,10 +35,10 @@ export type ArrayOptionConfig<T = unknown> = z.infer<
 >
 
 // TODO turn to options
-const OPT_FULL_PREFIX = "--"
-const OPT_SHORT_PREFIX = "-"
-const NEGATE_FULL_PREFIX = "no-"
-const NEGATE_SHORT_PREFIX = "^"
+const OPT_FULL_PREFIX = '--'
+const OPT_SHORT_PREFIX = '-'
+const NEGATE_FULL_PREFIX = 'no-'
+const NEGATE_SHORT_PREFIX = '^'
 
 export type ArgvValue<T> = { argv: string[]; value: T; key: string }
 
@@ -64,7 +64,7 @@ export default class MassargOption<T = unknown> {
 
   static fromTypedConfig<T = unknown>(config: TypedOptionConfig<T>): MassargOption<T> {
     switch (config.type) {
-      case "number":
+      case 'number':
         return new MassargNumber(config as OptionConfig<number>) as MassargOption<T>
     }
     return new MassargOption(config as OptionConfig<T>)
@@ -72,12 +72,12 @@ export default class MassargOption<T = unknown> {
 
   _parseDetails(argv: string[]): ArgvValue<T> {
     // TODO: support --option=value
-    let input = ""
+    let input = ''
     try {
       if (!this._match(argv[0])) {
         throw new ParseError({
           path: [this.name],
-          code: "invalid_option",
+          code: 'invalid_option',
           message: `Expected option ${this.name}`,
           received: JSON.stringify(argv[0]),
         })
@@ -100,7 +100,7 @@ export default class MassargOption<T = unknown> {
   }
 
   helpString(): string {
-    const aliases = this.aliases.length ? `|${this.aliases.join("|-")}` : ""
+    const aliases = this.aliases.length ? `|${this.aliases.join('|-')}` : ''
     return `--${this.name}${aliases} ${this.description}`
   }
 
@@ -150,12 +150,12 @@ export default class MassargOption<T = unknown> {
     if (arg.startsWith(NEGATE_SHORT_PREFIX)) {
       return arg.slice(NEGATE_SHORT_PREFIX.length)
     }
-    return "<blank>"
+    return '<blank>'
   }
 }
 
 export class MassargNumber extends MassargOption<number> {
-  constructor(options: Omit<OptionConfig<number>, "parse">) {
+  constructor(options: Omit<OptionConfig<number>, 'parse'>) {
     super({
       ...options,
       parse: (value) => Number(value),
@@ -168,8 +168,8 @@ export class MassargNumber extends MassargOption<number> {
       if (isNaN(value)) {
         throw new ParseError({
           path: [this.name],
-          code: "invalid_type",
-          message: "Expected a number",
+          code: 'invalid_type',
+          message: 'Expected a number',
           received: JSON.stringify(argv[0]),
         })
       }
@@ -189,7 +189,7 @@ export class MassargNumber extends MassargOption<number> {
 }
 
 export class MassargFlag extends MassargOption<boolean> {
-  constructor(options: Omit<OptionConfig<boolean>, "parse">) {
+  constructor(options: Omit<OptionConfig<boolean>, 'parse'>) {
     super({
       ...options,
       parse: () => true,
@@ -203,7 +203,7 @@ export class MassargFlag extends MassargOption<boolean> {
       if (!this._match(argv[0])) {
         throw new ParseError({
           path: [this.name],
-          code: "invalid_option",
+          code: 'invalid_option',
           message: `Expected option ${this.name}`,
           received: JSON.stringify(argv[0]),
         })
@@ -228,11 +228,11 @@ export class MassargFlag extends MassargOption<boolean> {
 }
 
 export class MassargHelpFlag extends MassargFlag {
-  constructor(config: Partial<Omit<OptionConfig<boolean>, "parse">> = {}) {
+  constructor(config: Partial<Omit<OptionConfig<boolean>, 'parse'>> = {}) {
     super({
-      name: "help",
-      description: "Show this help message",
-      aliases: ["h"],
+      name: 'help',
+      description: 'Show this help message',
+      aliases: ['h'],
       ...config,
     })
   }

@@ -1,4 +1,4 @@
-import { z } from "zod"
+import { z } from 'zod'
 
 export class ValidationError extends Error {
   path: string[]
@@ -6,12 +6,12 @@ export class ValidationError extends Error {
   message: string
 
   constructor({ path, code, message }: { path: string[]; code: string; message: string }) {
-    const msg = `${path.join(".")}: ${message}`
+    const msg = `${path.join('.')}: ${message}`
     super(msg)
     this.path = path
     this.code = code
     this.message = msg
-    this.name = "ValidationError"
+    this.name = 'ValidationError'
   }
 }
 export class ParseError extends Error {
@@ -31,7 +31,7 @@ export class ParseError extends Error {
     message: string
     received?: unknown
   }) {
-    let msg = `${path.join(".")}: ${message}`
+    let msg = `${path.join('.')}: ${message}`
     if (received) {
       msg += ` (received: ${received})`
     }
@@ -39,7 +39,7 @@ export class ParseError extends Error {
     this.path = path
     this.code = code
     this.message = msg
-    this.name = "ParseError"
+    this.name = 'ParseError'
     this.received = received
   }
 }

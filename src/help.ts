@@ -1,5 +1,5 @@
-import { format, StringStyle, stripColors } from "./color"
-import MassargCommand from "./command"
+import { format, StringStyle, stripColors } from './color'
+import MassargCommand from './command'
 
 export type GenerateTableCommandConfig = {
   maxRowLength?: number
@@ -52,47 +52,47 @@ export class HelpGenerator {
   generate(): string {
     const entry = this.entry
     const options = generateHelpTable(entry.options, {
-      namePrefix: "--",
-      aliasPrefix: "-",
+      namePrefix: '--',
+      aliasPrefix: '-',
       ...this.config.optionOptions,
     })
     const commands = generateHelpTable(entry.commands, {
-      namePrefix: "",
-      aliasPrefix: "",
+      namePrefix: '',
+      aliasPrefix: '',
       ...this.config.commandOptions,
     })
 
     return chainStr(
       format(entry.name, {
         bold: true,
-        color: "brightWhite",
+        color: 'brightWhite',
         reset: true,
         ...this.config.titleStyle,
       }),
-      "",
+      '',
       format(entry.description, { reset: true, ...this.config.descriptionStyle }),
       commands.length && [
-        "",
+        '',
         format(`Commands for ${entry.name}:`, {
           bold: true,
           reset: true,
-          color: "brightWhite",
+          color: 'brightWhite',
           underline: true,
           ...this.config.subtitleStyle,
         }),
-        "",
+        '',
         commands,
       ],
       options.length && [
-        "",
+        '',
         format(`Options for ${entry.name}:`, {
           bold: true,
           reset: true,
-          color: "brightWhite",
+          color: 'brightWhite',
           underline: true,
           ...this.config.subtitleStyle,
         }),
-        "",
+        '',
         options,
       ],
     )
@@ -107,24 +107,24 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
   items: HelpItem[],
   {
     maxRowLength = 80,
-    namePrefix = "",
-    aliasPrefix = "",
+    namePrefix = '',
+    aliasPrefix = '',
     compact = false,
     ...config
   }: Partial<T> = {},
 ): string {
   const rows = items.map((o) => {
     const name = `${namePrefix}${o.name}${
-      o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ""
+      o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
     }`
     const description = o.description
     return { name, description }
   })
   const maxNameLength = Math.max(...rows.map((o) => o.name.length))
   const nameStyle = (name: string) =>
-    format(name, { bold: true, color: "brightWhite", reset: true, ...config.nameStyle })
+    format(name, { bold: true, color: 'brightWhite', reset: true, ...config.nameStyle })
   const descStyle = (desc: string) =>
-    format(desc, { color: "gray", reset: true, ...config.descriptionStyle })
+    format(desc, { color: 'gray', reset: true, ...config.descriptionStyle })
   const table = rows.map((row) => {
     const name = nameStyle(row.name.padEnd(maxNameLength + 2))
     const description = descStyle(row.description)
@@ -137,25 +137,25 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
       return line
     }
     const subRows: string[] = []
-    const words = description.split(" ")
+    const words = description.split(' ')
     let currentRow = name
 
     for (const word of words) {
       if (stripColors(currentRow).length + stripColors(word).length + 1 > maxRowLength) {
         subRows.push(currentRow)
-        currentRow = " ".repeat(maxNameLength + 2)
+        currentRow = ' '.repeat(maxNameLength + 2)
       }
       currentRow += `${word} `
     }
 
     if (!compact) {
-      subRows.push("")
+      subRows.push('')
     }
 
-    return subRows.join("\n")
+    return subRows.join('\n')
   })
 
-  return table.join("\n")
+  return table.join('\n')
 }
 
 type Parseable = string | number | boolean | Record<string, unknown>
@@ -163,7 +163,7 @@ type Parseable = string | number | boolean | Record<string, unknown>
 function chainStr(...strs: (Parseable | Parseable[])[]) {
   const res: string[] = []
   for (const str of strs) {
-    if (typeof str === "string") {
+    if (typeof str === 'string') {
       res.push(str)
       continue
     }
@@ -171,7 +171,7 @@ function chainStr(...strs: (Parseable | Parseable[])[]) {
       res.push(chainStr(...str))
       continue
     }
-    if (typeof str === "object") {
+    if (typeof str === 'object') {
       for (const [key, value] of Object.entries(str)) {
         if (Boolean(value)) {
           res.push(key)
@@ -184,5 +184,5 @@ function chainStr(...strs: (Parseable | Parseable[])[]) {
       continue
     }
   }
-  return res.join("\n")
+  return res.join('\n')
 }
