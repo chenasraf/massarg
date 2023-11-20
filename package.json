@@ -17,9 +17,9 @@
   "scripts": {
     "build": "tsc -p tsconfig.build.json && cp package.json README.md build",
     "dev": "tsc --watch",
-    "example": "ts-node src/example.ts",
+    "cmd": "ts-node src/sample.ts",
     "test": "jest",
-    "docs": "typedoc --out docs src --plugin typedoc-plugin-zod --theme default"
+    "docgen": "typedoc --out docs src --plugin typedoc-plugin-zod --theme default"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
