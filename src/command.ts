@@ -8,6 +8,7 @@ import MassargOption, {
   MassargHelpFlag,
 } from './option'
 import { setOrPush } from './utils'
+import MassargExample, { ExampleConfig } from './example'
 
 export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
   z.object({
@@ -54,8 +55,9 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
   description: string
   aliases: string[]
   private _run?: Runner<Args>
-  options: MassargOption[] = []
   commands: MassargCommand<any>[] = []
+  options: MassargOption[] = []
+  examples: MassargExample[] = []
   args: Partial<Args> = {}
 
   constructor(options: CommandConfig<Args>) {
@@ -79,6 +81,14 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
   ): MassargCommand<Args> {
     try {
       const command = config instanceof MassargCommand ? config : new MassargCommand(config)
+      const existing = this.commands.find((c) => c.name === command.name)
+      if (existing) {
+        throw new ValidationError({
+          code: 'duplicate_command',
+          message: `Command "${command.name}" already exists`,
+          path: [this.name, command.name],
+        })
+      }
       this.commands.push(command)
       return this
     } catch (e) {
@@ -93,11 +103,23 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     }
   }
 
-  flag(config: Omit<OptionConfig<boolean>, 'parse'>): MassargCommand<Args>
+  flag(config: Omit<OptionConfig<boolean>, 'parse' | 'isDefault'>): MassargCommand<Args>
   flag(config: MassargFlag): MassargCommand<Args>
-  flag(config: Omit<OptionConfig<boolean>, 'parse'> | MassargFlag): MassargCommand<Args> {
+  flag(
+    config: Omit<OptionConfig<boolean>, 'parse' | 'isDefault'> | MassargFlag,
+  ): MassargCommand<Args> {
     try {
       const flag = config instanceof MassargFlag ? config : new MassargFlag(config)
+      if (flag.isDefault) {
+        const defaultOption = this.options.find((o) => o.isDefault)
+        if (defaultOption) {
+          throw new ValidationError({
+            code: 'duplicate_default_option',
+            message: `Option "${flag.name}" cannot be set as default because option "${defaultOption.name}" is already set as default`,
+            path: [this.name, flag.name],
+          })
+        }
+      }
       this.options.push(flag as MassargOption)
       return this
     } catch (e) {
@@ -118,6 +140,16 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     try {
       const option =
         config instanceof MassargOption ? config : MassargOption.fromTypedConfig(config)
+      if (option.isDefault) {
+        const defaultOption = this.options.find((o) => o.isDefault)
+        if (defaultOption) {
+          throw new ValidationError({
+            code: 'duplicate_default_option',
+            message: `Option "${option.name}" cannot be set as default because option "${defaultOption.name}" is already set as default`,
+            path: [this.name, option.name],
+          })
+        }
+      }
       this.options.push(option as MassargOption)
       return this
     } catch (e) {
@@ -130,6 +162,11 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
       }
       throw e
     }
+  }
+
+  example(config: ExampleConfig): MassargCommand<Args> {
+    this.examples.push(new MassargExample(config))
+    return this
   }
 
   main<A extends ArgsObject = Args>(run: Runner<A>): MassargCommand<Args> {
