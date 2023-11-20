@@ -1,1 +1,1 @@
-export * from "./massarg"
+export * from './massarg'

@@ -1,70 +1,19 @@
-# Massarg
+# massarg
 
-Massarg is a simple-to-use, beautiful, flexible, and powerful command/argument parser for JS
+Massarg is a beautiful, flexible, powerful, and simple-to-use command/argument parser for JS
 applications, allowing you to create complex but easy applications that consume command-line
 arguments and commands.
 
-Yes, there are a lot of arg parsers. But hear us out.
+It allows you to both parse argument options and flags, as well as hierarchal subcommands, both of
+which can be parsed into an automatic help command or flag that displays all the information easily,
+with customizable styles, and content.
 
-<details>
-  <summary>Table of contents</summary>
+You should only focus on actually writing the functionality of your CLI, and not waste it on writing
+a way to parse the chain of commands, flags or options.
 
-- [Massarg](#massarg)
-  - [Features](#features)
-  - [Usage](#usage)
-  - [Quick Start](#quick-start)
-    - [Installing](#installing)
-    - [Importing](#importing)
-    - [Using](#using)
-  - [Main command](#main-command)
-    - [Example](#example)
-      - [JS/TS](#jsts)
-      - [Shell](#shell)
-  - [Commands](#commands)
-    - [Options](#options)
-    - [Example](#example-1)
-      - [JS/TS](#jsts-1)
-      - [Shell](#shell-1)
-  - [Options](#options-1)
-    - [Options](#options-2)
-    - [Example](#example-2)
-      - [JS/TS](#jsts-2)
-      - [Shell](#shell-2)
-  - [Example Lines](#example-lines)
-    - [Options](#options-3)
-    - [Example](#example-3)
-      - [JS/TS](#jsts-3)
-  - [Help/Usage Command](#helpusage-command)
-    - [Options](#options-4)
-    - [Example](#example-4)
-      - [JS/TS](#jsts-4)
-      - [Shell output](#shell-output)
-  - [Contributing](#contributing)
-    <!-- - [Example](#example) -->
-      <!-- - [JS/TS](#jsts) -->
-      <!-- - [Shell](#shell) -->
-  - [Commands](#commands)
-    - [Options](#options)
-    - [Example](#example-1)
-      - [JS/TS](#jsts-1)
-      - [Shell](#shell-1)
-  - [Options](#options-1)
-    - [Options](#options-2)
-    - [Example](#example-2)
-      - [JS/TS](#jsts-2)
-      - [Shell](#shell-2)
-  - [Example Lines](#example-lines)
-    - [Options](#options-3)
-    - [Example](#example-3)
-      - [JS/TS](#jsts-3)
-  - [Help/Usage Command](#helpusage-command)
-    - [Options](#options-4)
-    - [Example](#example-4)
-      - [JS/TS](#jsts-4)
-      - [Shell output](#shell-output)
-  - [Contributing](#contributing)
+And it should look good too, right?
 
-</details>
+![colored shell output](https://user-images.githubusercontent.com/167217/126086652-433a523f-2f0a-427c-b58a-18b2131489f4.png)
 
 ## Features
 
@@ -87,23 +36,24 @@ Yes, there are a lot of arg parsers. But hear us out.
 
 ## Quick Start
 
-### Installing
+### Install
 
 ```shell
+# pnpm
+pnpm install massarg
 # npm
-npm install --save massarg
+npm install massarg
 # yarn
 yarn add massarg
 ```
 
-### Importing
+### Import
 
-```typescript
-import massarg from "massarg" // import init function (returns massarg instance)
-import { Massarg } from "massarg" // import class
+```ts
+import massarg from 'massarg'
 ```
 
-### Using
+### Usage
 
 Call the default export function `massarg`, or create a new instance manually using `new Massarg()`,
 and then you can start chaining commands. Use `.parse()` to do the final parsing and run the
@@ -112,30 +62,39 @@ commands and options.
 Here is an example with some commonly used examples to get you started. Keep reading for a complete
 documentation of every option.
 
-```typescript
-massarg() // or: new Massarg()
-  .main((options) => console.log("main command", options))
-  .command({
-    name: "sub",
-    description: "a sub command",
-    aliases: ["s"],
-    run: (options) => console.log("sub command", options),
+```ts
+const parser = massarg({
+  name: 'my-cli',
+  description: "Does really amazing stuff, you wouldn't believe!",
+  bindHelpCommand: true,
+}) // or: new Massarg()
+  .main((options) => console.log('main command', options))
+  .command(
+    massarg({
+      name: 'sub',
+      description: 'a sub command',
+      aliases: ['s'],
+      run: (options) => console.log('sub command', options),
+    }).option({
+      name: 'file',
+      description: 'Filename to use',
+      aliases: ['f'],
+      parse: (filename) => path.resolve(process.cwd(), filename),
+    }),
+  )
+  .flag({
+    name: 'flag',
+    description: 'a flag that will be related to any command (main or sub)',
+    aliases: ['f'],
   })
-  .option({
-    name: "flag",
-    description: "a flag that will be related to any command (main or sub)",
-    aliases: ["f"],
-    boolean: true,
-  })
-  .option({
-    name: "command-specific-flag",
-    description: "a flag that will be related to only the 'sub' command",
-    commands: ["sub"],
-    parse: (v) => parseInt(v),
+  .example({
+    description: 'Run the sub command',
+    input: 'my-bin --flag sub',
+    output: 'Sub command: flag is true',
   })
   .help({
-    binName: "my-cli-app",
-    footer: "Copyright © 2021 Me, Myself and I",
+    binName: 'my-cli-app',
+    footer: 'Copyright © 2021 Me, Myself and I',
   })
 ```
 
@@ -143,13 +102,15 @@ massarg() // or: new Massarg()
 
 The main command is the one that runs when you supply no other commands.
 
+If no command is specified, and no main command is present, the help usage is automatically printed.
+
 ### Example
 
 #### JS/TS
 
-```typescript
-massarg().main((options) => {
-  console.log("Parsed options:", options)
+```ts
+parser.main((options) => {
+  console.log('Parsed options:', options)
   // do stuff
 })
 ```
@@ -167,32 +128,29 @@ $ ./mybin --my-string "Some string"
 ## Commands
 
 Commands are activated when their keyword is included in the args. The first command that matches
-will be executed, skipping the rest. Options will still be parsed.
-
-Any arguments that are not taken by options or commands, are automatically passed to
-`options.extra`, which you can access when running a command or when using the return value from
-`parseArgs()`.
+will be executed, skipping the rest. Options before will be parsed on the main parser, while
+anything after the command will be parsed for that subcommand only.
 
 ### Options
 
-| Name (required*) | Type                        | Example                                           | Description                                                                                                          |
-| ---------------- | --------------------------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
-| `name`*          | `string`                    | `"my-command"`                                    | The name of the command, which will be used in the CLI to trigger it                                                 |
-| `aliases`        | `string[]`                  | `["m", "mc"]`                                     | Alternate names for the command, available for use in addition to `name`                                             |
-| `description`    | `string`                    | `"Description of the command"`                    | Description for the command, only displayed with `--help` or `printHelp()`                                           |
-| `run`*           | `function(options) => void` | `(options) => console.log("my-command", options)` | Main function that runs this command. The supplied argument is the options passed via the CLI and parsed by massarg. |
+| Name          | Type                                | Required | Example                                           | Description                                                                                                          |
+| ------------- | ----------------------------------- | -------- | ------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------- |
+| `name`        | `string`                            | ✅       | `"my-command"`                                    | The name of the command, which will be used in the CLI to trigger it                                                 |
+| `aliases`     | `string[]`                          |          | `["m", "mc"]`                                     | Alternate names for the command, available for use in addition to `name`                                             |
+| `description` | `string`                            |          | `"Description of the command"`                    | Description for the command, only displayed with `--help` or `printHelp()`                                           |
+| `run`         | `function(options, parser) => void` | ✅       | `(options) => console.log("my-command", options)` | Main function that runs this command. The supplied argument is the options passed via the CLI and parsed by massarg. |
 
 ### Example
 
 #### JS/TS
 
-```typescript
-massarg().command({
-  name: "do-something",
-  description: "This command does something",
-  aliases: ["do", "d"],
+```ts
+parser.command({
+  name: 'do-something',
+  description: 'This command does something',
+  aliases: ['do', 'd'],
   run: (options) => {
-    console.log("Parsed options:", options)
+    console.log('Parsed options:', options)
     // do stuff
   },
 })
@@ -211,57 +169,35 @@ $ ./mybin my-command --my-string "Some string"
 ## Options
 
 Options are variables you can accept via CLI and parse to use in your commands, e.g. `--my-bool`,
-`--no-my-bool`, `--my-string string`, `--my-number 1`
+`--my-string string`, `--my-number 1`.
 
-Any arguments that are not taken by options or commands, are automatically passed to
-`options.extra`, which you can access when running a command or when using the return value from
-`parseArgs()`.
+Aliases use the shorthand syntax, as such: `-s string`, `-n 1`.
 
 ### Options
 
-| Name (required*)               | Type                              | Example                               | Description                                                                                                                                                                                                       |
-| ------------------------------ | --------------------------------- | ------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `name`*                        | `string`                          | `"my-number"`                         | The name of the option, which will be used in the CLI to apply it.                                                                                                                                                |
-| `aliases`                      | `string[]`                        | `["n"]`                               | Alternate names for the option, available for use in addition to `name`.                                                                                                                                          |
-| `description`                  | `string`                          | `"Description of the command"`        | Description for the command, only displayed with `--help` or `printHelp()`.                                                                                                                                       |
-| `parse` (default: `String`)    | `function(value, options) => any` | `(value, options) => parseInt(value)` | Function that parses this option. The supplied arguments are the string value from the arg, and other options passed via the CLI and parsed by massarg before this one. Not all options will be available.        |
-| `isDefault` (default: `false`) | `boolean`                         |                                       | When `true`, any args placed without name will be applied to this option. When more than one arg is supplied this way, only the last given will be used (unless the option is an array type).                     |
-| `boolean` (default: `false`)   | `boolean`                         |                                       | When set to `true`, this option will be treated as a boolean: will accept no value as `true`, or other truthy\* values as `true`, and the rest as `false`. They also have special flags that define negation.\*\* |
-| `array` (default: `false`)     | `boolean`                         |                                       | When set to true, you will be able to take multiple values when using the same option more than once. They will all be parsed properly and put into an array.                                                     |
-| `required` (default: `false`)  | `boolean`                         |                                       | When an option is required, parsing will throw a `RequiredError` if it was not given a proper value. If it is attached to a specific (or several) commands, it will only throw if the relevant command was used.  |
-
-\* In boolean args, truthy values are considered true if they fit one of the following values: `1`,
-`true`, `yes`, `on`. Anything else is considered falsy.
-
-\*\* Boolean args will also have special negation flags that allow passing a `false` value by using
-a variation of the name or alias as a flag and still without supplying a value. The following will
-work for true, given `name: 'bool', aliases: ['b']`: `--bool`, `-b`, and the following will work for
-`false`: `--no-bool`, `-!b`. `--bool` and `-b` may still be supplied a truthy/falsy value separately
-in order to determine their value. Note it might cause unpredicted behavior when combining with
-options that have default values that are passed directly afterwards.
+| Name          | Type                              | Required | Default            | Example                               | Description                                                                                                                                                                                                      |
+| ------------- | --------------------------------- | -------- | ------------------ | ------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `name`        | `string`                          | ✅       |                    | `"my-number"`                         | The name of the option, which will be used in the CLI to apply it                                                                                                                                                |
+| `aliases`     | `string[]`                        |          |                    | `["n"]`                               | Alternate names for the option, available for use in addition to `name`                                                                                                                                          |
+| `description` | `string`                          |          |                    | `"Description of the command"`        | Description for the command, only displayed with `--help` or `printHelp()`                                                                                                                                       |
+| `parse`       | `function(value, options) => any` |          | `(s) => String(s)` | `(value, options) => parseInt(value)` | Function that parses this option. The supplied arguments are the string value from the arg, and other options passed via the CLI and parsed by massarg before this one. Not all options will be available.       |
+| `isDefault`   | `boolean`                         |          | `false`            |                                       | When `true`, any args placed without name will be applied to this option. When more than one arg is supplied this way, only the last given will be used (unless the option is an array type).                    |
+| `array`       | `boolean`                         |          | `false`            |                                       | When set to true, you will be able to take multiple values when using the same option more than once. They will all be parsed properly and put into an array.                                                    |
+| `required`    | `boolean`                         |          | `false`            |                                       | When an option is required, parsing will throw a `RequiredError` if it was not given a proper value. If it is attached to a specific (or several) commands, it will only throw if the relevant command was used. |
 
 ### Example
 
 #### JS/TS
 
-```typescript
-massarg()
-  .option({
-    name: "bool",
-    aliases: ["b"],
-    defaultValue: false,
-    commands: ["my-command"],
-    description: "This is a boolean arg. Supply it without value or with 1 to set as true, or set value 0 for false",
-    parse: Boolean,
-  })
-  .option({
-    name: "number",
-    aliases: ["n"],
-    description: "This is a number arg, if you include this option, you must supply it with a numeric value.",
-    defaultValue: 0,
-    commands: "do",
-    parse: (v) => parseInt(v),
-  })
+```ts
+parser.option({
+  name: 'number',
+  aliases: ['n'],
+  description:
+    'This is a number arg, if you include this option, you must supply it with a numeric value.',
+  defaultValue: 0,
+  parse: (v) => parseInt(v),
+})
 ```
 
 #### Shell
@@ -284,21 +220,21 @@ atop as titles, if specified.
 
 ### Options
 
-| Name (required*) | Type     | Default | Example                                                           | Description                                                                                                                                            |
-| ---------------- | -------- | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `input`*         | `string` |         | `"my-cmd --number 10"`                                            | The input line, an example of user input that will be displayed as "shell" commands. The prefix is customizable through the `help()` options.          |
-| `output`         | `string` |         | `"you entered my-cmd with the number 10, which is larger than 5"` | The output line, an example of the command's output that will be displayed as "shell" output. The prefix is customizable through the `help()` options. |
-| `description`    | `string` |         | `"Run the my-cmd command with a number parameter"`                | An explanation of the input/output that will be display as a title above the input if specified.                                                       |
+| Name          | Type     | Required | Default | Example                                                           | Description                                                                                                                                            |
+| ------------- | -------- | -------- | ------- | ----------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `input`       | `string` | ✅       |         | `"my-cmd --number 10"`                                            | The input line, an example of user input that will be displayed as "shell" commands. The prefix is customizable through the `help()` options.          |
+| `output`      | `string` | ✅       |         | `"you entered my-cmd with the number 10, which is larger than 5"` | The output line, an example of the command's output that will be displayed as "shell" output. The prefix is customizable through the `help()` options. |
+| `description` | `string` |          |         | `"Run the my-cmd command with a number parameter"`                | An explanation of the input/output that will be display as a title above the input if specified.                                                       |
 
 ### Example
 
 #### JS/TS
 
-```typescript
-massarg().example({
-  input: "my-cmd --number 10",
-  output: "you entered my-cmd with the number 10, which is larger than 5",
-  description: "Run the my-cmd command with a number parameter",
+```ts
+parser.example({
+  input: 'my-cmd --number 10',
+  output: 'you entered my-cmd with the number 10, which is larger than 5',
+  description: 'Run the my-cmd command with a number parameter',
 })
 ```
 
@@ -331,57 +267,21 @@ you may override their defaults to modify the behavior.
 
 #### JS/TS
 
-```typescript
-massarg().help({
+```ts
+parser.help({
   printWidth: 80,
-  binName: "my-app",
-  normalColors: "dim",
-  highlightColors: "yellow",
-  titleColors: "white",
-  subtitleColors: ["bold", "dim"],
-  header: "Header text",
-  footer: "Footer text",
-  commandNameSeparator: " | ",
-  optionNameSeparator: "|",
+  binName: 'my-app',
+  normalColors: 'dim',
+  highlightColors: 'yellow',
+  titleColors: 'white',
+  subtitleColors: ['bold', 'dim'],
+  header: 'Header text',
+  footer: 'Footer text',
+  commandNameSeparator: ' | ',
+  optionNameSeparator: '|',
   useGlobalColumns: true,
-  usageExample: "command [option]",
+  usageExample: 'command [option]',
 })
 ```
 
 #### Shell output
-
-![colored shell output](https://user-images.githubusercontent.com/167217/126086652-433a523f-2f0a-427c-b58a-18b2131489f4.png)
-
-## Contributing
-
-I am developing this package on my free time, so any support, whether code, issues, or just stars
-is very helpful to sustaining its life. If you would like to donate a bit to help keep the project
-alive, I would be very thankful!
-
-<a href='https://ko-fi.com/casraf' target='_blank'>
-  <img height='36' style='border:0px;height:36px;'
-    src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3'
-    alt='Buy Me a Coffee at ko-fi.com' />
-</a>
-
-I welcome any issues or pull requests on GitHub. If you find a bug, or would like a new feature,
-don't hesitate to open an appropriate issue and I will do my best to reply promptly.
-
-If you are a developer and want to contribute code, here are some starting tips:
-
-1. Fork this repository
-2. Run `yarn install`
-3. Run `yarn develop` to start file watch mode
-4. Make any changes you would like
-5. Create tests for your changes
-6. Update the relevant documentation (readme, code comments, type comments)
-7. Create a PR on upstream
-
-Some tips on getting around the code:
-
-- Use `yarn dev` for development - it runs TypeScript compile in watch mode, allowing you to make
-  changes and immediately be able to try them using `yarn cmd`.
-- Use `yarn build` to build the output
-- Use `yarn test` to run tests
-- While `yarn develop` is running, you may run `yarn sample` (try running with `-h` flag) to see
-  a sample script using massarg, that logs the parsed options with the correct parsers and runners.

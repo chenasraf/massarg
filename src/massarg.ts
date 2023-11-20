@@ -1,7 +1,7 @@
-import MassargCommand, { ArgsObject, CommandConfig } from "./command"
+import MassargCommand, { ArgsObject, CommandConfig } from './command'
 
-type MinimalCommandConfig<Args extends ArgsObject> = Omit<CommandConfig<Args>, "aliases" | "run"> &
-  Partial<Pick<CommandConfig<Args>, "aliases" | "run">>
+type MinimalCommandConfig<Args extends ArgsObject> = Omit<CommandConfig<Args>, 'aliases' | 'run'> &
+  Partial<Pick<CommandConfig<Args>, 'aliases' | 'run'>>
 
 export default class Massarg<Args extends ArgsObject = ArgsObject> extends MassargCommand<Args> {
   constructor(options: MinimalCommandConfig<Args>) {
@@ -19,7 +19,7 @@ export default class Massarg<Args extends ArgsObject = ArgsObject> extends Massa
 export { Massarg }
 
 export function massarg<Args extends ArgsObject = ArgsObject>(
-  options: MinimalCommandConfig<Args>
+  options: MinimalCommandConfig<Args>,
 ): MassargCommand<Args> {
   return new Massarg(options)
 }
