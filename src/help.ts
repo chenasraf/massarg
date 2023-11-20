@@ -1,5 +1,6 @@
 import { format, StringStyle, stripColors } from './color'
 import MassargCommand from './command'
+import { chainStr, indent } from './utils'
 
 export type GenerateTableCommandConfig = {
   maxRowLength?: number
@@ -25,6 +26,11 @@ export type GenerateHelpOptions = {
   descriptionStyle?: StringStyle
   subtitleStyle?: StringStyle
   usageStyle?: StringStyle
+  exampleStyles?: {
+    description?: StringStyle
+    input?: StringStyle
+    output?: StringStyle
+  }
 }
 
 export type HelpItem = {
@@ -61,40 +67,80 @@ export class HelpGenerator {
       aliasPrefix: '',
       ...this.config.commandOptions,
     })
+    const examples = entry.examples
+      .map((example) => {
+        const { description, input, output } = example
+        return chainStr(
+          description && [
+            format(description, {
+              reset: true,
+              bold: true,
+              ...this.config.exampleStyles?.description,
+            }),
+            '',
+          ],
+          input &&
+            format(input, { reset: true, color: 'yellow', ...this.config.exampleStyles?.input }),
+          output &&
+            format(output, {
+              reset: true,
+              color: 'brightWhite',
+              ...this.config.exampleStyles?.output,
+            }),
+        )
+      })
+      .join('\n')
 
-    return chainStr(
-      format(entry.name, {
-        bold: true,
-        color: 'brightWhite',
-        reset: true,
-        ...this.config.titleStyle,
-      }),
-      '',
-      format(entry.description, { reset: true, ...this.config.descriptionStyle }),
-      commands.length && [
-        '',
-        format(`Commands for ${entry.name}:`, {
+    return (
+      chainStr(
+        format(`Usage: ${entry.name} [...options]`, {
           bold: true,
+          color: 'yellow',
           reset: true,
-          color: 'brightWhite',
-          underline: true,
-          ...this.config.subtitleStyle,
+          ...this.config.titleStyle,
         }),
         '',
-        commands,
-      ],
-      options.length && [
-        '',
-        format(`Options for ${entry.name}:`, {
-          bold: true,
-          reset: true,
-          color: 'brightWhite',
-          underline: true,
-          ...this.config.subtitleStyle,
-        }),
-        '',
-        options,
-      ],
+        format(entry.description, { reset: true, ...this.config.descriptionStyle }),
+        commands.length &&
+          indent([
+            '',
+            format(`Commands for ${entry.name}:`, {
+              bold: true,
+              reset: true,
+              color: 'brightWhite',
+              underline: true,
+              ...this.config.subtitleStyle,
+            }),
+            '',
+            indent(commands),
+          ]),
+        options.length &&
+          indent([
+            '',
+            format(`Options for ${entry.name}:`, {
+              bold: true,
+              reset: true,
+              color: 'brightWhite',
+              underline: true,
+              ...this.config.subtitleStyle,
+            }),
+            '',
+            indent(options),
+          ]),
+        examples.length &&
+          indent([
+            '',
+            format('Examples:', {
+              bold: true,
+              reset: true,
+              color: 'brightWhite',
+              underline: true,
+              ...this.config.subtitleStyle,
+            }),
+            '',
+            indent(examples),
+          ]),
+      ) + '\n'
     )
   }
 
@@ -122,7 +168,7 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
   })
   const maxNameLength = Math.max(...rows.map((o) => o.name.length))
   const nameStyle = (name: string) =>
-    format(name, { bold: true, color: 'brightWhite', reset: true, ...config.nameStyle })
+    format(name, { color: 'yellow', reset: true, ...config.nameStyle })
   const descStyle = (desc: string) =>
     format(desc, { color: 'gray', reset: true, ...config.descriptionStyle })
   const table = rows.map((row) => {
@@ -156,33 +202,4 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
   })
 
   return table.join('\n')
-}
-
-type Parseable = string | number | boolean | Record<string, unknown>
-
-function chainStr(...strs: (Parseable | Parseable[])[]) {
-  const res: string[] = []
-  for (const str of strs) {
-    if (typeof str === 'string') {
-      res.push(str)
-      continue
-    }
-    if (Array.isArray(str)) {
-      res.push(chainStr(...str))
-      continue
-    }
-    if (typeof str === 'object') {
-      for (const [key, value] of Object.entries(str)) {
-        if (Boolean(value)) {
-          res.push(key)
-        }
-      }
-      continue
-    }
-    if (Boolean(str)) {
-      res.push(str.toString())
-      continue
-    }
-  }
-  return res.join('\n')
 }
