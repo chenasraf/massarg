@@ -1,13 +1,13 @@
-import { z } from "zod"
-import { isZodError, ParseError, ValidationError } from "./error"
-import { HelpGenerator } from "./help"
+import { z } from 'zod'
+import { isZodError, ParseError, ValidationError } from './error'
+import { HelpGenerator } from './help'
 import MassargOption, {
   MassargFlag,
   OptionConfig,
   TypedOptionConfig,
   MassargHelpFlag,
-} from "./option"
-import { setOrPush } from "./utils"
+} from './option'
+import { setOrPush } from './utils'
 
 export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
   z.object({
@@ -93,9 +93,9 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     }
   }
 
-  flag(config: Omit<OptionConfig<boolean>, "parse">): MassargCommand<Args>
+  flag(config: Omit<OptionConfig<boolean>, 'parse'>): MassargCommand<Args>
   flag(config: MassargFlag): MassargCommand<Args>
-  flag(config: Omit<OptionConfig<boolean>, "parse"> | MassargFlag): MassargCommand<Args> {
+  flag(config: Omit<OptionConfig<boolean>, 'parse'> | MassargFlag): MassargCommand<Args> {
     try {
       const flag = config instanceof MassargFlag ? config : new MassargFlag(config)
       this.options.push(flag as MassargOption)
@@ -138,30 +138,7 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
   }
 
   parse(argv: string[], args?: Partial<Args>, parent?: MassargCommand<Args>): Promise<void> | void {
-    this.args ??= {}
-    this.args = { ...this.args, ...args }
-    let _argv = [...argv]
-    while (_argv.length) {
-      const arg = _argv.shift()!
-      const found = this.options.some((o) => o._isOption(arg))
-      if (found) {
-        _argv = this.parseOption(arg, _argv)
-        continue
-      }
-
-      const command = this.commands.find((c) => c.name === arg || c.aliases.includes(arg))
-      if (command) {
-        return command.parse(_argv, this.args, parent ?? this)
-      }
-      const defaultOption = this.options.find((o) => o.isDefault)
-      if (defaultOption) {
-        _argv = this.parseOption(`--${defaultOption.name}`, [arg, ..._argv])
-        continue
-      }
-    }
-    if (this._run) {
-      this._run({ ...args, ...this.args } as Args, parent ?? this)
-    }
+    this.getArgs(argv, args, parent, true)
   }
 
   private parseOption(arg: string, argv: string[]) {
@@ -169,8 +146,8 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     if (!option) {
       throw new ValidationError({
         path: [MassargOption.getName(arg)],
-        code: "unknown_option",
-        message: "Unknown option",
+        code: 'unknown_option',
+        message: 'Unknown option',
       })
     }
     const res = option._parseDetails([arg, ...argv])
@@ -182,9 +159,27 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     return res.argv
   }
 
-  getArgs(argv: string[]): Args {
-    let args: Args = {} as Args
+  getArgs(
+    argv: string[],
+    __args?: Partial<Args>,
+    parent?: MassargCommand<any>,
+    parseCommands?: false,
+  ): Promise<void> | void
+  getArgs(
+    argv: string[],
+    __args?: Partial<Args>,
+    parent?: MassargCommand<any>,
+    parseCommands?: true,
+  ): Args
+  getArgs(
+    argv: string[],
+    args?: Partial<Args>,
+    parent?: MassargCommand<any>,
+    parseCommands = false,
+  ): Args | Promise<void> | void {
+    let _args: Args = { ...this.args, ...args } as Args
     let _argv = [...argv]
+    const _a = this.args as Record<string, string[]>
     while (_argv.length) {
       const arg = _argv.shift()!
       const found = this.options.some((o) => o._isOption(arg))
@@ -193,14 +188,14 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
         if (!option) {
           throw new ValidationError({
             path: [MassargOption.getName(arg)],
-            code: "unknown_option",
-            message: "Unknown option",
+            code: 'unknown_option',
+            message: 'Unknown option',
           })
         }
         const res = option._parseDetails(argv)
-        args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
+        _args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
           res.value,
-          args[res.key as keyof Args],
+          _args[res.key as keyof Args],
           option.isArray,
         )
         continue
@@ -208,10 +203,26 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
 
       const command = this.commands.find((c) => c.name === arg || c.aliases.includes(arg))
       if (command) {
-        break
+        if (!parseCommands) {
+          break
+        }
+        return command.parse(_argv, this.args, parent ?? this)
       }
+      const defaultOption = this.options.find((o) => o.isDefault)
+      if (defaultOption) {
+        _argv = this.parseOption(`--${defaultOption.name}`, [arg, ..._argv])
+        continue
+      }
+      _a.extra ??= []
+      _a.extra.push(arg)
     }
-    return args
+    if (!parseCommands) {
+      return _args
+    }
+    this.args = { ...this.args, ..._args }
+    if (this._run) {
+      this._run(this.args, parent ?? this)
+    }
   }
 
   helpString(): string {
@@ -224,11 +235,11 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
 }
 
 export class MassargHelpCommand<T extends ArgsObject = ArgsObject> extends MassargCommand<T> {
-  constructor(config: Partial<Omit<CommandConfig<T>, "run">> = {}) {
+  constructor(config: Partial<Omit<CommandConfig<T>, 'run'>> = {}) {
     super({
-      name: "help",
-      aliases: ["h"],
-      description: "Print help for this command, or a subcommand if specified",
+      name: 'help',
+      aliases: ['h'],
+      description: 'Print help for this command, or a subcommand if specified',
       // argsHint: "[command]",
       run: (args, parent) => {
         if (args.command) {
@@ -238,9 +249,9 @@ export class MassargHelpCommand<T extends ArgsObject = ArgsObject> extends Massa
             return
           } else {
             throw new ParseError({
-              path: ["command"],
-              code: "unknown_command",
-              message: "Unknown command",
+              path: ['command'],
+              code: 'unknown_command',
+              message: 'Unknown command',
               received: args.command,
             })
           }
@@ -250,9 +261,9 @@ export class MassargHelpCommand<T extends ArgsObject = ArgsObject> extends Massa
       ...config,
     })
     this.option({
-      name: "command",
-      aliases: ["c"],
-      description: "Command to print help for",
+      name: 'command',
+      aliases: ['c'],
+      description: 'Command to print help for',
       isDefault: true,
     })
   }
