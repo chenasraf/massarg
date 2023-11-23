@@ -1,7 +1,7 @@
 import z from 'zod'
 import { format, StringStyle, stripColors } from './color'
 import MassargCommand from './command'
-import { chainStr, indent } from './utils'
+import { DeepRequired, strConcat, indent } from './utils'
 
 export const GenerateTableCommandConfig = z.object({
   maxRowLength: z.number().optional(),
@@ -44,11 +44,14 @@ export const HelpConfig = z.object({
       output: StringStyle.optional(),
     })
     .optional(),
+  usageText: z.string().optional(),
+  headerText: z.string().optional(),
+  footerText: z.string().optional(),
 })
 
 export type HelpConfig = z.infer<typeof HelpConfig>
 
-export const defaultHelpConfig: HelpConfig = {
+export const defaultHelpConfig: DeepRequired<HelpConfig> = {
   maxRowLength: 80,
   commandOptions: {
     namePrefix: '',
@@ -97,6 +100,9 @@ export const defaultHelpConfig: HelpConfig = {
     color: 'brightWhite',
     underline: true,
   },
+  headerText: '',
+  footerText: '',
+  usageText: '',
 }
 
 export type HelpItem = {
@@ -107,15 +113,18 @@ export type HelpItem = {
 
 export class HelpGenerator {
   entry: MassargCommand<any>
-  config: HelpConfig
+  config: DeepRequired<HelpConfig>
 
   constructor(entry: MassargCommand<any>, config?: HelpConfig) {
     this.entry = entry
-    this.config = HelpConfig.parse({
+    this.config = HelpConfig.required().parse({
+      ...entry.helpConfig,
       commandOptions: {
+        ...entry.helpConfig?.commandOptions,
         ...config?.commandOptions,
       },
       optionOptions: {
+        ...entry.helpConfig?.optionOptions,
         ...config?.optionOptions,
       },
     })
@@ -123,40 +132,53 @@ export class HelpGenerator {
 
   generate(): string {
     const entry = this.entry
-    const options = generateHelpTable(entry.options, this.config.optionOptions)
-    const commands = generateHelpTable(entry.commands, this.config.commandOptions)
+    const CMD_OPT_INDENT = 4
+    const _wrap = (text: string, indent = 0) => wrap(text, this.config.maxRowLength - indent)
+    const options = generateHelpTable(entry.options, {
+      ...this.config.optionOptions,
+      maxRowLength:
+        (this.config.optionOptions.maxRowLength ?? this.config.maxRowLength) - CMD_OPT_INDENT,
+    })
+    const commands = generateHelpTable(entry.commands, {
+      ...this.config.commandOptions,
+      maxRowLength:
+        (this.config.commandOptions.maxRowLength ?? this.config.maxRowLength) - CMD_OPT_INDENT,
+    })
     const examples = entry.examples
       .map((example) => {
         const { description, input, output } = example
-        return chainStr(
-          description && [format(description, this.config.exampleStyles?.description), ''],
-          input && format(input, this.config.exampleStyles?.input),
-          output && format(output, this.config.exampleStyles?.output),
+        return strConcat(
+          description && [_wrap(format(description, this.config.exampleStyles.description), 4), ''],
+          input && _wrap(format('$ ' + input, this.config.exampleStyles.input), 4),
+          output && _wrap(format('> ' + output, this.config.exampleStyles.output), 4),
         )
       })
       .join('\n')
+    const { headerText, footerText, usageText } = this.config
 
     return (
-      chainStr(
-        format(`Usage: ${entry.name} [...options]`, this.config.usageStyle),
+      strConcat(
+        _wrap(format(usageText || `Usage: ${entry.name} [...options]`, this.config.usageStyle)),
+        headerText.length && ['', format(headerText, this.config.descriptionStyle)],
         '',
-        format(entry.description, this.config.descriptionStyle),
+        _wrap(format(entry.description, this.config.descriptionStyle)),
         commands.length &&
-        indent([
-          '',
-          format(`Commands for ${entry.name}:`, this.config.subtitleStyle),
-          '',
-          indent(commands),
-        ]),
+          indent([
+            '',
+            format(`Commands for ${entry.name}:`, this.config.subtitleStyle),
+            '',
+            indent(commands),
+          ]),
         options.length &&
-        indent([
-          '',
-          format(`Options for ${entry.name}:`, this.config.subtitleStyle),
-          '',
-          indent(options),
-        ]),
+          indent([
+            '',
+            format(`Options for ${entry.name}:`, this.config.subtitleStyle),
+            '',
+            indent(options),
+          ]),
         examples.length &&
-        indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
+          indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
+        footerText.length && ['', _wrap(format(footerText, this.config.descriptionStyle))],
       ) + '\n'
     )
   }
@@ -164,6 +186,28 @@ export class HelpGenerator {
   printHelp(): void {
     console.log(this.generate())
   }
+}
+
+function wrap(text: string, maxRowLength: number): string {
+  const length = stripColors(text).length
+  if (length <= maxRowLength) {
+    return text
+  }
+  const subRows: string[] = []
+  const words = text.split(' ')
+  let currentRow = ''
+  console.log('words', words)
+
+  for (const word of words) {
+    if (stripColors(currentRow).length + stripColors(word).length + 1 > maxRowLength) {
+      subRows.push(currentRow)
+      currentRow = ''
+    }
+    currentRow += `${word} `
+  }
+  subRows.push(currentRow)
+
+  return subRows.join('\n')
 }
 
 function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
@@ -177,8 +221,9 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
   }: Partial<T> = {},
 ): string {
   const rows = items.map((o) => {
-    const name = `${namePrefix}${o.name}${o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
-      }`
+    const name = `${namePrefix}${o.name}${
+      o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
+    }`
     const description = o.description
     return { name, description }
   })

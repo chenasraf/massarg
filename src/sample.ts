@@ -75,9 +75,13 @@ const removeCmd = new MassargCommand<{ component: string }>({
 const main = massarg<A>({
   name: 'my-cli',
   description: 'This is an example CLI',
-  bindHelpOption: true,
-  bindHelpCommand: true,
 })
+  .help({
+    bindOption: true,
+    bindCommand: true,
+    headerText: 'This is a header',
+    footerText: 'This is a footer',
+  })
   .main((opts, parser) => {
     console.log('Main command - printing all opts')
     console.log(opts, '\n')
@@ -96,6 +100,17 @@ const main = massarg<A>({
     description: 'Example number option',
     aliases: ['n'],
     type: 'number',
+  })
+  .example({
+    description: 'Example main command',
+    input: 'my-cli --bool --number 123',
+    output: 'Main command - printing all opts\n{ bool: true, number: 123 }\n',
+  })
+  .example({
+    description: 'Example add command',
+    input: 'my-cli add --component foo --classes bar --classes baz --custom 123',
+    output:
+      'Duis ad consectetur dolore elit laborum do et aute consequat magna eu consequat dolore dolor commodo sit enim reprehenderit lorem consectetur adipiscing officia nisi adipiscing consequat consequat labore sint incididunt',
   })
 
 // console.log("Opts:", main.getArgs(process.argv.slice(2)), "\n")
