@@ -12,7 +12,11 @@ export function setOrPush<T>(
 }
 type Parseable = string | number | boolean | null | undefined | Record<string, unknown>
 
-export function chainStr(...strs: (Parseable | Parseable[])[]) {
+export type DeepRequired<T> = {
+  [P in keyof T]-?: T[P] extends object ? DeepRequired<T[P]> : NonNullable<T[P]>
+}
+
+export function strConcat(...strs: (Parseable | Parseable[])[]) {
   const res: string[] = []
   for (const str of strs) {
     if (typeof str === 'string') {
@@ -20,7 +24,7 @@ export function chainStr(...strs: (Parseable | Parseable[])[]) {
       continue
     }
     if (Array.isArray(str)) {
-      res.push(chainStr(...str))
+      res.push(strConcat(...str))
       continue
     }
     if (str == null) {
@@ -43,7 +47,7 @@ export function chainStr(...strs: (Parseable | Parseable[])[]) {
 }
 
 export function indent(str: Parseable | Parseable[], indent = 2): string {
-  return chainStr(str)
+  return strConcat(str)
     .split('\n')
     .map((s) => ' '.repeat(indent) + s)
     .join('\n')

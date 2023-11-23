@@ -31,13 +31,13 @@ export const StringStyle = z.object({
   bold: z.boolean().optional(),
   underline: z.boolean().optional(),
   color: zodEnumFromObjKeys(ansiColors).optional(),
-  reset: z.boolean().optional(),
+  reset: z.boolean().default(true).optional(),
 })
 
 export type StringStyle = z.infer<typeof StringStyle>
 
 export function format(string: string, style: StringStyle = {}): string {
-  const { color, bold, underline, reset } = style
+  const { color, bold, underline, reset = true } = style
   const colorCode = color ? ansiColors[color] : ''
   const boldCode = bold ? ansiStyles.bold : ''
   const underlineCode = underline ? ansiStyles.underline : ''
@@ -46,5 +46,5 @@ export function format(string: string, style: StringStyle = {}): string {
 }
 
 export function stripColors(string: string): string {
-  return string.replace(/\x1b\[\d+m/g, '')
+  return string.replace(/\x1b\[\d+m/gi, '')
 }
