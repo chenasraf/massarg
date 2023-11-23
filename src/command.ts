@@ -7,7 +7,7 @@ import MassargOption, {
   TypedOptionConfig,
   MassargHelpFlag,
 } from './option'
-import { setOrPush, deepMerge } from './utils'
+import { DeepRequired, setOrPush, deepMerge } from './utils'
 import MassargExample, { ExampleConfig } from './example'
 
 export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
@@ -48,15 +48,24 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
   options: MassargOption[] = []
   examples: MassargExample[] = []
   args: Partial<Args> = {}
-  helpConfig: Required<HelpConfig>
+  private _helpConfig: HelpConfig
+  parent?: MassargCommand<any>
 
-  constructor(options: CommandConfig<Args>) {
+  constructor(options: CommandConfig<Args>, parent?: MassargCommand<any>) {
     CommandConfig(z.any()).parse(options)
     this.name = options.name
     this.description = options.description
     this.aliases = options.aliases ?? []
     this._run = options.run
-    this.helpConfig = HelpConfig.required().parse(defaultHelpConfig)
+    this._helpConfig = HelpConfig.required().parse(defaultHelpConfig)
+    this.parent = parent
+  }
+
+  get helpConfig(): DeepRequired<HelpConfig> {
+    if (this.parent) {
+      return deepMerge(this.parent.helpConfig, this._helpConfig)
+    }
+    return deepMerge(defaultHelpConfig, this._helpConfig) as Required<HelpConfig>
   }
 
   command<A extends ArgsObject = Args>(config: CommandConfig<A>): MassargCommand<Args>
@@ -74,6 +83,7 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
           path: [this.name, command.name],
         })
       }
+      command.parent = this
       this.commands.push(command)
       return this
     } catch (e) {
@@ -161,9 +171,7 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
   }
 
   help(config: HelpConfig): MassargCommand<Args> {
-    this.helpConfig = HelpConfig.required().parse(
-      deepMerge(defaultHelpConfig, config) as HelpConfig,
-    )
+    this._helpConfig = HelpConfig.parse(config)
 
     if (this.helpConfig.bindCommand) {
       this.command(new MassargHelpCommand())
