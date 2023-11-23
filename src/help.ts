@@ -1,36 +1,102 @@
+import z from 'zod'
 import { format, StringStyle, stripColors } from './color'
 import MassargCommand from './command'
 import { chainStr, indent } from './utils'
 
-export type GenerateTableCommandConfig = {
-  maxRowLength?: number
-  namePrefix?: string
-  aliasPrefix?: string
-  compact?: boolean
-  nameStyle?: StringStyle
-  descriptionStyle?: StringStyle
-}
+export const GenerateTableCommandConfig = z.object({
+  maxRowLength: z.number().optional(),
+  namePrefix: z.string().optional(),
+  aliasPrefix: z.string().optional(),
+  compact: z.boolean().optional(),
+  nameStyle: StringStyle.optional(),
+  descriptionStyle: StringStyle.optional(),
+})
+export type GenerateTableCommandConfig = z.infer<typeof GenerateTableCommandConfig>
 
-export type GenerateTableOptionConfig = GenerateTableCommandConfig & {
-  typeStyle?: StringStyle
-  defaultStyle?: StringStyle
-}
+export const GenerateTableOptionConfig = GenerateTableCommandConfig
+export type GenerateTableOptionConfig = z.infer<typeof GenerateTableOptionConfig>
 
-export type GenerateHelpOptions = {
-  // sub-styles
-  commandOptions?: GenerateTableCommandConfig
-  optionOptions?: GenerateTableOptionConfig
+export const HelpConfig = z.object({
+  /**
+   * Whether to bind the help command to this command
+   *
+   * Set this to `true` to automatically add a `help` command to this command's subcommands.
+   */
+  bindCommand: z.boolean().optional(),
+  /**
+   * Whether to bind the help option to this command
+   *
+   * Set this to `true` to automatically add a `--help` option to this command's options.
+   */
+  bindOption: z.boolean().optional(),
 
-  // global styles
-  titleStyle?: StringStyle
-  descriptionStyle?: StringStyle
-  subtitleStyle?: StringStyle
-  usageStyle?: StringStyle
-  exampleStyles?: {
-    description?: StringStyle
-    input?: StringStyle
-    output?: StringStyle
-  }
+  commandOptions: GenerateTableCommandConfig.optional(),
+  optionOptions: GenerateTableOptionConfig.optional(),
+  titleStyle: StringStyle.optional(),
+  descriptionStyle: StringStyle.optional(),
+  subtitleStyle: StringStyle.optional(),
+  usageStyle: StringStyle.optional(),
+  maxRowLength: z.number().optional(),
+  exampleStyles: z
+    .object({
+      description: StringStyle.optional(),
+      input: StringStyle.optional(),
+      output: StringStyle.optional(),
+    })
+    .optional(),
+})
+
+export type HelpConfig = z.infer<typeof HelpConfig>
+
+export const defaultHelpConfig: HelpConfig = {
+  maxRowLength: 80,
+  commandOptions: {
+    namePrefix: '',
+    aliasPrefix: '',
+    nameStyle: {
+      color: 'yellow',
+    },
+    descriptionStyle: {
+      color: 'gray',
+    },
+  },
+  optionOptions: {
+    namePrefix: '--',
+    aliasPrefix: '-',
+    nameStyle: {
+      color: 'yellow',
+    },
+    descriptionStyle: {
+      color: 'gray',
+    },
+  },
+  descriptionStyle: {},
+  exampleStyles: {
+    description: {
+      bold: true,
+    },
+    input: {
+      color: 'yellow',
+    },
+    output: {
+      color: 'brightWhite',
+    },
+  },
+  bindCommand: false,
+  bindOption: false,
+  titleStyle: {
+    bold: true,
+    color: 'yellow',
+  },
+  usageStyle: {
+    bold: true,
+    color: 'yellow',
+  },
+  subtitleStyle: {
+    bold: true,
+    color: 'brightWhite',
+    underline: true,
+  },
 }
 
 export type HelpItem = {
@@ -41,105 +107,56 @@ export type HelpItem = {
 
 export class HelpGenerator {
   entry: MassargCommand<any>
-  config: GenerateHelpOptions
+  config: HelpConfig
 
-  constructor(entry: MassargCommand<any>, config?: GenerateHelpOptions) {
+  constructor(entry: MassargCommand<any>, config?: HelpConfig) {
     this.entry = entry
-    this.config = {
+    this.config = HelpConfig.parse({
       commandOptions: {
         ...config?.commandOptions,
       },
       optionOptions: {
         ...config?.optionOptions,
       },
-    }
+    })
   }
 
   generate(): string {
     const entry = this.entry
-    const options = generateHelpTable(entry.options, {
-      namePrefix: '--',
-      aliasPrefix: '-',
-      ...this.config.optionOptions,
-    })
-    const commands = generateHelpTable(entry.commands, {
-      namePrefix: '',
-      aliasPrefix: '',
-      ...this.config.commandOptions,
-    })
+    const options = generateHelpTable(entry.options, this.config.optionOptions)
+    const commands = generateHelpTable(entry.commands, this.config.commandOptions)
     const examples = entry.examples
       .map((example) => {
         const { description, input, output } = example
         return chainStr(
-          description && [
-            format(description, {
-              reset: true,
-              bold: true,
-              ...this.config.exampleStyles?.description,
-            }),
-            '',
-          ],
-          input &&
-            format(input, { reset: true, color: 'yellow', ...this.config.exampleStyles?.input }),
-          output &&
-            format(output, {
-              reset: true,
-              color: 'brightWhite',
-              ...this.config.exampleStyles?.output,
-            }),
+          description && [format(description, this.config.exampleStyles?.description), ''],
+          input && format(input, this.config.exampleStyles?.input),
+          output && format(output, this.config.exampleStyles?.output),
         )
       })
       .join('\n')
 
     return (
       chainStr(
-        format(`Usage: ${entry.name} [...options]`, {
-          bold: true,
-          color: 'yellow',
-          reset: true,
-          ...this.config.titleStyle,
-        }),
+        format(`Usage: ${entry.name} [...options]`, this.config.usageStyle),
         '',
-        format(entry.description, { reset: true, ...this.config.descriptionStyle }),
+        format(entry.description, this.config.descriptionStyle),
         commands.length &&
-          indent([
-            '',
-            format(`Commands for ${entry.name}:`, {
-              bold: true,
-              reset: true,
-              color: 'brightWhite',
-              underline: true,
-              ...this.config.subtitleStyle,
-            }),
-            '',
-            indent(commands),
-          ]),
+        indent([
+          '',
+          format(`Commands for ${entry.name}:`, this.config.subtitleStyle),
+          '',
+          indent(commands),
+        ]),
         options.length &&
-          indent([
-            '',
-            format(`Options for ${entry.name}:`, {
-              bold: true,
-              reset: true,
-              color: 'brightWhite',
-              underline: true,
-              ...this.config.subtitleStyle,
-            }),
-            '',
-            indent(options),
-          ]),
+        indent([
+          '',
+          format(`Options for ${entry.name}:`, this.config.subtitleStyle),
+          '',
+          indent(options),
+        ]),
         examples.length &&
-          indent([
-            '',
-            format('Examples:', {
-              bold: true,
-              reset: true,
-              color: 'brightWhite',
-              underline: true,
-              ...this.config.subtitleStyle,
-            }),
-            '',
-            indent(examples),
-          ]),
+        indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
       ) + '\n'
     )
   }
@@ -160,17 +177,14 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
   }: Partial<T> = {},
 ): string {
   const rows = items.map((o) => {
-    const name = `${namePrefix}${o.name}${
-      o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
-    }`
+    const name = `${namePrefix}${o.name}${o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
+      }`
     const description = o.description
     return { name, description }
   })
   const maxNameLength = Math.max(...rows.map((o) => o.name.length))
-  const nameStyle = (name: string) =>
-    format(name, { color: 'yellow', reset: true, ...config.nameStyle })
-  const descStyle = (desc: string) =>
-    format(desc, { color: 'gray', reset: true, ...config.descriptionStyle })
+  const nameStyle = (name: string) => format(name, config.nameStyle)
+  const descStyle = (desc: string) => format(desc, config.descriptionStyle)
   const table = rows.map((row) => {
     const name = nameStyle(row.name.padEnd(maxNameLength + 2))
     const description = descStyle(row.description)

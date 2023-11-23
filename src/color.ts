@@ -1,3 +1,6 @@
+import z from 'zod'
+import { zodEnumFromObjKeys } from './utils'
+
 export const ansiStyles = {
   reset: '\x1b[0m',
   bold: '\x1b[1m',
@@ -24,12 +27,14 @@ export const ansiColors = {
   brightWhite: '\x1b[97m',
 }
 
-export type StringStyle = {
-  color?: keyof typeof ansiColors
-  bold?: boolean
-  underline?: boolean
-  reset?: boolean
-}
+export const StringStyle = z.object({
+  bold: z.boolean().optional(),
+  underline: z.boolean().optional(),
+  color: zodEnumFromObjKeys(ansiColors).optional(),
+  reset: z.boolean().optional(),
+})
+
+export type StringStyle = z.infer<typeof StringStyle>
 
 export function format(string: string, style: StringStyle = {}): string {
   const { color, bold, underline, reset } = style
