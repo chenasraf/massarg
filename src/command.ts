@@ -1,13 +1,13 @@
 import { z } from 'zod'
 import { isZodError, ParseError, ValidationError } from './error'
-import { HelpGenerator } from './help'
+import { defaultHelpConfig, HelpConfig, HelpGenerator } from './help'
 import MassargOption, {
   MassargFlag,
   OptionConfig,
   TypedOptionConfig,
   MassargHelpFlag,
 } from './option'
-import { setOrPush } from './utils'
+import { setOrPush, deepMerge } from './utils'
 import MassargExample, { ExampleConfig } from './example'
 
 export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
@@ -26,18 +26,7 @@ export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
       .function()
       .args(args, z.any())
       .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<z.infer<RunArgs>>>,
-    /**
-     * Whether to bind the help command to this command
-     *
-     * Set this to `true` to automatically add a `help` command to this command's subcommands.
-     */
-    bindHelpCommand: z.boolean().optional(),
-    /**
-     * Whether to bind the help option to this command
-     *
-     * Set this to `true` to automatically add a `--help` option to this command's options.
-     */
-    bindHelpOption: z.boolean().optional(),
+    helpConfig: HelpConfig.optional(),
     // argsHint: z.string().optional(),
   })
 
@@ -59,6 +48,7 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
   options: MassargOption[] = []
   examples: MassargExample[] = []
   args: Partial<Args> = {}
+  helpConfig: Required<HelpConfig>
 
   constructor(options: CommandConfig<Args>) {
     CommandConfig(z.any()).parse(options)
@@ -66,12 +56,7 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     this.description = options.description
     this.aliases = options.aliases ?? []
     this._run = options.run
-    if (options.bindHelpCommand) {
-      this.command(new MassargHelpCommand())
-    }
-    if (options.bindHelpOption) {
-      this.option(new MassargHelpFlag())
-    }
+    this.helpConfig = HelpConfig.required().parse(defaultHelpConfig)
   }
 
   command<A extends ArgsObject = Args>(config: CommandConfig<A>): MassargCommand<Args>
@@ -110,15 +95,13 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
   ): MassargCommand<Args> {
     try {
       const flag = config instanceof MassargFlag ? config : new MassargFlag(config)
-      if (flag.isDefault) {
-        const defaultOption = this.options.find((o) => o.isDefault)
-        if (defaultOption) {
-          throw new ValidationError({
-            code: 'duplicate_default_option',
-            message: `Option "${flag.name}" cannot be set as default because option "${defaultOption.name}" is already set as default`,
-            path: [this.name, flag.name],
-          })
-        }
+      const existing = this.options.find((c) => c.name === flag.name)
+      if (existing) {
+        throw new ValidationError({
+          code: 'duplicate_flag',
+          message: `Flag "${flag.name}" already exists`,
+          path: [this.name, flag.name],
+        })
       }
       this.options.push(flag as MassargOption)
       return this
@@ -140,6 +123,14 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     try {
       const option =
         config instanceof MassargOption ? config : MassargOption.fromTypedConfig(config)
+      const existing = this.options.find((c) => c.name === option.name)
+      if (existing) {
+        throw new ValidationError({
+          code: 'duplicate_option',
+          message: `Option "${option.name}" already exists`,
+          path: [this.name, option.name],
+        })
+      }
       if (option.isDefault) {
         const defaultOption = this.options.find((o) => o.isDefault)
         if (defaultOption) {
@@ -166,6 +157,20 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
 
   example(config: ExampleConfig): MassargCommand<Args> {
     this.examples.push(new MassargExample(config))
+    return this
+  }
+
+  help(config: HelpConfig): MassargCommand<Args> {
+    this.helpConfig = HelpConfig.required().parse(
+      deepMerge(defaultHelpConfig, config) as HelpConfig,
+    )
+
+    if (this.helpConfig.bindCommand) {
+      this.command(new MassargHelpCommand())
+    }
+    if (this.helpConfig.bindOption) {
+      this.option(new MassargHelpFlag())
+    }
     return this
   }
 
@@ -217,46 +222,50 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     let _args: Args = { ...this.args, ...args } as Args
     let _argv = [...argv]
     const _a = this.args as Record<string, string[]>
+
+    // fill defaults
+    for (const option of this.options) {
+      if (option.defaultValue !== undefined && _a[option.name] === undefined) {
+        _args[option.name as keyof Args] = option.defaultValue as Args[keyof Args]
+      }
+    }
+
+    // parse options
     while (_argv.length) {
       const arg = _argv.shift()!
       const found = this.options.some((o) => o._isOption(arg))
       if (found) {
-        const option = this.options.find((o) => o._match(arg))
-        if (!option) {
-          throw new ValidationError({
-            path: [MassargOption.getName(arg)],
-            code: 'unknown_option',
-            message: 'Unknown option',
-          })
-        }
-        const res = option._parseDetails(argv)
-        _args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
-          res.value,
-          _args[res.key as keyof Args],
-          option.isArray,
-        )
+        _argv = this.parseOption(arg, _argv)
+        _args = { ..._args, ...this.args }
         continue
       }
 
       const command = this.commands.find((c) => c.name === arg || c.aliases.includes(arg))
       if (command) {
+        // this is dry run, just exit
         if (!parseCommands) {
           break
         }
+        // this is real run, parse command, pass unparsed args
         return command.parse(_argv, this.args, parent ?? this)
       }
+      // default option - passes arg value even without flag name
       const defaultOption = this.options.find((o) => o.isDefault)
       if (defaultOption) {
         _argv = this.parseOption(`--${defaultOption.name}`, [arg, ..._argv])
         continue
       }
+      // not parsed by any step, add to extra key
       _a.extra ??= []
       _a.extra.push(arg)
     }
-    if (!parseCommands) {
-      return _args
-    }
     this.args = { ...this.args, ..._args }
+    // dry run, just exit
+    if (!parseCommands) {
+      return this.args as Args
+    }
+
+    // no sub command found, run main command
     if (this._run) {
       this._run(this.args, parent ?? this)
     }
