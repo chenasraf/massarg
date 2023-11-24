@@ -88,6 +88,17 @@ export type ArgvValue<T> = { argv: string[]; value: T; key: string }
  *
  * They can also have a parse function, which will be used to parse the value passed in from the
  * original argument (string).
+ *
+ * @example
+ * ```ts
+ * massarg(options).option({
+ *   name: 'option',
+ *   description: 'An option',
+ *   defaultValue: 'default',
+ *   aliases: ['o'],
+ *   parse: (value) => value.toUpperCase(),
+ * })
+ * ```
  */
 export class MassargOption<T = unknown> {
   name: string
@@ -205,6 +216,17 @@ export class MassargOption<T = unknown> {
  * An option that can be passed to a command.
  *
  * This type of option parses a number, and fails if it is not a valid number.
+ *
+ * @example
+ * ```ts
+ * massarg(options).option({
+ *   name: 'number',
+ *   description: 'A number',
+ *   defaultValue: 0,
+ *   aliases: ['n'],
+ *   type: 'number',
+ * })
+ * ```
  */
 export class MassargNumber extends MassargOption<number> {
   constructor(options: Omit<OptionConfig<number>, 'parse'>) {
@@ -250,6 +272,16 @@ export class MassargNumber extends MassargOption<number> {
  * A flag can be negated by prefixing it with `no-`. For example, `--no-verbose`,
  * or by prefixing the alias with `^` instead of `-`. This is configurable via the command's
  * configuration.
+ *
+ * @example
+ * ```ts
+ * massarg.flag({
+ *   name: 'verbose',
+ *   aliases: ['v'],
+ *   description: 'Enable verbose logging',
+ *   defaultValue: false,
+ * })
+ * ```
  */
 export class MassargFlag extends MassargOption<boolean> {
   constructor(options: Omit<OptionConfig<boolean>, 'parse'>) {
