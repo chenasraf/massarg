@@ -1,6 +1,6 @@
 import z from 'zod'
 import { format, StringStyle, stripColors } from './color'
-import MassargCommand from './command'
+import { MassargCommand } from './command'
 import { DeepRequired, strConcat, indent } from './utils'
 
 export const GenerateTableCommandConfig = z.object({
@@ -30,22 +30,44 @@ export const HelpConfig = z.object({
    */
   bindOption: z.boolean().optional(),
 
-  commandOptions: GenerateTableCommandConfig.optional(),
-  optionOptions: GenerateTableOptionConfig.optional(),
+  /** Options for generating the table of commands */
+  commandOptions: GenerateTableCommandConfig.omit({ maxRowLength: true }).optional(),
+  /** Options for generating the table of options */
+  optionOptions: GenerateTableOptionConfig.omit({ maxRowLength: true }).optional(),
+  /** Style of the help title */
   titleStyle: StringStyle.optional(),
+  /** Style of the help description */
   descriptionStyle: StringStyle.optional(),
+  /** Style of the help subtitles for commands, options and examples */
   subtitleStyle: StringStyle.optional(),
+  /** Style of the help usage */
   usageStyle: StringStyle.optional(),
+  /** Style of the help header */
+  headerStyle: StringStyle.optional(),
+  /** Style of the help footer */
+  footerStyle: StringStyle.optional(),
+  /** Maximum length of a row in the help output */
   maxRowLength: z.number().optional(),
-  exampleStyles: z
+  /** Options for examples section */
+  exampleOptions: z
     .object({
-      description: StringStyle.optional(),
-      input: StringStyle.optional(),
-      output: StringStyle.optional(),
+      /** Style of the example description */
+      descriptionStyle: StringStyle.optional(),
+      /** Style of the example input */
+      inputStyle: StringStyle.optional(),
+      /** Style of the example output */
+      outputStyle: StringStyle.optional(),
+      /** Prefix for the example input */
+      inputPrefix: z.string().default('$').optional(),
+      /** Prefix for the example output */
+      outputPrefix: z.string().default('>').optional(),
     })
     .optional(),
+  /** Text to display at the very top, describing CLI usage */
   usageText: z.string().optional(),
+  /** Text to display above the description, below the usage */
   headerText: z.string().optional(),
+  /** Text to display at the very bottom, below the examples */
   footerText: z.string().optional(),
 })
 
@@ -74,16 +96,19 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
     },
   },
   descriptionStyle: {},
-  exampleStyles: {
-    description: {
+  exampleOptions: {
+    descriptionStyle: {
       bold: true,
-    },
-    input: {
-      color: 'yellow',
-    },
-    output: {
       color: 'brightWhite',
     },
+    inputStyle: {
+      color: 'yellow',
+    },
+    outputStyle: {
+      color: 'brightWhite',
+    },
+    inputPrefix: '$',
+    outputPrefix: '>',
   },
   bindCommand: false,
   bindOption: false,
@@ -103,6 +128,8 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
   headerText: '',
   footerText: '',
   usageText: '',
+  headerStyle: {},
+  footerStyle: {},
 }
 
 export type HelpItem = {
@@ -136,21 +163,36 @@ export class HelpGenerator {
     const _wrap = (text: string, indent = 0) => wrap(text, this.config.maxRowLength - indent)
     const options = generateHelpTable(entry.options, {
       ...this.config.optionOptions,
-      maxRowLength:
-        (this.config.optionOptions.maxRowLength ?? this.config.maxRowLength) - CMD_OPT_INDENT,
-    })
+      maxRowLength: this.config.maxRowLength - CMD_OPT_INDENT,
+    }).trimEnd()
     const commands = generateHelpTable(entry.commands, {
       ...this.config.commandOptions,
-      maxRowLength:
-        (this.config.commandOptions.maxRowLength ?? this.config.maxRowLength) - CMD_OPT_INDENT,
-    })
+      maxRowLength: this.config.maxRowLength - CMD_OPT_INDENT,
+    }).trimEnd()
     const examples = entry.examples
       .map((example) => {
         const { description, input, output } = example
         return strConcat(
-          description && [_wrap(format(description, this.config.exampleStyles.description), 4), ''],
-          input && _wrap(format('$ ' + input, this.config.exampleStyles.input), 4),
-          output && _wrap(format('> ' + output, this.config.exampleStyles.output), 4),
+          description && [
+            _wrap(format(description, this.config.exampleOptions.descriptionStyle), 4),
+            '',
+          ],
+          input &&
+            _wrap(
+              format(
+                [this.config.exampleOptions.inputPrefix, input].filter(Boolean).join(' '),
+                this.config.exampleOptions.inputStyle,
+              ),
+              4,
+            ),
+          output &&
+            _wrap(
+              format(
+                [this.config.exampleOptions.outputPrefix, output].filter(Boolean).join(' '),
+                this.config.exampleOptions.outputStyle,
+              ),
+              4,
+            ),
         )
       })
       .join('\n')
@@ -158,10 +200,20 @@ export class HelpGenerator {
 
     return (
       strConcat(
-        _wrap(format(usageText || `Usage: ${entry.name} [...options]`, this.config.usageStyle)),
+        _wrap(
+          format(
+            usageText ||
+              [`Usage:`, entry.name, commands.length && '[command]', options.length && '[options]']
+                .filter(Boolean)
+                .join(' '),
+            this.config.usageStyle,
+          ),
+        ),
         headerText.length && ['', format(headerText, this.config.descriptionStyle)],
-        '',
-        _wrap(format(entry.description, this.config.descriptionStyle)),
+        entry.description.length && [
+          '',
+          _wrap(format(entry.description, this.config.descriptionStyle)),
+        ],
         commands.length &&
           indent([
             '',
@@ -196,7 +248,6 @@ function wrap(text: string, maxRowLength: number): string {
   const subRows: string[] = []
   const words = text.split(' ')
   let currentRow = ''
-  console.log('words', words)
 
   for (const word of words) {
     if (stripColors(currentRow).length + stripColors(word).length + 1 > maxRowLength) {
