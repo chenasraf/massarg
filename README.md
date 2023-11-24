@@ -66,15 +66,20 @@ documentation of every option.
 const parser = massarg({
   name: 'my-cli',
   description: "Does really amazing stuff, you wouldn't believe!",
-  bindHelpCommand: true,
 }) // or: new Massarg()
   .main((options) => console.log('main command', options))
+  .command({
+    name: 'foo',
+    description: 'a sub command',
+    aliases: ['f'],
+    run: (options) => console.log('foo command'),
+  })
   .command(
     massarg({
-      name: 'sub',
-      description: 'a sub command',
+      name: 'bar',
+      description: 'another sub command',
       aliases: ['s'],
-      run: (options) => console.log('sub command', options),
+      run: (options) => console.log('bar command', options),
     }).option({
       name: 'file',
       description: 'Filename to use',
@@ -82,6 +87,11 @@ const parser = massarg({
       parse: (filename) => path.resolve(process.cwd(), filename),
     }),
   )
+  .option({
+    name: 'my-string',
+    description: 'A string argument',
+    aliases: ['s'],
+  })
   .flag({
     name: 'flag',
     description: 'a flag that will be related to any command (main or sub)',
@@ -93,8 +103,12 @@ const parser = massarg({
     output: 'Sub command: flag is true',
   })
   .help({
-    binName: 'my-cli-app',
-    footer: 'Copyright © 2021 Me, Myself and I',
+    bindCommand: true,
+    footerText: `Copyright © ${new Date().getFullYear()} Me, Myself and I`,
+    titleStyle: {
+      bold: true,
+      color: 'brightWhite',
+    },
   })
 ```
 
@@ -122,7 +136,10 @@ $ ./mybin
 # Main command runs without options
 
 $ ./mybin --my-string "Some string"
-# Main command runs with option { myString: "Some string" }
+# Main command runs with options { myString: "Some string" }
+
+$ ./mybin foo
+# Foo sub command run with options {}
 ```
 
 ## Commands
