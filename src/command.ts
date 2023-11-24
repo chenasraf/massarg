@@ -1,14 +1,15 @@
 import { z } from 'zod'
 import { isZodError, ParseError, ValidationError } from './error'
 import { defaultHelpConfig, HelpConfig, HelpGenerator } from './help'
-import MassargOption, {
+import {
+  MassargOption,
   MassargFlag,
   OptionConfig,
   TypedOptionConfig,
   MassargHelpFlag,
 } from './option'
 import { DeepRequired, setOrPush, deepMerge } from './utils'
-import MassargExample, { ExampleConfig } from './example'
+import { MassargExample, ExampleConfig } from './example'
 
 export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
   z.object({
@@ -26,8 +27,6 @@ export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
       .function()
       .args(args, z.any())
       .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<z.infer<RunArgs>>>,
-    helpConfig: HelpConfig.optional(),
-    // argsHint: z.string().optional(),
   })
 
 export type CommandConfig<T = unknown> = z.infer<ReturnType<typeof CommandConfig<z.ZodType<T>>>>
@@ -39,7 +38,15 @@ export type Runner<Args extends ArgsObject> = <A extends ArgsObject = Args>(
   instance: MassargCommand<A>,
 ) => Promise<void> | void
 
-export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
+/**
+ * A command is a named function that can be invoked with a set of options.
+ *
+ * Commands can have sub-commands, which can have their own sub-commands, and so on.
+ *
+ * Options are not inherited by sub-commands, but their parsed values are passed down when
+ * invoking a sub-command. This works recursively.
+ */
+export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   name: string
   description: string
   aliases: string[]
@@ -57,7 +64,7 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     this.description = options.description
     this.aliases = options.aliases ?? []
     this._run = options.run
-    this._helpConfig = HelpConfig.required().parse(defaultHelpConfig)
+    this._helpConfig = {}
     this.parent = parent
   }
 
@@ -68,6 +75,15 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     return deepMerge(defaultHelpConfig, this._helpConfig) as Required<HelpConfig>
   }
 
+  /**
+   * Add a sub-command to this command.
+   *
+   * The sub-command will inherit all help configuration from the parent commands,
+   * all the way up to the top-level command.
+   *
+   * While options are not inherited, they will be passed from any parent commands
+   * to the sub-command when invoked.
+   */
   command<A extends ArgsObject = Args>(config: CommandConfig<A>): MassargCommand<Args>
   command<A extends ArgsObject = Args>(config: MassargCommand<A>): MassargCommand<Args>
   command<A extends ArgsObject = Args>(
@@ -98,6 +114,17 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     }
   }
 
+  /**
+   * Adds a flag to this command.
+   *
+   * A flag is an option that is either present or not. It can be used to toggle
+   * a boolean value, or to indicate that a command should be run in a different
+   * mode.
+   *
+   * A flag can be negated by prefixing it with `no-`. For example, `--no-verbose`,
+   * or by prefixing the alias with `^` instead of `-`. This is configurable via the command's
+   * configuration.
+   */
   flag(config: Omit<OptionConfig<boolean>, 'parse' | 'isDefault'>): MassargCommand<Args>
   flag(config: MassargFlag): MassargCommand<Args>
   flag(
@@ -127,6 +154,19 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     }
   }
 
+  /**
+   * Adds an option to this command.
+   *
+   * An option is a named value that can be passed to a command. It can be
+   * required or optional, and can be of any type.
+   *
+   * You can specify a default value for an option, which will be used if the
+   * option is not passed to the command.
+   *
+   * You can also specify a parse function, which will be used to parse the
+   * value passed to the command. This is useful if you want to parse a string
+   * into a more complex type, or if you want to validate the value.
+   */
   option<T = string>(config: MassargOption<T>): MassargCommand<Args>
   option<T = string>(config: TypedOptionConfig<T>): MassargCommand<Args>
   option<T = string>(config: TypedOptionConfig<T> | MassargOption<T>): MassargCommand<Args> {
@@ -165,11 +205,28 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     }
   }
 
+  /**
+   * Adds an example to this command.
+   *
+   * An example is a description of how to use the command, with an example input and output.
+   *
+   * At least one of `description`, `input` or `output` must be provided, but neither alone is
+   * required.
+   */
   example(config: ExampleConfig): MassargCommand<Args> {
     this.examples.push(new MassargExample(config))
     return this
   }
 
+  /**
+   * Configure the help output for this (and all child) commands.
+   *
+   * You can automatically bind the help command to this command, and/or bind the help option
+   * to this command.
+   *
+   * If you don't opt-in to this behavior with `bindCommand` or `bindOption`, you can still
+   * access the help output via `this.helpString()` and `this.printHelp()`.
+   */
   help(config: HelpConfig): MassargCommand<Args> {
     this._helpConfig = HelpConfig.parse(config)
 
@@ -182,11 +239,24 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     return this
   }
 
+  /**
+   * Configure the main function for this command. This command will run when no sub-commands
+   * are provided.
+   *
+   * If none is provided, help will be printed.
+   */
   main<A extends ArgsObject = Args>(run: Runner<A>): MassargCommand<Args> {
     this._run = run
     return this
   }
 
+  /**
+   * Parse the given arguments and run the command or sub-commands along with the given options
+   * and flags.
+   *
+   * To parse the arguments without running any commands and only get the output args,
+   * use `getArgs` instead.
+   */
   parse(argv: string[], args?: Partial<Args>, parent?: MassargCommand<Args>): Promise<void> | void {
     this.getArgs(argv, args, parent, true)
   }
@@ -209,6 +279,7 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     return res.argv
   }
 
+  /** Parse the given arguments and return the output args. */
   getArgs(
     argv: string[],
     __args?: Partial<Args>,
@@ -279,10 +350,16 @@ export default class MassargCommand<Args extends ArgsObject = ArgsObject> {
     }
   }
 
+  /**
+   * Generate the help output for this command, and return it as a string.
+   */
   helpString(): string {
     return new HelpGenerator(this).generate()
   }
 
+  /**
+   * Print the help output for this command.
+   */
   printHelp(): void {
     console.log(this.helpString())
   }
@@ -322,5 +399,3 @@ export class MassargHelpCommand<T extends ArgsObject = ArgsObject> extends Massa
     })
   }
 }
-
-export { MassargCommand }

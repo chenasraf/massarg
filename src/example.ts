@@ -2,13 +2,22 @@ import z from 'zod'
 import { ValidationError } from './error'
 
 export const ExampleConfig = z.object({
+  /** Description of the example. This will appear as a title above the input/output line(s). */
   description: z.string().optional(),
+  /**
+   * Input of the example. This will appear as a line below the description, with a `$` prefix.
+   * The prefix can be changed using the `help()` function on the command.
+   */
   input: z.string().optional(),
+  /**
+   * Output of the example. This will appear as a line below the input, with a `>` prefix.
+   * The prefix can be changed using the `help()` function on the command.
+   */
   output: z.string().optional(),
 })
 export type ExampleConfig = z.infer<typeof ExampleConfig>
 
-export default class MassargExample {
+export class MassargExample {
   description: string | undefined
   input: string | undefined
   output: string | undefined
@@ -31,4 +40,3 @@ export default class MassargExample {
     this.output = config.output
   }
 }
-export { MassargExample }

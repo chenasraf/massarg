@@ -1,8 +1,12 @@
 import { z } from 'zod'
 
+/** This error is thrown when a validation fails. */
 export class ValidationError extends Error {
+  /** The path to the value that failed validation. */
   path: string[]
+  /** The error code. */
   code: string
+  /** The error message. */
   message: string
 
   constructor({ path, code, message }: { path: string[]; code: string; message: string }) {
@@ -14,10 +18,16 @@ export class ValidationError extends Error {
     this.name = 'ValidationError'
   }
 }
+
+/** This error is thrown when a parse fails on an option value. */
 export class ParseError extends Error {
+  /** The path to the value that failed parsing. */
   path: string[]
+  /** The error code. */
   code: string
+  /** The error message. */
   message: string
+  /** The value that failed parsing. */
   received: unknown
 
   constructor({
