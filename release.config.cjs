@@ -6,7 +6,20 @@ module.exports = {
   plugins: [
     '@semantic-release/commit-analyzer',
     '@semantic-release/release-notes-generator',
-    '@semantic-release/npm',
+    [
+      '@semantic-release/npm',
+      {
+        // only update the pkg version on root, don't publish
+        npmPublish: false,
+      },
+    ],
+    [
+      '@semantic-release/npm',
+      {
+        // publish from build dir instead of root
+        pkgRoot: 'build',
+      },
+    ],
     [
       '@semantic-release/github',
       {
