@@ -19,7 +19,8 @@
     "dev": "tsc --watch",
     "cmd": "ts-node src/sample.ts",
     "test": "jest",
-    "docgen": "typedoc --out docs src/**/*.ts --exclude src/sample.ts --plugin typedoc-plugin-zod --theme default",
+    "doc": "typedoc --out docs src/**/*.ts --exclude src/sample.ts --plugin typedoc-plugin-zod --theme default",
+    "deploy-doc": "pnpm doc && gh-pages -d docs",
     "semantic-release": "semantic-release"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "@semantic-release/git": "^10.0.1",
     "@types/jest": "^29.5.8",
     "@types/node": "^20.9.2",
+    "gh-pages": "^6.1.0",
     "jest": "^29.7.0",
     "semantic-release": "^22.0.8",
     "ts-jest": "^29.1.1",
