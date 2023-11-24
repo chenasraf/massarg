@@ -2,16 +2,20 @@ name: Pull Requests
 
 on:
   pull_request:
-    branches: [master]
+    branches: [master, develop, pre]
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: "!contains(github.event.head_commit.message, '[skip ci]')"
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: "12.x"
-      - run: yarn install --frozen-lockfile
-      - run: yarn test
-      - run: yarn build
+          node-version: '20.x'
+      - name: Install PNPM
+        run: npm i -g pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run Tests
+        run: pnpm test
+      - name: Build Package
+        run: pnpm build
