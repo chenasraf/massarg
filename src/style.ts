@@ -45,6 +45,6 @@ export function format(string: string, style: StringStyle = {}): string {
   return `${colorCode}${boldCode}${underlineCode}${string}${resetCode}`
 }
 
-export function stripColors(string: string): string {
+export function stripStyle(string: string): string {
   return string.replace(/\x1b\[\d+m/gi, '')
 }
