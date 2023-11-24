@@ -11,7 +11,11 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: '18.x'
-      - run: npm i -g pnpm
-      - run: pnpm install --frozen-lockfile
-      - run: pnpm test
-      - run: pnpm build
+      - name: Install PNPM
+        run: npm i -g pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Run Tests
+        run: pnpm test
+      - name: Build Package
+        run: pnpm build
