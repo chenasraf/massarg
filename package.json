@@ -19,7 +19,7 @@
     "dev": "tsc --watch",
     "cmd": "ts-node src/sample.ts",
     "test": "jest",
-    "docgen": "typedoc --out docs src --plugin typedoc-plugin-zod --theme default"
+    "docgen": "typedoc --out docs src/**/*.ts --exclude src/sample.ts --plugin typedoc-plugin-zod --theme default"
   },
   "devDependencies": {
     "@types/jest": "^29.5.8",
