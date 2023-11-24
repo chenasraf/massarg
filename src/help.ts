@@ -1,5 +1,5 @@
 import z from 'zod'
-import { format, StringStyle, stripColors } from './color'
+import { format, StringStyle, stripStyle } from './style'
 import { MassargCommand } from './command'
 import { DeepRequired, strConcat, indent } from './utils'
 
@@ -242,7 +242,7 @@ export class HelpGenerator {
 }
 
 function wrap(text: string, maxRowLength: number): string {
-  const length = stripColors(text).length
+  const length = stripStyle(text).length
   if (length <= maxRowLength) {
     return text
   }
@@ -251,7 +251,7 @@ function wrap(text: string, maxRowLength: number): string {
   let currentRow = ''
 
   for (const word of words) {
-    if (stripColors(currentRow).length + stripColors(word).length + 1 > maxRowLength) {
+    if (stripStyle(currentRow).length + stripStyle(word).length + 1 > maxRowLength) {
       subRows.push(currentRow)
       currentRow = ''
     }
@@ -288,7 +288,7 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
   const table = rows.map((row) => {
     const name = nameStyle(row.name.padEnd(maxNameLength + 2))
     const description = descStyle(row.description)
-    const length = stripColors(name).length + stripColors(description).length
+    const length = stripStyle(name).length + stripStyle(description).length
     if (length <= maxRowLength) {
       const line = `${name}${description}`
       if (!compact) {
@@ -301,7 +301,7 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
     let currentRow = name
 
     for (const word of words) {
-      if (stripColors(currentRow).length + stripColors(word).length + 1 > maxRowLength) {
+      if (stripStyle(currentRow).length + stripStyle(word).length + 1 > maxRowLength) {
         subRows.push(currentRow)
         currentRow = ' '.repeat(maxNameLength + 2)
       }
