@@ -1,5 +1,5 @@
 import { massarg } from '.'
-import MassargCommand from './command'
+import { MassargCommand } from './command'
 import { ParseError } from './error'
 
 type A = { test: boolean }

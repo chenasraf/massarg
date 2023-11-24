@@ -3,13 +3,37 @@ import { isZodError, ParseError } from './error'
 
 export const OptionConfig = <T extends z.ZodType>(type: T) =>
   z.object({
+    /** Name of the option */
     name: z.string(),
+    /** Description of the option, displayed in the help output */
     description: z.string(),
+    /** Default value of the option */
     defaultValue: z.any().optional(),
+    /** Aliases for the option, which can be used with the shorthand option notation. */
     aliases: z.string().array(),
+    /**
+     * Parse the value of the option. You can return any type here, or throw an error if the value
+     * is invalid.
+     */
     parse: z.function().args(z.string()).returns(type).optional(),
+    /**
+     * Whether the option is an array.
+     *
+     * Array options can be specified multiple times, and the values will be collected into an array.
+     *
+     * Normally, specifying an option multiple times will override the previous value.
+     */
     array: z.boolean().optional(),
+    /** Whether the option is required. If it is required, parsing will throw an error if it's not
+     * present.
+     */
     required: z.boolean().optional(),
+    /** Whether the option is the default option. The default option is the option that is used if
+     * no other option is specified, e.g. a value is passed in without an option name.
+     *
+     * Note that if commands match the same argument first, they will be used instead of the default
+     * option.
+     */
     isDefault: z.boolean().optional(),
   })
 export type OptionConfig<T = unknown> = z.infer<ReturnType<typeof OptionConfig<z.ZodType<T>>>>
@@ -24,12 +48,23 @@ export type TypedOptionConfig<T = unknown> = z.infer<
   ReturnType<typeof TypedOptionConfig<z.ZodType<T>>>
 >
 
+/**
+ * @see OptionConfig
+ * @see ArrayOptionConfig
+ */
 export const ArrayOptionConfig = <T extends z.ZodType>(type: T) =>
   TypedOptionConfig(z.array(type)).merge(
+    // OptionConfig(z.array(type)).merge(
     z.object({
       defaultValue: z.array(type).optional(),
     }),
   )
+
+/**
+ * An option that can be passed to a command.
+ *
+ * This type represents an array option, which can be specified multiple times.
+ */
 export type ArrayOptionConfig<T = unknown> = z.infer<
   ReturnType<typeof ArrayOptionConfig<z.ZodType<T>>>
 >
@@ -40,9 +75,21 @@ const OPT_SHORT_PREFIX = '-'
 const NEGATE_FULL_PREFIX = 'no-'
 const NEGATE_SHORT_PREFIX = '^'
 
+/** @internal */
 export type ArgvValue<T> = { argv: string[]; value: T; key: string }
 
-export default class MassargOption<T = unknown> {
+/**
+ * An option that can be passed to a command.
+ *
+ * Options can be specified in two ways:
+ *
+ * - Using the long form, e.g. `--option value`
+ * - Using the short form, e.g. `-o value`
+ *
+ * They can also have a parse function, which will be used to parse the value passed in from the
+ * original argument (string).
+ */
+export class MassargOption<T = unknown> {
   name: string
   description: string
   defaultValue?: T
@@ -154,6 +201,11 @@ export default class MassargOption<T = unknown> {
   }
 }
 
+/**
+ * An option that can be passed to a command.
+ *
+ * This type of option parses a number, and fails if it is not a valid number.
+ */
 export class MassargNumber extends MassargOption<number> {
   constructor(options: Omit<OptionConfig<number>, 'parse'>) {
     super({
@@ -188,6 +240,17 @@ export class MassargNumber extends MassargOption<number> {
   }
 }
 
+/**
+ * An option that can be passed to a command.
+ *
+ * A flag is an option that is either present or not. It can be used to toggle
+ * a boolean value, or to indicate that a command should be run in a different
+ * mode.
+ *
+ * A flag can be negated by prefixing it with `no-`. For example, `--no-verbose`,
+ * or by prefixing the alias with `^` instead of `-`. This is configurable via the command's
+ * configuration.
+ */
 export class MassargFlag extends MassargOption<boolean> {
   constructor(options: Omit<OptionConfig<boolean>, 'parse'>) {
     super({
@@ -237,5 +300,3 @@ export class MassargHelpFlag extends MassargFlag {
     })
   }
 }
-
-export { MassargOption }

@@ -1,5 +1,6 @@
 import z from 'zod'
 
+/** @internal */
 export function setOrPush<T>(
   newValue: unknown,
   currentValue: T[] | T | undefined,
@@ -12,10 +13,19 @@ export function setOrPush<T>(
 }
 type Parseable = string | number | boolean | null | undefined | Record<string, unknown>
 
+/** A type that makes all properties of an object required, recursively. */
 export type DeepRequired<T> = {
   [P in keyof T]-?: T[P] extends object ? DeepRequired<T[P]> : NonNullable<T[P]>
 }
 
+/**
+ * Concatenates strings, arrays of strings, and objects with truthy values.
+ *
+ * It works recursively, so adding an array of strings to an array of strings will work.
+ *
+ * Falsy values are ignored, so pasing `undefined` or `null` will not add anything to the result,
+ * and using a boolean will only add it if it is `true`. Using 0 will also not add anything.
+ */
 export function strConcat(...strs: (Parseable | Parseable[])[]) {
   const res: string[] = []
   for (const str of strs) {
@@ -46,6 +56,9 @@ export function strConcat(...strs: (Parseable | Parseable[])[]) {
   return res.join('\n')
 }
 
+/**
+ * Indents a string or an array of strings. Concatenates them all using `strConcat`.
+ */
 export function indent(str: Parseable | Parseable[], indent = 2): string {
   return strConcat(str)
     .split('\n')
@@ -53,11 +66,13 @@ export function indent(str: Parseable | Parseable[], indent = 2): string {
     .join('\n')
 }
 
+/** @internal */
 export function zodEnumFromObjKeys<K extends string>(obj: Record<K, any>): z.ZodEnum<[K, ...K[]]> {
   const [firstKey, ...otherKeys] = Object.keys(obj) as K[]
   return z.enum([firstKey, ...otherKeys])
 }
 
+/** @internal */
 export function deepMerge<T1, T2>(obj1: T1, obj2: T2): NonNullable<T1> & NonNullable<T2> {
   const res = { ...obj1 } as any
   if (obj1 == null) return obj2 as any
