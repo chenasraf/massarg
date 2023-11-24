@@ -136,6 +136,7 @@ export type HelpItem = {
   name: string
   aliases: string[]
   description: string
+  hidden?: boolean
 }
 
 export class HelpGenerator {
@@ -271,13 +272,16 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
     ...config
   }: Partial<T> = {},
 ): string {
-  const rows = items.map((o) => {
-    const name = `${namePrefix}${o.name}${
-      o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
-    }`
-    const description = o.description
-    return { name, description }
-  })
+  const rows = items
+    .map((o) => {
+      const name = `${namePrefix}${o.name}${
+        o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
+      }`
+      const description = o.description
+      const hidden = o.hidden || false
+      return { name, description, hidden }
+    })
+    .filter((r) => !r.hidden)
   const maxNameLength = Math.max(...rows.map((o) => o.name.length))
   const nameStyle = (name: string) => format(name, config.nameStyle)
   const descStyle = (desc: string) => format(desc, config.descriptionStyle)

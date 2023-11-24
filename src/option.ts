@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { isZodError, ParseError } from './error'
+import { toCamelCase } from './utils'
 
 export const OptionConfig = <T extends z.ZodType>(type: T) =>
   z.object({
@@ -35,6 +36,10 @@ export const OptionConfig = <T extends z.ZodType>(type: T) =>
      * option.
      */
     isDefault: z.boolean().optional(),
+    /** Whether the option is hidden. Hidden options are not displayed in the help output. */
+    hidden: z.boolean().optional(),
+    /** Specify a custom name for the output, which will be used when parsing the args. */
+    outputName: z.string().optional(),
   })
 export type OptionConfig<T = unknown> = z.infer<ReturnType<typeof OptionConfig<z.ZodType<T>>>>
 
@@ -108,6 +113,7 @@ export class MassargOption<T = unknown> {
   parse: (value: string) => T
   isArray: boolean
   isDefault: boolean
+  outputName?: string
 
   constructor(options: OptionConfig<T>) {
     OptionConfig(z.any()).parse(options)
@@ -118,6 +124,7 @@ export class MassargOption<T = unknown> {
     this.parse = options.parse ?? ((x) => x as unknown as T)
     this.isArray = options.array ?? false
     this.isDefault = options.isDefault ?? false
+    this.outputName = options.outputName
   }
 
   static fromTypedConfig<T = unknown>(config: TypedOptionConfig<T>): MassargOption<T> {
@@ -143,7 +150,7 @@ export class MassargOption<T = unknown> {
       argv.shift()
       input = argv.shift()!
       const value = this.parse(input)
-      return { key: this.name, value, argv }
+      return { key: this.outputName || toCamelCase(this.name), value, argv }
     } catch (e) {
       if (isZodError(e)) {
         throw new ParseError({
