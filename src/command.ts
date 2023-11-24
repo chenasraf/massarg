@@ -45,6 +45,17 @@ export type Runner<Args extends ArgsObject> = <A extends ArgsObject = Args>(
  *
  * Options are not inherited by sub-commands, but their parsed values are passed down when
  * invoking a sub-command. This works recursively.
+ *
+ * @example
+ * ```ts
+ * massarg(options).command({
+ *   name: 'foo',
+ *   description: 'foo command',
+ *   run: (options, instance) => {
+ *     console.log(options, instance)
+ *   },
+ * })
+ * ```
  */
 export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   name: string
@@ -312,6 +323,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     // parse options
     while (_argv.length) {
       const arg = _argv.shift()!
+      // make sure option exists
       const found = this.options.some((o) => o._isOption(arg))
       if (found) {
         _argv = this.parseOption(arg, _argv)
@@ -319,6 +331,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
         continue
       }
 
+      // if not, try see if it's a command
       const command = this.commands.find((c) => c.name === arg || c.aliases.includes(arg))
       if (command) {
         // this is dry run, just exit
@@ -338,6 +351,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       _a.extra ??= []
       _a.extra.push(arg)
     }
+    // merge args
     this.args = { ...this.args, ..._args }
     // dry run, just exit
     if (!parseCommands) {
