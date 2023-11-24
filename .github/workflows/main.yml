@@ -30,6 +30,8 @@ jobs:
         run: npm i -g pnpm
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+      - name: Run Tests
+        run: pnpm test
       - name: Build Package
         run: pnpm build
       # - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
