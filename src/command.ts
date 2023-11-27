@@ -316,7 +316,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     // fill defaults
     for (const option of this.options) {
       if (option.defaultValue !== undefined && _a[option.name] === undefined) {
-        _args[option.name as keyof Args] = option.defaultValue as Args[keyof Args]
+        _args[option.getOutputName() as keyof Args] = option.defaultValue as Args[keyof Args]
       }
     }
 
@@ -336,7 +336,8 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       if (command) {
         // this is dry run, just exit
         if (!parseCommands) {
-          break
+          return command.getArgs(_argv, this.args, parent ?? this, false)
+          // break
         }
         // this is real run, parse command, pass unparsed args
         return command.parse(_argv, this.args, parent ?? this)
@@ -385,7 +386,6 @@ export class MassargHelpCommand<T extends ArgsObject = ArgsObject> extends Massa
       name: 'help',
       aliases: ['h'],
       description: 'Print help for this command, or a subcommand if specified',
-      // argsHint: "[command]",
       run: (args, parent) => {
         if (args.command) {
           const command = parent.commands.find((c) => c.name === args.command)
