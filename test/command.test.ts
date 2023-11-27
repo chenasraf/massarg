@@ -1,5 +1,4 @@
 import { MassargCommand } from '../src/command'
-import { defaultHelpConfig } from '../src/help'
 import { massarg } from '../src/index'
 
 const opts = {
@@ -55,7 +54,7 @@ describe('getArgs', () => {
       massarg(opts)
         .command({ name: 'test', description: 'test', run: jest.fn() })
         .getArgs(['test', '--test', 'test']),
-    ).toEqual({})
+    ).toEqual({ extra: ['--test', 'test'] })
   })
 
   test('alias', () => {
@@ -138,7 +137,7 @@ describe('getArgs', () => {
         .getArgs(['test3']),
     ).toEqual({})
   })
-  test.skip('extra values', () => {
+  test('extra values', () => {
     expect(
       massarg(opts)
         .command({

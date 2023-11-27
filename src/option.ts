@@ -135,6 +135,10 @@ export class MassargOption<T = unknown> {
     return new MassargOption(config as OptionConfig<T>)
   }
 
+  getOutputName(): string {
+    return this.outputName || toCamelCase(this.name)
+  }
+
   _parseDetails(argv: string[]): ArgvValue<T> {
     // TODO: support --option=value
     let input = ''
@@ -150,7 +154,7 @@ export class MassargOption<T = unknown> {
       argv.shift()
       input = argv.shift()!
       const value = this.parse(input)
-      return { key: this.outputName || toCamelCase(this.name), value, argv }
+      return { key: this.getOutputName(), value, argv }
     } catch (e) {
       if (isZodError(e)) {
         throw new ParseError({
