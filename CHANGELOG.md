@@ -1,3 +1,17 @@
+# Change Log
+
+# [2.0.0-pre.2](https://github.com/chenasraf/massarg/compare/v2.0.0-pre.1...v2.0.0-pre.2) (2023-12-01)
+
+
+### Bug Fixes
+
+* exported types fixes ([a0aa8ec](https://github.com/chenasraf/massarg/commit/a0aa8ecbb7c112033842f080caaea666a75b88b1))
+
+
+### Features
+
+* different opt output name (default camelCase) ([48b9602](https://github.com/chenasraf/massarg/commit/48b96022e42c6de1776485be1d829247f50cb6ad))
+
 # [2.0.0-pre.1](https://github.com/chenasraf/massarg/compare/v1.0.6...v2.0.0-pre.1) (2023-11-24)
 
 
@@ -21,4 +35,3 @@
 ### BREAKING CHANGES
 
 * recreated massarg package
-
