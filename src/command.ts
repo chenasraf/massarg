@@ -11,7 +11,7 @@ import {
 import { DeepRequired, setOrPush, deepMerge } from './utils'
 import { MassargExample, ExampleConfig } from './example'
 
-export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
+export const CommandConfig = <RunArgs extends ArgsObject = ArgsObject>(args: z.ZodType<RunArgs>) =>
   z.object({
     /** Command name */
     name: z.string(),
@@ -26,16 +26,18 @@ export const CommandConfig = <RunArgs extends z.ZodType>(args: RunArgs) =>
     run: z
       .function()
       .args(args, z.any())
-      .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<z.infer<RunArgs>>>,
+      .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<RunArgs>>,
   })
 
-export type CommandConfig<T = unknown> = z.infer<ReturnType<typeof CommandConfig<z.ZodType<T>>>>
+export type CommandConfig<RunArgs extends ArgsObject = ArgsObject> = z.infer<
+  ReturnType<typeof CommandConfig<RunArgs>>
+>
 
-export type ArgsObject = Record<string, unknown>
+export type ArgsObject = object
 
-export type Runner<Args extends ArgsObject> = <A extends ArgsObject = Args>(
-  options: A,
-  instance: MassargCommand<A>,
+export type Runner<Args extends ArgsObject> = (
+  options: Args,
+  instance: MassargCommand<Args>,
 ) => Promise<void> | void
 
 /**
@@ -178,12 +180,18 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
    * value passed to the command. This is useful if you want to parse a string
    * into a more complex type, or if you want to validate the value.
    */
-  option<T = string>(config: MassargOption<T>): MassargCommand<Args>
-  option<T = string>(config: TypedOptionConfig<T>): MassargCommand<Args>
-  option<T = string>(config: TypedOptionConfig<T> | MassargOption<T>): MassargCommand<Args> {
+  option<T = string, A extends ArgsObject = Args>(config: MassargOption<T, A>): MassargCommand<Args>
+  option<T = string, A extends ArgsObject = Args>(
+    config: TypedOptionConfig<T, A>,
+  ): MassargCommand<Args>
+  option<T = string, A extends ArgsObject = Args>(
+    config: TypedOptionConfig<T, A> | MassargOption<T, A>,
+  ): MassargCommand<Args> {
     try {
       const option =
-        config instanceof MassargOption ? config : MassargOption.fromTypedConfig(config)
+        config instanceof MassargOption
+          ? config
+          : MassargOption.fromTypedConfig(config as TypedOptionConfig<T, A>)
       const existing = this.options.find((c) => c.name === option.name)
       if (existing) {
         throw new ValidationError({
@@ -256,7 +264,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
    *
    * If none is provided, help will be printed.
    */
-  main<A extends ArgsObject = Args>(run: Runner<A>): MassargCommand<Args> {
+  main(run: Runner<Args>): MassargCommand<Args> {
     this._run = run
     return this
   }
@@ -281,7 +289,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
         message: 'Unknown option',
       })
     }
-    const res = option._parseDetails([arg, ...argv])
+    const res = option._parseDetails([arg, ...argv], { ...this.args })
     this.args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
       res.value,
       this.args[res.key as keyof Args],
@@ -361,7 +369,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
 
     // no sub command found, run main command
     if (this._run) {
-      this._run(this.args, parent ?? this)
+      this._run(this.args as Args, parent ?? this)
     }
   }
 
@@ -380,13 +388,15 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   }
 }
 
-export class MassargHelpCommand<T extends ArgsObject = ArgsObject> extends MassargCommand<T> {
+export class MassargHelpCommand<
+  T extends { command?: string } = { command?: string },
+> extends MassargCommand<T> {
   constructor(config: Partial<Omit<CommandConfig<T>, 'run'>> = {}) {
     super({
       name: 'help',
       aliases: ['h'],
       description: 'Print help for this command, or a subcommand if specified',
-      run: (args, parent) => {
+      run: (args: { command?: string }, parent) => {
         if (args.command) {
           const command = parent.commands.find((c) => c.name === args.command)
           if (command) {
