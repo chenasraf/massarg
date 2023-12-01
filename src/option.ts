@@ -1,8 +1,11 @@
 import { z } from 'zod'
 import { isZodError, ParseError } from './error'
 import { toCamelCase } from './utils'
+import { ArgsObject } from './command'
 
-export const OptionConfig = <T extends z.ZodType>(type: T) =>
+export const OptionConfig = <OptionType, Args extends ArgsObject = ArgsObject>(
+  type: z.ZodType<OptionType>,
+) =>
   z.object({
     /** Name of the option */
     name: z.string(),
@@ -16,7 +19,9 @@ export const OptionConfig = <T extends z.ZodType>(type: T) =>
      * Parse the value of the option. You can return any type here, or throw an error if the value
      * is invalid.
      */
-    parse: z.function().args(z.string()).returns(type).optional(),
+    parse: z.function().args(z.string(), z.any()).returns(type).optional() as z.ZodOptional<
+      z.ZodType<Parser<Args, OptionType>>
+    >,
     /**
      * Whether the option is an array.
      *
@@ -41,24 +46,33 @@ export const OptionConfig = <T extends z.ZodType>(type: T) =>
     /** Specify a custom name for the output, which will be used when parsing the args. */
     outputName: z.string().optional(),
   })
-export type OptionConfig<T = unknown> = z.infer<ReturnType<typeof OptionConfig<z.ZodType<T>>>>
+export type OptionConfig<T = unknown, Args extends ArgsObject = ArgsObject> = z.infer<
+  ReturnType<typeof OptionConfig<T, Args>>
+>
 
-export const TypedOptionConfig = <T extends z.ZodType>(type: T) =>
-  OptionConfig(type).merge(
+export type Parser<Args extends ArgsObject = ArgsObject, OptionType extends any = any> = (
+  x: string,
+  y: Args,
+) => OptionType
+
+export const TypedOptionConfig = <OptionType, Args extends ArgsObject = ArgsObject>(
+  type: z.ZodType<OptionType>,
+) =>
+  OptionConfig<OptionType, Args>(type).merge(
     z.object({
       type: z.enum(['number']).optional(),
     }),
   )
-export type TypedOptionConfig<T = unknown> = z.infer<
-  ReturnType<typeof TypedOptionConfig<z.ZodType<T>>>
+export type TypedOptionConfig<T, A extends ArgsObject = ArgsObject> = z.infer<
+  ReturnType<typeof TypedOptionConfig<T, A>>
 >
 
 /**
  * @see OptionConfig
  * @see ArrayOptionConfig
  */
-export const ArrayOptionConfig = <T extends z.ZodType>(type: T) =>
-  TypedOptionConfig(z.array(type)).merge(
+export const ArrayOptionConfig = <T, A extends ArgsObject = ArgsObject>(type: z.ZodType<T>) =>
+  TypedOptionConfig<T[], A>(z.array(type)).merge(
     // OptionConfig(z.array(type)).merge(
     z.object({
       defaultValue: z.array(type).optional(),
@@ -105,29 +119,31 @@ export type ArgvValue<T> = { argv: string[]; value: T; key: string }
  * })
  * ```
  */
-export class MassargOption<T = unknown> {
+export class MassargOption<OptionType extends any = unknown, Args extends ArgsObject = ArgsObject> {
   name: string
   description: string
-  defaultValue?: T
+  defaultValue?: OptionType
   aliases: string[]
-  parse: (value: string) => T
+  parse: Parser<Args, OptionType>
   isArray: boolean
   isDefault: boolean
   outputName?: string
 
-  constructor(options: OptionConfig<T>) {
+  constructor(options: OptionConfig<OptionType, Args>) {
     OptionConfig(z.any()).parse(options)
     this.name = options.name
     this.description = options.description
     this.defaultValue = options.defaultValue
     this.aliases = options.aliases
-    this.parse = options.parse ?? ((x) => x as unknown as T)
+    this.parse = options.parse ?? ((x: string) => x as OptionType)
     this.isArray = options.array ?? false
     this.isDefault = options.isDefault ?? false
     this.outputName = options.outputName
   }
 
-  static fromTypedConfig<T = unknown>(config: TypedOptionConfig<T>): MassargOption<T> {
+  static fromTypedConfig<T = unknown, A extends ArgsObject = ArgsObject>(
+    config: TypedOptionConfig<T, A>,
+  ): MassargOption<T> {
     switch (config.type) {
       case 'number':
         return new MassargNumber(config as OptionConfig<number>) as MassargOption<T>
@@ -139,7 +155,7 @@ export class MassargOption<T = unknown> {
     return this.outputName || toCamelCase(this.name)
   }
 
-  _parseDetails(argv: string[]): ArgvValue<T> {
+  _parseDetails(argv: string[], options: ArgsObject): ArgvValue<OptionType> {
     // TODO: support --option=value
     let input = ''
     try {
@@ -153,7 +169,7 @@ export class MassargOption<T = unknown> {
       }
       argv.shift()
       input = argv.shift()!
-      const value = this.parse(input)
+      const value = this.parse(input, options as Args)
       return { key: this.getOutputName(), value, argv }
     } catch (e) {
       if (isZodError(e)) {
@@ -243,13 +259,13 @@ export class MassargNumber extends MassargOption<number> {
   constructor(options: Omit<OptionConfig<number>, 'parse'>) {
     super({
       ...options,
-      parse: (value) => Number(value),
+      parse: (value) => Number(value) as any,
     })
   }
 
-  _parseDetails(argv: string[]): ArgvValue<number> {
+  _parseDetails(argv: string[], options: ArgsObject): ArgvValue<number> {
     try {
-      const { argv: _argv, value } = super._parseDetails(argv)
+      const { argv: _argv, value } = super._parseDetails(argv, options)
       if (isNaN(value)) {
         throw new ParseError({
           path: [this.name],
@@ -298,7 +314,7 @@ export class MassargFlag extends MassargOption<boolean> {
   constructor(options: Omit<OptionConfig<boolean>, 'parse'>) {
     super({
       ...options,
-      parse: () => true,
+      parse: () => true as any,
     })
   }
 
