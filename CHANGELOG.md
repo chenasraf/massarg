@@ -1,5 +1,13 @@
 # Change Log
 
+# [2.0.0-pre.3](https://github.com/chenasraf/massarg/compare/v2.0.0-pre.2...v2.0.0-pre.3) (2023-12-02)
+
+
+### Bug Fixes
+
+* help output formatting/text ([fed6f60](https://github.com/chenasraf/massarg/commit/fed6f602c5e682a2b585fed68ed05d95ed2a0a7e))
+* support help option with early quit ([742b597](https://github.com/chenasraf/massarg/commit/742b597f1ec9392f09b6af181d9c9cee7f680ba6))
+
 # [2.0.0-pre.2](https://github.com/chenasraf/massarg/compare/v2.0.0-pre.1...v2.0.0-pre.2) (2023-12-01)
 
 
