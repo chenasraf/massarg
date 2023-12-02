@@ -23,12 +23,7 @@ module.exports = {
     [
       '@semantic-release/github',
       {
-        assets: [
-          {
-            path: '*.tgz',
-            name: 'massarg.tgz',
-          },
-        ],
+        assets: ['*.tgz'],
       },
     ],
     [

@@ -89,10 +89,10 @@ export type ArrayOptionConfig<T = unknown> = z.infer<
 >
 
 // TODO turn to options
-const OPT_FULL_PREFIX = '--'
-const OPT_SHORT_PREFIX = '-'
-const NEGATE_FULL_PREFIX = 'no-'
-const NEGATE_SHORT_PREFIX = '^'
+export const OPT_FULL_PREFIX = '--'
+export const OPT_SHORT_PREFIX = '-'
+export const NEGATE_FULL_PREFIX = 'no-'
+export const NEGATE_SHORT_PREFIX = '^'
 
 /** @internal */
 export type ArgvValue<T> = { argv: string[]; value: T; key: string }

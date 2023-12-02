@@ -7,6 +7,10 @@ import {
   OptionConfig,
   TypedOptionConfig,
   MassargHelpFlag,
+  OPT_FULL_PREFIX,
+  NEGATE_FULL_PREFIX,
+  OPT_SHORT_PREFIX,
+  NEGATE_SHORT_PREFIX,
 } from './option'
 import { DeepRequired, setOrPush, deepMerge } from './utils'
 import { MassargExample, ExampleConfig } from './example'
@@ -27,6 +31,14 @@ export const CommandConfig = <RunArgs extends ArgsObject = ArgsObject>(args: z.Z
       .function()
       .args(args, z.any())
       .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<RunArgs>>,
+    /** Prefix of options understood by this command */
+    optionPrefix: z.string().default(OPT_FULL_PREFIX).optional(),
+    /** Prefix of negated flags understood by this command */
+    negateFlagPrefix: z.string().default(NEGATE_FULL_PREFIX).optional(),
+    /** Prefix of aliases of options understood by this command */
+    optionAliasPrefix: z.string().default(OPT_SHORT_PREFIX).optional(),
+    /** Prefix of aliases of negated flags understood by this command */
+    negateAliasPrefix: z.string().default(NEGATE_SHORT_PREFIX).optional(),
   })
 
 export type CommandConfig<RunArgs extends ArgsObject = ArgsObject> = z.infer<
@@ -70,6 +82,10 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   args: Partial<Args> = {}
   private _helpConfig: HelpConfig
   parent?: MassargCommand<any>
+  optionPrefix = OPT_FULL_PREFIX
+  negateFlagPrefix = NEGATE_FULL_PREFIX
+  optionAliasPrefix = OPT_SHORT_PREFIX
+  negateAliasPrefix = NEGATE_SHORT_PREFIX
 
   constructor(options: CommandConfig<Args>, parent?: MassargCommand<any>) {
     CommandConfig(z.any()).parse(options)
@@ -85,7 +101,20 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     if (this.parent) {
       return deepMerge(this.parent.helpConfig, this._helpConfig)
     }
-    return deepMerge(defaultHelpConfig, this._helpConfig) as Required<HelpConfig>
+    return deepMerge(
+      defaultHelpConfig,
+      deepMerge(
+        {
+          optionOptions: {
+            namePrefix: this.optionPrefix,
+            aliasPrefix: this.optionAliasPrefix,
+            negatePrefix: this.negateFlagPrefix,
+            negateAliasPrefix: this.negateAliasPrefix,
+          },
+        } as Partial<HelpConfig>,
+        this._helpConfig,
+      ),
+    ) as Required<HelpConfig>
   }
 
   /**
@@ -398,7 +427,7 @@ export class MassargHelpCommand<
   T extends { command?: string } = { command?: string },
 > extends MassargCommand<T> {
   constructor(config: Partial<Omit<CommandConfig<T>, 'run'>> = {}) {
-    super({
+    const _config = CommandConfig(z.any()).parse({
       name: 'help',
       aliases: ['h'],
       description: 'Print help for this command, or a subcommand if specified',
@@ -420,7 +449,8 @@ export class MassargHelpCommand<
         parent.printHelp()
       },
       ...config,
-    })
+    } as CommandConfig<T>)
+    super(_config)
     this.option({
       name: 'command',
       aliases: ['c'],
