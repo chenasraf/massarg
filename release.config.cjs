@@ -23,7 +23,12 @@ module.exports = {
     [
       '@semantic-release/github',
       {
-        assets: [{ path: 'build', label: 'Package Bundle' }],
+        assets: [
+          {
+            path: '*.tgz',
+            name: 'massarg.tgz',
+          },
+        ],
       },
     ],
     [
