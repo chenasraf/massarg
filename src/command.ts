@@ -326,6 +326,12 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       if (option.defaultValue !== undefined && _a[option.name] === undefined) {
         _args[option.getOutputName() as keyof Args] = option.defaultValue as Args[keyof Args]
       }
+      if (this.helpConfig.bindOption && option.name === 'help') {
+        if (parseCommands) {
+          this.printHelp()
+        }
+        return
+      }
     }
 
     // parse options
