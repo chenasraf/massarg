@@ -1,15 +1,23 @@
 import z from 'zod'
 import { format, StringStyle, stripStyle } from './style'
 import { MassargCommand } from './command'
-import { DeepRequired, strConcat, indent } from './utils'
+import { DeepRequired, strConcat, indent, deepMerge } from './utils'
+import {
+  NEGATE_FULL_PREFIX,
+  NEGATE_SHORT_PREFIX,
+  OPT_FULL_PREFIX,
+  OPT_SHORT_PREFIX,
+} from './option'
 
 export const GenerateTableCommandConfig = z.object({
-  maxRowLength: z.number().optional(),
-  namePrefix: z.string().optional(),
-  aliasPrefix: z.string().optional(),
+  lineLength: z.number().optional(),
   compact: z.boolean().optional(),
   nameStyle: StringStyle.optional(),
   descriptionStyle: StringStyle.optional(),
+  namePrefix: z.string().optional(),
+  aliasPrefix: z.string().optional(),
+  negatePrefix: z.string().optional(),
+  negateAliasPrefix: z.string().optional(),
 })
 export type GenerateTableCommandConfig = z.infer<typeof GenerateTableCommandConfig>
 
@@ -31,9 +39,9 @@ export const HelpConfig = z.object({
   bindOption: z.boolean().optional(),
 
   /** Options for generating the table of commands */
-  commandOptions: GenerateTableCommandConfig.omit({ maxRowLength: true }).optional(),
+  commandOptions: GenerateTableCommandConfig.omit({ lineLength: true }).optional(),
   /** Options for generating the table of options */
-  optionOptions: GenerateTableOptionConfig.omit({ maxRowLength: true }).optional(),
+  optionOptions: GenerateTableOptionConfig.omit({ lineLength: true }).optional(),
   /** Style of the help title */
   titleStyle: StringStyle.optional(),
   /** Style of the help description */
@@ -47,7 +55,7 @@ export const HelpConfig = z.object({
   /** Style of the help footer */
   footerStyle: StringStyle.optional(),
   /** Maximum length of a row in the help output */
-  maxRowLength: z.number().optional(),
+  lineLength: z.number().optional(),
   /** Options for examples section */
   exampleOptions: z
     .object({
@@ -74,10 +82,8 @@ export const HelpConfig = z.object({
 export type HelpConfig = z.infer<typeof HelpConfig>
 
 export const defaultHelpConfig: DeepRequired<HelpConfig> = {
-  maxRowLength: 80,
+  lineLength: 80,
   commandOptions: {
-    namePrefix: '',
-    aliasPrefix: '',
     nameStyle: {
       color: 'yellow',
     },
@@ -86,8 +92,10 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
     },
   },
   optionOptions: {
-    namePrefix: '--',
-    aliasPrefix: '-',
+    namePrefix: OPT_FULL_PREFIX,
+    aliasPrefix: OPT_SHORT_PREFIX,
+    negatePrefix: NEGATE_FULL_PREFIX,
+    negateAliasPrefix: NEGATE_SHORT_PREFIX,
     nameStyle: {
       color: 'yellow',
     },
@@ -145,30 +153,20 @@ export class HelpGenerator {
 
   constructor(entry: MassargCommand<any>, config?: HelpConfig) {
     this.entry = entry
-    this.config = HelpConfig.required().parse({
-      ...entry.helpConfig,
-      commandOptions: {
-        ...entry.helpConfig?.commandOptions,
-        ...config?.commandOptions,
-      },
-      optionOptions: {
-        ...entry.helpConfig?.optionOptions,
-        ...config?.optionOptions,
-      },
-    })
+    this.config = HelpConfig.required().parse(deepMerge(entry.helpConfig, config))
   }
 
   generate(): string {
     const entry = this.entry
     const CMD_OPT_INDENT = 4
-    const _wrap = (text: string, indent = 0) => wrap(text, this.config.maxRowLength - indent)
+    const _wrap = (text: string, indent = 0) => wrap(text, this.config.lineLength - indent)
     const options = generateHelpTable(entry.options, {
       ...this.config.optionOptions,
-      maxRowLength: this.config.maxRowLength - CMD_OPT_INDENT,
+      lineLength: this.config.lineLength - CMD_OPT_INDENT,
     }).trimEnd()
     const commands = generateHelpTable(entry.commands, {
       ...this.config.commandOptions,
-      maxRowLength: this.config.maxRowLength - CMD_OPT_INDENT,
+      lineLength: this.config.lineLength - CMD_OPT_INDENT,
     }).trimEnd()
     const examples = entry.examples
       .map((example) => {
@@ -247,9 +245,9 @@ export class HelpGenerator {
   }
 }
 
-function wrap(text: string, maxRowLength: number): string {
+function wrap(text: string, lineLength: number): string {
   const length = stripStyle(text).length
-  if (length <= maxRowLength) {
+  if (length <= lineLength) {
     return text
   }
   const subRows: string[] = []
@@ -257,7 +255,7 @@ function wrap(text: string, maxRowLength: number): string {
   let currentRow = ''
 
   for (const word of words) {
-    if (stripStyle(currentRow).length + stripStyle(word).length + 1 > maxRowLength) {
+    if (stripStyle(currentRow).length + stripStyle(word).length + 1 > lineLength) {
       subRows.push(currentRow)
       currentRow = ''
     }
@@ -271,17 +269,33 @@ function wrap(text: string, maxRowLength: number): string {
 function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
   items: HelpItem[],
   {
-    maxRowLength = 80,
+    lineLength: lineLength = 80,
     namePrefix = '',
+    negatePrefix = '',
     aliasPrefix = '',
+    negateAliasPrefix: aliasNegatePrefix = '',
     compact = false,
     ...config
   }: Partial<T> = {},
 ): string {
   const rows = items
     .map((o) => {
-      const name = `${namePrefix}${o.name}${o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
-        }`
+      const cmdNames = {
+        full: `${namePrefix}${o.name}`,
+        fullNegated: negatePrefix ? `${negatePrefix}${o.name}` : undefined,
+        aliases: o.aliases.map((a) => `${aliasPrefix}${a}`).join(' | '),
+        aliasesNegated: negatePrefix
+          ? o.aliases.map((a) => `${aliasNegatePrefix}${a}`).join(' | ')
+          : undefined,
+      }
+      const name = [
+        cmdNames.full,
+        cmdNames.aliases,
+        // cmdNames.fullNegated,
+        // cmdNames.aliasesNegated,
+      ]
+        .filter(Boolean)
+        .join(' | ')
       const description = o.description
       const hidden = o.hidden || false
       return { name, description, hidden }
@@ -294,7 +308,7 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
     const name = nameStyle(row.name.padEnd(maxNameLength + 2))
     const description = descStyle(row.description)
     const length = stripStyle(name).length + stripStyle(description).length
-    if (length <= maxRowLength) {
+    if (length <= lineLength) {
       const line = `${name}${description}`
       if (!compact) {
         return `${line}\n`
@@ -306,7 +320,7 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
     let currentRow = name
 
     for (const word of words) {
-      if (stripStyle(currentRow).length + stripStyle(word).length + 1 > maxRowLength) {
+      if (stripStyle(currentRow).length + stripStyle(word).length + 1 > lineLength) {
         subRows.push(currentRow)
         currentRow = ' '.repeat(maxNameLength + 2)
       }
