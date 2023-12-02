@@ -34,6 +34,8 @@ jobs:
         run: pnpm test
       - name: Build Package
         run: pnpm build
+      - name: Pack
+        run: cd ./build && pnpm pack --pack-destination=../
       # - name: Verify the integrity of provenance attestations and registry signatures for installed dependencies
       #   run: npm audit signatures
       - name: Semantic Release
