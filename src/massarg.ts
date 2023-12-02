@@ -1,6 +1,9 @@
 import { ArgsObject, CommandConfig, MassargCommand } from './command'
 
-type MinimalCommandConfig<Args extends ArgsObject> = Omit<CommandConfig<Args>, 'aliases' | 'run'> &
+type MinimalCommandConfig<Args extends ArgsObject = ArgsObject> = Omit<
+  CommandConfig<Args>,
+  'aliases' | 'run'
+> &
   Partial<Pick<CommandConfig<Args>, 'aliases' | 'run'>>
 
 export class Massarg<Args extends ArgsObject = ArgsObject> extends MassargCommand<Args> {
