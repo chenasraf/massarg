@@ -10,18 +10,31 @@ import {
 } from './option'
 
 export const GenerateTableCommandConfig = z.object({
+  /** Length of each row in the table */
   lineLength: z.number().optional(),
+  /** When `false`, each row is separated by a blank line */
   compact: z.boolean().optional(),
+  /** Style of the command/option name */
   nameStyle: StringStyle.optional(),
+  /** Style of the command/option description */
   descriptionStyle: StringStyle.optional(),
+  /** Prefix for the command/option name (default is the command's prefix) */
   namePrefix: z.string().optional(),
+  /** Prefix for the command/option aliases (default is the command's prefix) */
   aliasPrefix: z.string().optional(),
-  negatePrefix: z.string().optional(),
-  negateAliasPrefix: z.string().optional(),
 })
 export type GenerateTableCommandConfig = z.infer<typeof GenerateTableCommandConfig>
 
-export const GenerateTableOptionConfig = GenerateTableCommandConfig
+export const GenerateTableOptionConfig = GenerateTableCommandConfig.merge(
+  z.object({
+    /** Prefix for the command/option negations (default is the command's prefix) */
+    negatePrefix: z.string().optional(),
+    /** Prefix for the command/option negation aliases (default is the command's prefix) */
+    negateAliasPrefix: z.string().optional(),
+    /** Whether to display negations with each option name */
+    displayNegations: z.boolean().optional(),
+  }),
+)
 export type GenerateTableOptionConfig = z.infer<typeof GenerateTableOptionConfig>
 
 export const HelpConfig = z.object({
@@ -37,6 +50,9 @@ export const HelpConfig = z.object({
    * Set this to `true` to automatically add a `--help` option to this command's options.
    */
   bindOption: z.boolean().optional(),
+
+  /** Whether to align all tables to the column widths, or have each table be independent. Default is `true` */
+  useGlobalTableColumns: z.boolean().default(true).optional(),
 
   /** Options for generating the table of commands */
   commandOptions: GenerateTableCommandConfig.omit({ lineLength: true }).optional(),
@@ -83,6 +99,7 @@ export type HelpConfig = z.infer<typeof HelpConfig>
 
 export const defaultHelpConfig: DeepRequired<HelpConfig> = {
   lineLength: 80,
+  useGlobalTableColumns: true,
   commandOptions: {
     nameStyle: {
       color: 'yellow',
@@ -96,6 +113,7 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
     aliasPrefix: OPT_SHORT_PREFIX,
     negatePrefix: NEGATE_FULL_PREFIX,
     negateAliasPrefix: NEGATE_SHORT_PREFIX,
+    displayNegations: false,
     nameStyle: {
       color: 'yellow',
     },
@@ -160,14 +178,23 @@ export class HelpGenerator {
     const entry = this.entry
     const CMD_OPT_INDENT = 4
     const _wrap = (text: string, indent = 0) => wrap(text, this.config.lineLength - indent)
-    const options = generateHelpTable(entry.options, {
+    const optionOptions = {
       ...this.config.optionOptions,
       lineLength: this.config.lineLength - CMD_OPT_INDENT,
-    }).trimEnd()
-    const commands = generateHelpTable(entry.commands, {
+    }
+    const commandOptions = {
       ...this.config.commandOptions,
+      displayNegations: false,
       lineLength: this.config.lineLength - CMD_OPT_INDENT,
-    }).trimEnd()
+    }
+    const maxNameLength = this.config.useGlobalTableColumns
+      ? Math.max(
+        getMaxNameLength(entry.options.map((e) => getItemDetails(e, optionOptions))),
+        getMaxNameLength(entry.commands.map((e) => getItemDetails(e, commandOptions))),
+      )
+      : undefined
+    const options = generateHelpTable(entry.options, optionOptions, maxNameLength).trimEnd()
+    const commands = generateHelpTable(entry.commands, commandOptions, maxNameLength).trimEnd()
     const examples = entry.examples
       .map((example) => {
         const { description, input, output } = example
@@ -266,46 +293,80 @@ function wrap(text: string, lineLength: number): string {
   return subRows.join('\n')
 }
 
-function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
-  items: HelpItem[],
-  {
-    lineLength: lineLength = 80,
+type ParsedHelpItem = {
+  name: string
+  description: string
+  hidden: boolean
+}
+
+const getMaxNameLength = (items: ParsedHelpItem[]): number =>
+  Math.max(...items.map((o) => o.name.length))
+
+function getItemDetails(
+  o: HelpItem,
+  options?: Pick<
+    GenerateTableOptionConfig & GenerateTableOptionConfig,
+    'displayNegations' | 'namePrefix' | 'aliasPrefix' | 'negatePrefix' | 'negateAliasPrefix'
+  >,
+): ParsedHelpItem {
+  const {
+    displayNegations = false,
     namePrefix = '',
     negatePrefix = '',
     aliasPrefix = '',
-    negateAliasPrefix: aliasNegatePrefix = '',
+    negateAliasPrefix = '',
+  } = options ?? {}
+  const cmdNames = {
+    full: `${namePrefix}${o.name}`,
+    fullNegated: negatePrefix ? `${negatePrefix}${o.name}` : undefined,
+    aliases: o.aliases.map((a) => `${aliasPrefix}${a}`).join(' | '),
+    aliasesNegated: negatePrefix
+      ? o.aliases.map((a) => `${negateAliasPrefix}${a}`).join(' | ')
+      : undefined,
+  }
+  const name = [
+    cmdNames.full,
+    cmdNames.aliases,
+    displayNegations && cmdNames.fullNegated,
+    displayNegations && cmdNames.aliasesNegated,
+  ]
+    .filter(Boolean)
+    .join(' | ')
+  const description = o.description
+  const hidden = o.hidden || false
+  return { name, description, hidden }
+}
+
+function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableOptionConfig>(
+  items: HelpItem[],
+  fullConfig: Partial<T> = {},
+  maxNameLength?: number,
+): string {
+  const {
+    lineLength = 80,
+    namePrefix = '',
+    aliasPrefix = '',
+    negatePrefix = '',
+    negateAliasPrefix = '',
+    displayNegations = false,
     compact = false,
     ...config
-  }: Partial<T> = {},
-): string {
+  } = fullConfig as GenerateTableOptionConfig
   const rows = items
-    .map((o) => {
-      const cmdNames = {
-        full: `${namePrefix}${o.name}`,
-        fullNegated: negatePrefix ? `${negatePrefix}${o.name}` : undefined,
-        aliases: o.aliases.map((a) => `${aliasPrefix}${a}`).join(' | '),
-        aliasesNegated: negatePrefix
-          ? o.aliases.map((a) => `${aliasNegatePrefix}${a}`).join(' | ')
-          : undefined,
-      }
-      const name = [
-        cmdNames.full,
-        cmdNames.aliases,
-        // cmdNames.fullNegated,
-        // cmdNames.aliasesNegated,
-      ]
-        .filter(Boolean)
-        .join(' | ')
-      const description = o.description
-      const hidden = o.hidden || false
-      return { name, description, hidden }
-    })
+    .map((o) =>
+      getItemDetails(o, {
+        namePrefix,
+        aliasPrefix,
+        negatePrefix,
+        negateAliasPrefix,
+      }),
+    )
     .filter((r) => !r.hidden)
-  const maxNameLength = Math.max(...rows.map((o) => o.name.length))
+  maxNameLength ??= getMaxNameLength(rows)
   const nameStyle = (name: string) => format(name, config.nameStyle)
   const descStyle = (desc: string) => format(desc, config.descriptionStyle)
   const table = rows.map((row) => {
-    const name = nameStyle(row.name.padEnd(maxNameLength + 2))
+    const name = nameStyle(row.name.padEnd(maxNameLength! + 2))
     const description = descStyle(row.description)
     const length = stripStyle(name).length + stripStyle(description).length
     if (length <= lineLength) {
@@ -322,7 +383,7 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
     for (const word of words) {
       if (stripStyle(currentRow).length + stripStyle(word).length + 1 > lineLength) {
         subRows.push(currentRow)
-        currentRow = ' '.repeat(maxNameLength + 2)
+        currentRow = ' '.repeat(maxNameLength! + 2)
       }
       currentRow += `${word} `
     }
