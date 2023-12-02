@@ -57,9 +57,9 @@ export const HelpConfig = z.object({
       inputStyle: StringStyle.optional(),
       /** Style of the example output */
       outputStyle: StringStyle.optional(),
-      /** Prefix for the example input */
+      /** Prefix for the example input (default: `$`) */
       inputPrefix: z.string().default('$').optional(),
-      /** Prefix for the example output */
+      /** Prefix for the example output (default: `>`) */
       outputPrefix: z.string().default('>').optional(),
     })
     .optional(),
@@ -176,24 +176,24 @@ export class HelpGenerator {
         return strConcat(
           description && [
             _wrap(format(description, this.config.exampleOptions.descriptionStyle), 4),
-            '',
           ],
           input &&
-            _wrap(
-              format(
-                [this.config.exampleOptions.inputPrefix, input].filter(Boolean).join(' '),
-                this.config.exampleOptions.inputStyle,
-              ),
-              4,
+          _wrap(
+            format(
+              [this.config.exampleOptions.inputPrefix, input].filter(Boolean).join(' '),
+              this.config.exampleOptions.inputStyle,
             ),
+            4,
+          ),
           output &&
-            _wrap(
-              format(
-                [this.config.exampleOptions.outputPrefix, output].filter(Boolean).join(' '),
-                this.config.exampleOptions.outputStyle,
-              ),
-              4,
+          _wrap(
+            format(
+              [this.config.exampleOptions.outputPrefix, output].filter(Boolean).join(' '),
+              this.config.exampleOptions.outputStyle,
             ),
+            4,
+          ),
+          '',
         )
       })
       .join('\n')
@@ -204,9 +204,9 @@ export class HelpGenerator {
         _wrap(
           format(
             usageText ||
-              [`Usage:`, entry.name, commands.length && '[command]', options.length && '[options]']
-                .filter(Boolean)
-                .join(' '),
+            [`Usage:`, entry.name, commands.length && '[command]', options.length && '[options]']
+              .filter(Boolean)
+              .join(' '),
             this.config.usageStyle,
           ),
         ),
@@ -216,21 +216,27 @@ export class HelpGenerator {
           _wrap(format(entry.description, this.config.descriptionStyle)),
         ],
         commands.length &&
-          indent([
-            '',
-            format(`Commands for ${entry.name}:`, this.config.subtitleStyle),
-            '',
-            indent(commands),
-          ]),
+        indent([
+          '',
+          format(
+            entry.parent ? `Commands for ${entry.name}:` : 'Commands:',
+            this.config.subtitleStyle,
+          ),
+          '',
+          indent(commands),
+        ]),
         options.length &&
-          indent([
-            '',
-            format(`Options for ${entry.name}:`, this.config.subtitleStyle),
-            '',
-            indent(options),
-          ]),
+        indent([
+          '',
+          format(
+            entry.parent ? `Options for ${entry.name}:` : 'Options:',
+            this.config.subtitleStyle,
+          ),
+          '',
+          indent(options),
+        ]),
         examples.length &&
-          indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
+        indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
         footerText.length && ['', _wrap(format(footerText, this.config.descriptionStyle))],
       ) + '\n'
     )
@@ -274,9 +280,8 @@ function generateHelpTable<T extends Partial<GenerateTableCommandConfig>>(
 ): string {
   const rows = items
     .map((o) => {
-      const name = `${namePrefix}${o.name}${
-        o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
-      }`
+      const name = `${namePrefix}${o.name}${o.aliases.length ? ` | ${aliasPrefix}${o.aliases.join(`|${aliasPrefix}`)}` : ''
+        }`
       const description = o.description
       const hidden = o.hidden || false
       return { name, description, hidden }
