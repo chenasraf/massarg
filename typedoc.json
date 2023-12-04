@@ -1,0 +1,11 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "out": "docs",
+  "entryPoints": [
+    "src"
+  ],
+  "theme": "default",
+  "plugin": [
+    "typedoc-plugin-zod"
+  ]
+}
