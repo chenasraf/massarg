@@ -11,6 +11,7 @@ import {
   NEGATE_FULL_PREFIX,
   OPT_SHORT_PREFIX,
   NEGATE_SHORT_PREFIX,
+  Prefixes,
 } from './option'
 import { DeepRequired, setOrPush, deepMerge } from './utils'
 import { MassargExample, ExampleConfig } from './example'
@@ -95,6 +96,15 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     this._run = options.run
     this._helpConfig = {}
     this.parent = parent
+  }
+
+  get optionPrefixes(): Prefixes {
+    return {
+      optionPrefix: this.optionPrefix,
+      aliasPrefix: this.optionAliasPrefix,
+      negateFlagPrefix: this.negateFlagPrefix,
+      negateAliasPrefix: this.negateAliasPrefix,
+    }
   }
 
   get helpConfig(): DeepRequired<HelpConfig> {
@@ -310,10 +320,10 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   }
 
   private parseOption(arg: string, argv: string[]) {
-    const option = this.options.find((o) => o._match(arg))
+    const option = this.options.find((o) => o._match(arg, this.optionPrefixes))
     if (!option) {
       throw new ValidationError({
-        path: [MassargOption.getName(arg)],
+        path: [MassargOption.findNameInArg(arg, this.optionPrefixes)],
         code: 'unknown_option',
         message: 'Unknown option',
       })
@@ -367,7 +377,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     while (_argv.length) {
       const arg = _argv.shift()!
       // make sure option exists
-      const found = this.options.some((o) => o._isOption(arg))
+      const found = this.options.some((o) => o._isOption(arg, this.optionPrefixes))
       if (found) {
         _argv = this.parseOption(arg, _argv)
         _args = { ..._args, ...this.args }
