@@ -68,6 +68,15 @@ describe('option', () => {
     })
     expect(command.getArgs(['--test2', 'test'])).toHaveProperty('test', 'test')
   })
+  test('required', () => {
+    const command = massarg(opts).option({
+      name: 'test2',
+      description: 'test2',
+      aliases: [],
+      required: true,
+    })
+    expect(() => command.getArgs([])).toThrow('Missing required option: test2')
+  })
 })
 
 describe('flag', () => {
