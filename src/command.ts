@@ -397,6 +397,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     }
     // merge args
     this.args = { ...this.args, ..._args }
+    this.assertRequired()
     // dry run, just exit
     if (!parseCommands) {
       return this.args as Args
@@ -405,6 +406,19 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     // no sub command found, run main command
     if (this._run) {
       this._run(this.args as Args, parent ?? this)
+    }
+  }
+
+  private assertRequired() {
+    const required = this.options.filter((o) => o.isRequired)
+    const missing = required.filter((o) => this.args[o.getOutputName() as keyof Args] === undefined)
+    if (missing.length) {
+      const plural = missing.length > 1 ? 's' : ''
+      throw new ValidationError({
+        code: 'missing_required_options',
+        message: `Missing required option${plural}: ${missing.map((o) => o.name).join(', ')}`,
+        path: [this.name],
+      })
     }
   }
 

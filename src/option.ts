@@ -126,6 +126,7 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
   aliases: string[]
   parse: Parser<Args, OptionType>
   isArray: boolean
+  isRequired: boolean
   isDefault: boolean
   outputName?: string
 
@@ -138,6 +139,7 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     this.parse = options.parse ?? ((x: string) => x as OptionType)
     this.isArray = options.array ?? false
     this.isDefault = options.isDefault ?? false
+    this.isRequired = options.required ?? false
     this.outputName = options.outputName
   }
 
