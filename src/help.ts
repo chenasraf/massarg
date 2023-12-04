@@ -254,7 +254,7 @@ export class HelpGenerator {
           usageText
             ? strConcat(
               format('Usage:', this.config.usageStyle.prefix),
-              format(usageText, this.config.usageStyle.command),
+              format(usageText, this.config.usageStyle.main),
             )
             : [
               format(`Usage:`, this.config.usageStyle.prefix),

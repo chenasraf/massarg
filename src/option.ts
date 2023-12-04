@@ -50,6 +50,14 @@ export type OptionConfig<T = unknown, Args extends ArgsObject = ArgsObject> = z.
   ReturnType<typeof OptionConfig<T, Args>>
 >
 
+export const FlagConfig = OptionConfig<boolean>(z.any()).merge(
+  z.object({
+    /** Whether the flag can be negated, e.g. `--no-verbose` */
+    negatable: z.boolean().optional(),
+  }),
+)
+export type FlagConfig = z.infer<typeof FlagConfig>
+
 export type Parser<Args extends ArgsObject = ArgsObject, OptionType extends any = any> = (
   x: string,
   y: Args,
@@ -93,6 +101,13 @@ export const OPT_FULL_PREFIX = '--'
 export const OPT_SHORT_PREFIX = '-'
 export const NEGATE_FULL_PREFIX = 'no-'
 export const NEGATE_SHORT_PREFIX = '^'
+
+export type Prefixes = {
+  optionPrefix: string
+  aliasPrefix: string
+  negateFlagPrefix: string
+  negateAliasPrefix: string
+}
 
 /** @internal */
 export type ArgvValue<T> = { argv: string[]; value: T; key: string }
@@ -191,29 +206,11 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     return `--${this.name}${aliases} ${this.description}`
   }
 
-  _match(arg: string): boolean {
-    if (!arg) return false
-    // full prefix
-    if (arg.startsWith(OPT_FULL_PREFIX)) {
-      // negate full prefix
-      if (arg.startsWith(`--${NEGATE_FULL_PREFIX}`)) {
-        return this.name === arg.slice(`--${NEGATE_FULL_PREFIX}`.length)
-      }
-      return this.name === arg.slice(OPT_FULL_PREFIX.length)
-    }
-    // short prefix
-    if (arg.startsWith(OPT_SHORT_PREFIX) || arg.startsWith(NEGATE_SHORT_PREFIX)) {
-      return this.aliases.includes(arg.slice(OPT_SHORT_PREFIX.length))
-    }
-    // negate short prefix
-    if (arg.startsWith(NEGATE_SHORT_PREFIX)) {
-      return this.aliases.includes(arg.slice(NEGATE_SHORT_PREFIX.length))
-    }
-    // no prefix
-    return false
+  _match(arg: string, prefixes: Prefixes): boolean {
+    return MassargOption.findNameInArg(arg, prefixes) !== '<blank>'
   }
 
-  _isOption(arg: string): boolean {
+  _isOption(arg: string, prefixes: Prefixes): boolean {
     return (
       arg.startsWith(OPT_FULL_PREFIX) ||
       arg.startsWith(OPT_SHORT_PREFIX) ||
@@ -221,21 +218,25 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     )
   }
 
-  static getName(arg: string): string {
-    if (arg.startsWith(OPT_FULL_PREFIX)) {
+  static findNameInArg(
+    arg: string,
+    prefixes: Prefixes,
+  ): string {
+    const { optionPrefix, aliasPrefix, negateFlagPrefix, negateAliasPrefix } = prefixes
+    if (arg.startsWith(optionPrefix)) {
       // negate full prefix
-      if (arg.startsWith(`--${NEGATE_FULL_PREFIX}`)) {
-        return arg.slice(`--${NEGATE_FULL_PREFIX}`.length)
+      if (arg.startsWith(`--${negateFlagPrefix}`)) {
+        return arg.slice(`--${negateFlagPrefix}`.length)
       }
-      return arg.slice(OPT_FULL_PREFIX.length)
+      return arg.slice(optionPrefix.length)
     }
     // short prefix
-    if (arg.startsWith(OPT_SHORT_PREFIX) || arg.startsWith(NEGATE_SHORT_PREFIX)) {
-      return arg.slice(OPT_SHORT_PREFIX.length)
+    if (arg.startsWith(aliasPrefix) || arg.startsWith(negateAliasPrefix)) {
+      return arg.slice(aliasPrefix.length)
     }
     // negate short prefix
-    if (arg.startsWith(NEGATE_SHORT_PREFIX)) {
-      return arg.slice(NEGATE_SHORT_PREFIX.length)
+    if (arg.startsWith(negateAliasPrefix)) {
+      return arg.slice(negateAliasPrefix.length)
     }
     return '<blank>'
   }
@@ -300,7 +301,7 @@ export class MassargNumber extends MassargOption<number> {
  *
  * A flag can be negated by prefixing it with `no-`. For example, `--no-verbose`,
  * or by prefixing the alias with `^` instead of `-`. This is configurable via the command's
- * configuration.
+ * configuration. To turn this behavior on, set `negatable: true` in the flag's configuration.
  *
  * @example
  * ```ts
@@ -313,11 +314,14 @@ export class MassargNumber extends MassargOption<number> {
  * ```
  */
 export class MassargFlag extends MassargOption<boolean> {
-  constructor(options: Omit<OptionConfig<boolean>, 'parse'>) {
+  negatable: boolean
+
+  constructor(options: FlagConfig) {
     super({
       ...options,
       parse: () => true as any,
     })
+    this.negatable = options.negatable ?? false
   }
 
   _parseDetails(argv: string[]): ArgvValue<boolean> {
