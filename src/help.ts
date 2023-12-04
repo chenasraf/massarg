@@ -65,7 +65,21 @@ export const HelpConfig = z.object({
   /** Style of the help subtitles for commands, options and examples */
   subtitleStyle: StringStyle.optional(),
   /** Style of the help usage */
-  usageStyle: StringStyle.optional(),
+  usageStyle: z
+    .object({
+      /** Style of the help usage title - appears before the usage text (custom or auto) */
+      prefix: StringStyle.optional(),
+      /**
+       * For custom usage text, this is the primary style used (right after the `prefix` style).
+       * For automated usage text, this style is used for the command/binary name
+       */
+      main: StringStyle.optional(),
+      /** Style of the help usage commands (if any) */
+      command: StringStyle.optional(),
+      /** Style of the help usage options (if any) */
+      options: StringStyle.optional(),
+    })
+    .optional(),
   /** Style of the help header */
   headerStyle: StringStyle.optional(),
   /** Style of the help footer */
@@ -143,8 +157,19 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
     color: 'yellow',
   },
   usageStyle: {
-    bold: true,
-    color: 'yellow',
+    prefix: {
+      bold: true,
+      color: 'brightWhite',
+    },
+    main: {
+      color: 'yellow',
+    },
+    command: {
+      color: 'gray',
+    },
+    options: {
+      color: 'gray',
+    },
   },
   subtitleStyle: {
     bold: true,
@@ -218,7 +243,6 @@ export class HelpGenerator {
             ),
             4,
           ),
-          '',
         )
       })
       .join('\n')
@@ -227,13 +251,19 @@ export class HelpGenerator {
     return (
       strConcat(
         _wrap(
-          format(
-            usageText ||
-            [`Usage:`, entry.name, commands.length && '[command]', options.length && '[options]']
+          usageText
+            ? strConcat(
+              format('Usage:', this.config.usageStyle.prefix),
+              format(usageText, this.config.usageStyle.command),
+            )
+            : [
+              format(`Usage:`, this.config.usageStyle.prefix),
+              format(entry.name, this.config.usageStyle.main),
+              commands.length && format('[command]', this.config.usageStyle.command),
+              options.length && format('[options]', this.config.usageStyle.options),
+            ]
               .filter(Boolean)
               .join(' '),
-            this.config.usageStyle,
-          ),
         ),
         headerText.length && ['', format(headerText, this.config.descriptionStyle)],
         entry.description.length && [
