@@ -1,5 +1,20 @@
 # Change Log
 
+# [2.0.0-pre.4](https://github.com/chenasraf/massarg/compare/v2.0.0-pre.3...v2.0.0-pre.4) (2023-12-11)
+
+
+### Bug Fixes
+
+* bugfixes, build updates ([fa29138](https://github.com/chenasraf/massarg/commit/fa29138fd1bb4ac0b574086caf5dd721c17e676b))
+* detect the correct flag syntax in all cases ([291ff0f](https://github.com/chenasraf/massarg/commit/291ff0fe0ef2c33cfa5d0fae3939ce9290397f29))
+* flag negation ([a42a854](https://github.com/chenasraf/massarg/commit/a42a8547195f1c7c932081584af501f8bb05ef19))
+* required options ([0f17d33](https://github.com/chenasraf/massarg/commit/0f17d336fb41f7c39e8dc3f536861d9bd8ab6601))
+
+
+### Features
+
+* global column width ([637f91d](https://github.com/chenasraf/massarg/commit/637f91d8ba777e6e1d98b3a65e4cc4b8a2722661))
+
 # [2.0.0-pre.3](https://github.com/chenasraf/massarg/compare/v1.0.6...v2.0.0-pre.3) (2023-12-02)
 
 ### Features
