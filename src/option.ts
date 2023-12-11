@@ -163,7 +163,7 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
   ): MassargOption<T> {
     switch (config.type) {
       case 'number':
-        return new MassargNumber(config as OptionConfig<number>) as MassargOption<T>
+        return new MassargNumber(config as OptionConfig<number>) as MassargOption<any>
     }
     return new MassargOption(config as OptionConfig<T>)
   }
@@ -172,11 +172,11 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     return this.outputName || toCamelCase(this.name)
   }
 
-  _parseDetails(argv: string[], options: ArgsObject): ArgvValue<OptionType> {
+  _parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<OptionType> {
     // TODO: support --option=value
     let input = ''
     try {
-      if (!this._match(argv[0])) {
+      if (!this._match(argv[0], prefixes)) {
         throw new ParseError({
           path: [this.name],
           code: 'invalid_option',
@@ -212,23 +212,25 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
 
   _isOption(arg: string, prefixes: Prefixes): boolean {
     return (
-      arg.startsWith(OPT_FULL_PREFIX) ||
-      arg.startsWith(OPT_SHORT_PREFIX) ||
-      arg.startsWith(NEGATE_SHORT_PREFIX)
+      arg.startsWith(prefixes.optionPrefix) ||
+      arg.startsWith(prefixes.aliasPrefix) ||
+      arg.startsWith(prefixes.negateFlagPrefix) ||
+      arg.startsWith(prefixes.negateAliasPrefix)
     )
   }
 
-  static findNameInArg(
-    arg: string,
-    prefixes: Prefixes,
-  ): string {
+  static findNameInArg(arg: string, prefixes: Prefixes): string {
     const { optionPrefix, aliasPrefix, negateFlagPrefix, negateAliasPrefix } = prefixes
     if (arg.startsWith(optionPrefix)) {
       // negate full prefix
-      if (arg.startsWith(`--${negateFlagPrefix}`)) {
-        return arg.slice(`--${negateFlagPrefix}`.length)
+      if (arg.startsWith(negateFlagPrefix)) {
+        return arg.slice(negateFlagPrefix.length)
       }
       return arg.slice(optionPrefix.length)
+    }
+    // negate full prefix
+    if (arg.startsWith(negateFlagPrefix)) {
+      return arg.slice(negateFlagPrefix.length)
     }
     // short prefix
     if (arg.startsWith(aliasPrefix) || arg.startsWith(negateAliasPrefix)) {
@@ -266,9 +268,9 @@ export class MassargNumber extends MassargOption<number> {
     })
   }
 
-  _parseDetails(argv: string[], options: ArgsObject): ArgvValue<number> {
+  _parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<number> {
     try {
-      const { argv: _argv, value } = super._parseDetails(argv, options)
+      const { argv: _argv, value } = super._parseDetails(argv, options, prefixes)
       if (isNaN(value)) {
         throw new ParseError({
           path: [this.name],
@@ -324,11 +326,20 @@ export class MassargFlag extends MassargOption<boolean> {
     this.negatable = options.negatable ?? false
   }
 
-  _parseDetails(argv: string[]): ArgvValue<boolean> {
+  _parseDetails(argv: string[], prefixes: Prefixes): ArgvValue<boolean> {
     try {
       const isNegation =
-        argv[0]?.startsWith(NEGATE_SHORT_PREFIX) || argv[0]?.startsWith(NEGATE_FULL_PREFIX)
-      if (!this._match(argv[0])) {
+        argv[0]?.startsWith(prefixes.negateAliasPrefix) ||
+        argv[0]?.startsWith(prefixes.negateFlagPrefix)
+      if (!this.negatable && isNegation) {
+        throw new ParseError({
+          path: [this.name],
+          code: 'invalid_option',
+          message: `Option ${this.name} cannot be negated`,
+          received: JSON.stringify(argv[0]),
+        })
+      }
+      if (!this._match(argv[0], prefixes)) {
         throw new ParseError({
           path: [this.name],
           code: 'invalid_option',

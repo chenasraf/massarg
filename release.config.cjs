@@ -9,8 +9,9 @@ module.exports = {
     [
       '@semantic-release/npm',
       {
-        // only update the pkg version on root, don't publish
+        // only update the pkg version on doc, don't publish
         npmPublish: false,
+        pkgRoot: 'doc',
       },
     ],
     [
@@ -36,7 +37,7 @@ module.exports = {
     [
       '@semantic-release/git',
       {
-        assets: ['package.json', 'CHANGELOG.md'],
+        assets: ['CHANGELOG.md'],
       },
     ],
     //
