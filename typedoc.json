@@ -2,7 +2,7 @@
   "$schema": "https://typedoc.org/schema.json",
   "out": "docs",
   "entryPoints": [
-    "src"
+    "src/**/*.ts"
   ],
   "theme": "default",
   "plugin": [

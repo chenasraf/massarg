@@ -328,7 +328,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
         message: 'Unknown option',
       })
     }
-    const res = option._parseDetails([arg, ...argv], { ...this.args })
+    const res = option._parseDetails([arg, ...argv], { ...this.args }, this.optionPrefixes)
     this.args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
       res.value,
       this.args[res.key as keyof Args],
