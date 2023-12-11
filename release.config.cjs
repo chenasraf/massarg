@@ -13,14 +13,14 @@ module.exports = {
         npmPublish: false,
       },
     ],
-    [
-      '@semantic-release/npm',
-      {
-        // only update the pkg version on doc, don't publish
-        npmPublish: false,
-        pkgRoot: 'doc',
-      },
-    ],
+    // [
+    //   '@semantic-release/npm',
+    //   {
+    //     // only update the pkg version on doc, don't publish
+    //     npmPublish: false,
+    //     pkgRoot: 'doc',
+    //   },
+    // ]
     [
       '@semantic-release/npm',
       {
