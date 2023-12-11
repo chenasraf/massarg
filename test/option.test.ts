@@ -103,4 +103,10 @@ describe('flag', () => {
       }),
     ).toThrow('Expected string, received number')
   })
+  describe('negation', () => {
+    test('default', () => {
+      const command = massarg(opts).flag({ name: 'test2', description: 'test2', aliases: [] })
+      expect(command.getArgs(['--no-test2'])).toThrow('is not negatable')
+    })
+  })
 })
