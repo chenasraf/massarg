@@ -50,12 +50,14 @@ export type OptionConfig<T = unknown, Args extends ArgsObject = ArgsObject> = z.
   ReturnType<typeof OptionConfig<T, Args>>
 >
 
-export const FlagConfig = OptionConfig<boolean>(z.any()).merge(
-  z.object({
-    /** Whether the flag can be negated, e.g. `--no-verbose` */
-    negatable: z.boolean().optional(),
-  }),
-)
+export const FlagConfig = OptionConfig<boolean>(z.any())
+  .omit({ parse: true, isDefault: true })
+  .merge(
+    z.object({
+      /** Whether the flag can be negated, e.g. `--no-verbose` */
+      negatable: z.boolean().optional(),
+    }),
+  )
 export type FlagConfig = z.infer<typeof FlagConfig>
 
 export type Parser<Args extends ArgsObject = ArgsObject, OptionType extends any = any> = (
@@ -99,7 +101,7 @@ export type ArrayOptionConfig<T = unknown> = z.infer<
 // TODO turn to options
 export const OPT_FULL_PREFIX = '--'
 export const OPT_SHORT_PREFIX = '-'
-export const NEGATE_FULL_PREFIX = 'no-'
+export const NEGATE_FULL_PREFIX = '--no-'
 export const NEGATE_SHORT_PREFIX = '^'
 
 export type Prefixes = {
@@ -172,8 +174,7 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     return this.outputName || toCamelCase(this.name)
   }
 
-  _parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<OptionType> {
-    // TODO: support --option=value
+  parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<OptionType> {
     let input = ''
     try {
       if (!this._match(argv[0], prefixes)) {
@@ -221,24 +222,20 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
 
   static findNameInArg(arg: string, prefixes: Prefixes): string {
     const { optionPrefix, aliasPrefix, negateFlagPrefix, negateAliasPrefix } = prefixes
-    if (arg.startsWith(optionPrefix)) {
-      // negate full prefix
-      if (arg.startsWith(negateFlagPrefix)) {
-        return arg.slice(negateFlagPrefix.length)
-      }
-      return arg.slice(optionPrefix.length)
-    }
     // negate full prefix
     if (arg.startsWith(negateFlagPrefix)) {
       return arg.slice(negateFlagPrefix.length)
     }
-    // short prefix
-    if (arg.startsWith(aliasPrefix) || arg.startsWith(negateAliasPrefix)) {
-      return arg.slice(aliasPrefix.length)
+    if (arg.startsWith(optionPrefix)) {
+      return arg.slice(optionPrefix.length)
     }
     // negate short prefix
     if (arg.startsWith(negateAliasPrefix)) {
       return arg.slice(negateAliasPrefix.length)
+    }
+    // short prefix
+    if (arg.startsWith(aliasPrefix) || arg.startsWith(negateAliasPrefix)) {
+      return arg.slice(aliasPrefix.length)
     }
     return '<blank>'
   }
@@ -268,9 +265,9 @@ export class MassargNumber extends MassargOption<number> {
     })
   }
 
-  _parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<number> {
+  parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<number> {
     try {
-      const { argv: _argv, value } = super._parseDetails(argv, options, prefixes)
+      const { argv: _argv, value } = super.parseDetails(argv, options, prefixes)
       if (isNaN(value)) {
         throw new ParseError({
           path: [this.name],
@@ -326,7 +323,7 @@ export class MassargFlag extends MassargOption<boolean> {
     this.negatable = options.negatable ?? false
   }
 
-  _parseDetails(argv: string[], prefixes: Prefixes): ArgvValue<boolean> {
+  parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<boolean> {
     try {
       const isNegation =
         argv[0]?.startsWith(prefixes.negateAliasPrefix) ||
@@ -350,9 +347,9 @@ export class MassargFlag extends MassargOption<boolean> {
 
       argv.shift()
       if (isNegation) {
-        return { key: this.name, value: false, argv }
+        return { key: this.getOutputName(), value: false, argv }
       }
-      return { key: this.name, value: true, argv }
+      return { key: this.getOutputName(), value: true, argv }
     } catch (e) {
       if (isZodError(e)) {
         throw new ParseError({

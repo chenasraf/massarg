@@ -12,6 +12,7 @@ import {
   OPT_SHORT_PREFIX,
   NEGATE_SHORT_PREFIX,
   Prefixes,
+  FlagConfig,
 } from './option'
 import { DeepRequired, setOrPush, deepMerge } from './utils'
 import { MassargExample, ExampleConfig } from './example'
@@ -99,6 +100,10 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   }
 
   get optionPrefixes(): Prefixes {
+    return this.getPrefixes()
+  }
+
+  private getPrefixes(): Prefixes {
     return {
       optionPrefix: this.optionPrefix,
       aliasPrefix: this.optionAliasPrefix,
@@ -177,11 +182,9 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
    * or by prefixing the alias with `^` instead of `-`. This is configurable via the command's
    * configuration.
    */
-  flag(config: Omit<OptionConfig<boolean>, 'parse' | 'isDefault'>): MassargCommand<Args>
+  flag(config: FlagConfig): MassargCommand<Args>
   flag(config: MassargFlag): MassargCommand<Args>
-  flag(
-    config: Omit<OptionConfig<boolean>, 'parse' | 'isDefault'> | MassargFlag,
-  ): MassargCommand<Args> {
+  flag(config: FlagConfig | MassargFlag): MassargCommand<Args> {
     try {
       const flag = config instanceof MassargFlag ? config : new MassargFlag(config)
       const existing = this.options.find((c) => c.name === flag.name)
@@ -320,15 +323,17 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   }
 
   private parseOption(arg: string, argv: string[]) {
-    const option = this.options.find((o) => o._match(arg, this.optionPrefixes))
+    const prefixes = { ...this.optionPrefixes }
+    const option = this.options.find((o) => o._match(arg, prefixes))
     if (!option) {
       throw new ValidationError({
-        path: [MassargOption.findNameInArg(arg, this.optionPrefixes)],
+        path: [MassargOption.findNameInArg(arg, prefixes)],
         code: 'unknown_option',
         message: 'Unknown option',
       })
     }
-    const res = option._parseDetails([arg, ...argv], { ...this.args }, this.optionPrefixes)
+    const res = option.parseDetails([arg, ...argv], { ...this.args }, prefixes)
+
     this.args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
       res.value,
       this.args[res.key as keyof Args],
@@ -377,7 +382,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     while (_argv.length) {
       const arg = _argv.shift()!
       // make sure option exists
-      const found = this.options.some((o) => o._isOption(arg, this.optionPrefixes))
+      const found = this.options.some((o) => o._isOption(arg, { ...this.optionPrefixes }))
       if (found) {
         _argv = this.parseOption(arg, _argv)
         _args = { ..._args, ...this.args }

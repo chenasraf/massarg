@@ -214,9 +214,9 @@ export class HelpGenerator {
     }
     const maxNameLength = this.config.useGlobalTableColumns
       ? Math.max(
-        getMaxNameLength(entry.options.map((e) => getItemDetails(e, optionOptions))),
-        getMaxNameLength(entry.commands.map((e) => getItemDetails(e, commandOptions))),
-      )
+          getMaxNameLength(entry.options.map((e) => getItemDetails(e, optionOptions))),
+          getMaxNameLength(entry.commands.map((e) => getItemDetails(e, commandOptions))),
+        )
       : undefined
     const options = generateHelpTable(entry.options, optionOptions, maxNameLength).trimEnd()
     const commands = generateHelpTable(entry.commands, commandOptions, maxNameLength).trimEnd()
@@ -228,21 +228,21 @@ export class HelpGenerator {
             _wrap(format(description, this.config.exampleOptions.descriptionStyle), 4),
           ],
           input &&
-          _wrap(
-            format(
-              [this.config.exampleOptions.inputPrefix, input].filter(Boolean).join(' '),
-              this.config.exampleOptions.inputStyle,
+            _wrap(
+              format(
+                [this.config.exampleOptions.inputPrefix, input].filter(Boolean).join(' '),
+                this.config.exampleOptions.inputStyle,
+              ),
+              4,
             ),
-            4,
-          ),
           output &&
-          _wrap(
-            format(
-              [this.config.exampleOptions.outputPrefix, output].filter(Boolean).join(' '),
-              this.config.exampleOptions.outputStyle,
+            _wrap(
+              format(
+                [this.config.exampleOptions.outputPrefix, output].filter(Boolean).join(' '),
+                this.config.exampleOptions.outputStyle,
+              ),
+              4,
             ),
-            4,
-          ),
         )
       })
       .join('\n')
@@ -253,17 +253,17 @@ export class HelpGenerator {
         _wrap(
           usageText
             ? strConcat(
-              format('Usage:', this.config.usageStyle.prefix),
-              format(usageText, this.config.usageStyle.main),
-            )
+                format('Usage:', this.config.usageStyle.prefix),
+                format(usageText, this.config.usageStyle.main),
+              )
             : [
-              format(`Usage:`, this.config.usageStyle.prefix),
-              format(entry.name, this.config.usageStyle.main),
-              commands.length && format('[command]', this.config.usageStyle.command),
-              options.length && format('[options]', this.config.usageStyle.options),
-            ]
-              .filter(Boolean)
-              .join(' '),
+                format(`Usage:`, this.config.usageStyle.prefix),
+                format(entry.name, this.config.usageStyle.main),
+                commands.length && format('[command]', this.config.usageStyle.command),
+                options.length && format('[options]', this.config.usageStyle.options),
+              ]
+                .filter(Boolean)
+                .join(' '),
         ),
         headerText.length && ['', format(headerText, this.config.descriptionStyle)],
         entry.description.length && [
@@ -271,27 +271,27 @@ export class HelpGenerator {
           _wrap(format(entry.description, this.config.descriptionStyle)),
         ],
         commands.length &&
-        indent([
-          '',
-          format(
-            entry.parent ? `Commands for ${entry.name}:` : 'Commands:',
-            this.config.subtitleStyle,
-          ),
-          '',
-          indent(commands),
-        ]),
+          indent([
+            '',
+            format(
+              entry.parent ? `Commands for ${entry.name}:` : 'Commands:',
+              this.config.subtitleStyle,
+            ),
+            '',
+            indent(commands),
+          ]),
         options.length &&
-        indent([
-          '',
-          format(
-            entry.parent ? `Options for ${entry.name}:` : 'Options:',
-            this.config.subtitleStyle,
-          ),
-          '',
-          indent(options),
-        ]),
+          indent([
+            '',
+            format(
+              entry.parent ? `Options for ${entry.name}:` : 'Options:',
+              this.config.subtitleStyle,
+            ),
+            '',
+            indent(options),
+          ]),
         examples.length &&
-        indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
+          indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
         footerText.length && ['', _wrap(format(footerText, this.config.descriptionStyle))],
       ) + '\n'
     )
