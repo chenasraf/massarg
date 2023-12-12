@@ -188,6 +188,7 @@ export type HelpItem = {
   aliases: string[]
   description: string
   hidden?: boolean
+  negatable?: boolean
 }
 
 export class HelpGenerator {
@@ -243,6 +244,7 @@ export class HelpGenerator {
               ),
               4,
             ),
+          '',
         )
       })
       .join('\n')
@@ -327,6 +329,7 @@ type ParsedHelpItem = {
   name: string
   description: string
   hidden: boolean
+  negatable: boolean
 }
 
 const getMaxNameLength = (items: ParsedHelpItem[]): number =>
@@ -346,6 +349,10 @@ function getItemDetails(
     aliasPrefix = '',
     negateAliasPrefix = '',
   } = options ?? {}
+  const description = o.description
+  const hidden = o.hidden || false
+  const negatable = (displayNegations && o.negatable) || false
+
   const cmdNames = {
     full: `${namePrefix}${o.name}`,
     fullNegated: negatePrefix ? `${negatePrefix}${o.name}` : undefined,
@@ -357,14 +364,12 @@ function getItemDetails(
   const name = [
     cmdNames.full,
     cmdNames.aliases,
-    displayNegations && cmdNames.fullNegated,
-    displayNegations && cmdNames.aliasesNegated,
+    negatable && cmdNames.fullNegated,
+    negatable && cmdNames.aliasesNegated,
   ]
     .filter(Boolean)
     .join(' | ')
-  const description = o.description
-  const hidden = o.hidden || false
-  return { name, description, hidden }
+  return { name, description, hidden, negatable }
 }
 
 function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableOptionConfig>(
