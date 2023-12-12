@@ -98,7 +98,7 @@ export const HelpConfig = z.object({
       /** Prefix for the example input (default: `$`) */
       inputPrefix: z.string().default('$').optional(),
       /** Prefix for the example output (default: `>`) */
-      outputPrefix: z.string().default('>').optional(),
+      outputPrefix: z.string().default('➜').optional(),
     })
     .optional(),
   /** Text to display at the very top, describing CLI usage */
@@ -148,7 +148,7 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
       color: 'brightWhite',
     },
     inputPrefix: '$',
-    outputPrefix: '>',
+    outputPrefix: '➜',
   },
   bindCommand: false,
   bindOption: false,
