@@ -1,5 +1,12 @@
 # Change Log
 
+# [2.0.0-pre.5](https://github.com/chenasraf/massarg/compare/v2.0.0-pre.4...v2.0.0-pre.5) (2023-12-12)
+
+
+### Bug Fixes
+
+* default options & default values ([eacb0dd](https://github.com/chenasraf/massarg/commit/eacb0dd7ab8712d276280a891067cfffaafbca3a))
+
 # [2.0.0-pre.4](https://github.com/chenasraf/massarg/compare/v2.0.0-pre.3...v2.0.0-pre.4) (2023-12-11)
 
 
