@@ -40,6 +40,22 @@ describe('option', () => {
         }),
     ).toThrow('Option "test2" already exists')
   })
+  test('default', () => {
+    const command = massarg(opts)
+      .flag({
+        name: 'extra',
+        description: 'extra',
+        aliases: [],
+        negatable: true,
+      })
+      .option({
+        name: 'def',
+        description: 'def',
+        aliases: [],
+        isDefault: true,
+      })
+    expect(command.getArgs(['123'])).toHaveProperty('def', '123')
+  })
   test('add 2 defaults', () => {
     expect(() =>
       massarg(opts)
@@ -52,7 +68,7 @@ describe('option', () => {
         .option({
           name: 'test2',
           description: 'test2',
-          aliases: [],
+          aliases: ['t'],
           isDefault: true,
         }),
     ).toThrow(

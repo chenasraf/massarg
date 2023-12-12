@@ -169,7 +169,11 @@ describe('parse', () => {
   })
   test('runs main', () => {
     const fn = jest.fn()
-    const command = massarg(opts).main(fn)
+    const command = massarg(opts)
+      .main(fn)
+      .flag({ name: 'test', description: 'test', aliases: [] })
+      .option({ name: 'test2', description: 'test', aliases: [] })
+      .help({ bindCommand: true, bindOption: true })
     expect(command).toBeInstanceOf(MassargCommand)
     expect(command.parse([])).toBeUndefined()
     expect(fn).toHaveBeenCalledWith({}, command)

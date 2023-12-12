@@ -208,7 +208,8 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
   }
 
   _match(arg: string, prefixes: Prefixes): boolean {
-    return MassargOption.findNameInArg(arg, prefixes) !== '<blank>'
+    const name = MassargOption.findNameInArg(arg, prefixes)
+    return name === this.name || this.aliases.includes(name)
   }
 
   _isOption(arg: string, prefixes: Prefixes): boolean {
@@ -323,7 +324,7 @@ export class MassargFlag extends MassargOption<boolean> {
     this.negatable = options.negatable ?? false
   }
 
-  parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<boolean> {
+  parseDetails(argv: string[], _options: ArgsObject, prefixes: Prefixes): ArgvValue<boolean> {
     try {
       const isNegation =
         argv[0]?.startsWith(prefixes.negateAliasPrefix) ||

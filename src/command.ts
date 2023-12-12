@@ -370,20 +370,21 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       if (option.defaultValue !== undefined && _a[option.name] === undefined) {
         _args[option.getOutputName() as keyof Args] = option.defaultValue as Args[keyof Args]
       }
-      if (this.helpConfig.bindOption && option.name === 'help') {
-        if (parseCommands) {
-          this.printHelp()
-        }
-        return
-      }
     }
 
     // parse options
     while (_argv.length) {
       const arg = _argv.shift()!
       // make sure option exists
-      const found = this.options.some((o) => o._isOption(arg, { ...this.optionPrefixes }))
+      const found = this.options.find((o) => o._isOption(arg, { ...this.optionPrefixes }))
       if (found) {
+        if (this.helpConfig.bindOption && found.name === 'help') {
+          if (parseCommands) {
+            this.printHelp()
+            return
+          }
+          return this.args as Args
+        }
         _argv = this.parseOption(arg, _argv)
         _args = { ..._args, ...this.args }
         continue
@@ -404,6 +405,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       const defaultOption = this.options.find((o) => o.isDefault)
       if (defaultOption) {
         _argv = this.parseOption(`--${defaultOption.name}`, [arg, ..._argv])
+        _argv.shift()
         continue
       }
       // not parsed by any step, add to extra key
@@ -484,7 +486,6 @@ export class MassargHelpCommand<
       name: 'command',
       aliases: ['c'],
       description: 'Command to print help for',
-      isDefault: true,
     })
   }
 }
