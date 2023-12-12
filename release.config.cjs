@@ -1,3 +1,6 @@
+const ref = process.env.GITHUB_REF || ''
+const branch = ref.split('/').pop()
+
 /**
  * @type {import('semantic-release').GlobalConfig}
  */
@@ -35,13 +38,6 @@ module.exports = {
       },
     ],
     [
-      '@semantic-release/changelog',
-      {
-        changelogFile: 'CHANGELOG.md',
-        changelogTitle: '# Change Log',
-      },
-    ],
-    [
       '@semantic-release/git',
       {
         assets: ['package.json', 'CHANGELOG.md'],
@@ -55,4 +51,15 @@ module.exports = {
     //   },
     // ],
   ],
+}
+
+if (branch === 'master') {
+  const gitIdx = module.exports.plugins.findIndex((plugin) => plugin[0] === '@semantic-release/git')
+  module.exports.plugins.splice(gitIdx, 0, [
+    '@semantic-release/changelog',
+    {
+      changelogFile: 'CHANGELOG.md',
+      changelogTitle: '# Change Log',
+    },
+  ])
 }
