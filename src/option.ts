@@ -177,7 +177,7 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
   parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<OptionType> {
     let input = ''
     try {
-      if (!this._match(argv[0], prefixes)) {
+      if (!this.isMatch(argv[0], prefixes)) {
         throw new ParseError({
           path: [this.name],
           code: 'invalid_option',
@@ -207,20 +207,17 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     return `--${this.name}${aliases} ${this.description}`
   }
 
-  _match(arg: string, prefixes: Prefixes): boolean {
+  /** Returns true if the flag (including any prefixes) matches the name or aliases */
+  isMatch(arg: string, prefixes: Prefixes): boolean {
     const name = MassargOption.findNameInArg(arg, prefixes)
     return name === this.name || this.aliases.includes(name)
   }
 
-  _isOption(arg: string, prefixes: Prefixes): boolean {
-    return (
-      arg.startsWith(prefixes.optionPrefix) ||
-      arg.startsWith(prefixes.aliasPrefix) ||
-      arg.startsWith(prefixes.negateFlagPrefix) ||
-      arg.startsWith(prefixes.negateAliasPrefix)
-    )
-  }
-
+  /**
+   * Returns the name of the flag, removing any prefixes. It is discriminate of if the option
+   * exists, as it is a static method; it only returns the name of the flag if it matches the
+   * prefixes format.
+   */
   static findNameInArg(arg: string, prefixes: Prefixes): string {
     const { optionPrefix, aliasPrefix, negateFlagPrefix, negateAliasPrefix } = prefixes
     // negate full prefix
@@ -337,7 +334,7 @@ export class MassargFlag extends MassargOption<boolean> {
           received: JSON.stringify(argv[0]),
         })
       }
-      if (!this._match(argv[0], prefixes)) {
+      if (!this.isMatch(argv[0], prefixes)) {
         throw new ParseError({
           path: [this.name],
           code: 'invalid_option',

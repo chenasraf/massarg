@@ -91,17 +91,15 @@ export function deepMerge<T1, T2>(obj1: T1, obj2: T2): NonNullable<T1> & NonNull
  * regular spaced strings.
  */
 export function splitWords(str: string): string[] {
-  return (
-    str
-      .replace(/([a-z])([A-Z])/g, '$1 $2')
-      // .replace(/([a-zA-Z])([0-9])/g, '$1 $2')
-      .replace(/([0-9])([a-zA-Z])/g, '$1 $2')
-      .replace(/([a-z])([_-])/g, '$1 $2')
-      .replace(/([_-])([a-zA-Z])/g, '$1 $2')
-      .split(/[_-]/)
-      .map((s) => s.trim())
-      .filter(Boolean)
-  )
+  return str
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/([a-zA-Z])([0-9])/g, '$1 $2')
+    .replace(/([0-9])([a-zA-Z])/g, '$1 $2')
+    .replace(/([a-z])([_-])/g, '$1 $2')
+    .replace(/([_-])([a-zA-Z])/g, '$1 $2')
+    .split(/[_\- ]/)
+    .map((s) => s.trim())
+    .filter(Boolean)
 }
 
 export function toCamelCase(str: string): string {
