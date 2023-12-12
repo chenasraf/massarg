@@ -38,9 +38,10 @@ test('prints help from command', () => {
   const command = massarg(opts).help({
     bindCommand: true,
   })
-  const log = jest.spyOn(console, 'log').mockImplementation(() => { })
+  const log = jest.spyOn(console, 'log').mockImplementation(() => {})
   command.parse(['help'])
   expect(log).toHaveBeenCalled()
+  log.mockRestore()
 })
 
 test('binds option', () => {
@@ -52,12 +53,26 @@ test('binds option', () => {
   expect(command.options.find((o) => o.name === 'help')).toBeTruthy()
 })
 
+test('overrides required options', () => {
+  const command = massarg(opts)
+    .option({
+      name: 'required',
+      aliases: ['r'],
+      description: 'required',
+      required: true,
+    })
+    .help({
+      bindOption: true,
+    })
+  expect(() => command.getArgs(['--help'])).not.toThrow()
+})
+
 describe('prints help from option', () => {
   test('when no main command', () => {
     const command = massarg(opts).help({
       bindOption: true,
     })
-    const log = jest.spyOn(console, 'log').mockImplementation(() => { })
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {})
     command.parse(['--help'])
     expect(log).toHaveBeenCalled()
   })
@@ -80,7 +95,7 @@ test('help string', () => {
 })
 
 test('print help', () => {
-  const log = jest.spyOn(console, 'log').mockImplementation(() => { })
+  const log = jest.spyOn(console, 'log').mockImplementation(() => {})
   const command = massarg(opts)
   command.printHelp()
   expect(log).toHaveBeenCalled()

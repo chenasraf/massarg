@@ -318,13 +318,17 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
    * To parse the arguments without running any commands and only get the output args,
    * use `getArgs` instead.
    */
-  parse(argv: string[], args?: Partial<Args>, parent?: MassargCommand<Args>): Promise<void> | void {
+  parse(
+    argv = process.argv.slice(2),
+    args?: Partial<Args>,
+    parent?: MassargCommand<Args>,
+  ): Promise<void> | void {
     this.getArgs(argv, args, parent, true)
   }
 
   private parseOption(arg: string, argv: string[]) {
     const prefixes = { ...this.optionPrefixes }
-    const option = this.options.find((o) => o._match(arg, prefixes))
+    const option = this.options.find((o) => o.isMatch(arg, prefixes))
     if (!option) {
       throw new ValidationError({
         path: [MassargOption.findNameInArg(arg, prefixes)],
@@ -375,8 +379,9 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     // parse options
     while (_argv.length) {
       const arg = _argv.shift()!
+
       // make sure option exists
-      const found = this.options.find((o) => o._isOption(arg, { ...this.optionPrefixes }))
+      const found = this.options.find((o) => o.isMatch(arg, this.optionPrefixes))
       if (found) {
         if (this.helpConfig.bindOption && found.name === 'help') {
           if (parseCommands) {
