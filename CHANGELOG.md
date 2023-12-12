@@ -1,5 +1,12 @@
 # Change Log
 
+# [2.0.0-pre.6](https://github.com/chenasraf/massarg/compare/v2.0.0-pre.5...v2.0.0-pre.6) (2023-12-12)
+
+
+### Bug Fixes
+
+* let help flag ignore requirements ([119f201](https://github.com/chenasraf/massarg/commit/119f20156b35adbc6213f79adc6fed3a8c537af3))
+
 # [2.0.0-pre.5](https://github.com/chenasraf/massarg/compare/v2.0.0-pre.4...v2.0.0-pre.5) (2023-12-12)
 
 
