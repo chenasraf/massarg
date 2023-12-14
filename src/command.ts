@@ -14,8 +14,9 @@ import {
   Prefixes,
   FlagConfig,
 } from './option'
-import { DeepRequired, setOrPush, deepMerge } from './utils'
+import { DeepRequired, setOrPush, deepMerge, getErrorMessage } from './utils'
 import { MassargExample, ExampleConfig } from './example'
+import { format } from './style'
 
 export const CommandConfig = <RunArgs extends ArgsObject = ArgsObject>(args: z.ZodType<RunArgs>) =>
   z.object({
@@ -187,14 +188,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   flag(config: FlagConfig | MassargFlag): MassargCommand<Args> {
     try {
       const flag = config instanceof MassargFlag ? config : new MassargFlag(config)
-      const existing = this.options.find((c) => c.name === flag.name)
-      if (existing) {
-        throw new ValidationError({
-          code: 'duplicate_flag',
-          message: `Flag "${flag.name}" already exists`,
-          path: [this.name, flag.name],
-        })
-      }
+      this.assertNotDuplicate(flag)
       this.options.push(flag as MassargOption)
       return this
     } catch (e) {
@@ -234,24 +228,8 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
         config instanceof MassargOption
           ? config
           : MassargOption.fromTypedConfig(config as TypedOptionConfig<T, A>)
-      const existing = this.options.find((c) => c.name === option.name)
-      if (existing) {
-        throw new ValidationError({
-          code: 'duplicate_option',
-          message: `Option "${option.name}" already exists`,
-          path: [this.name, option.name],
-        })
-      }
-      if (option.isDefault) {
-        const defaultOption = this.options.find((o) => o.isDefault)
-        if (defaultOption) {
-          throw new ValidationError({
-            code: 'duplicate_default_option',
-            message: `Option "${option.name}" cannot be set as default because option "${defaultOption.name}" is already set as default`,
-            path: [this.name, option.name],
-          })
-        }
-      }
+      this.assertNotDuplicate(option)
+      this.assertOnlyOneDefault<T, A>(option)
       this.options.push(option as MassargOption)
       return this
     } catch (e) {
@@ -263,6 +241,43 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
         })
       }
       throw e
+    }
+  }
+
+  private assertNotDuplicate<T = string, A extends ArgsObject = Args>(option: MassargOption<T, A>) {
+    const existingName = this.options.find((c) => c.name === option.name),)
+    if (existingName) {
+      throw new ValidationError({
+        code: 'duplicate_option_name',
+        message: `Option name "${existingName.name}" already exists`,
+        path: [this.name, option.name],
+      })
+    }
+    const existingAlias = this.options.find((c) =>
+      c.aliases.some((a) => option.aliases.includes(a)),
+    )
+    if (existingAlias) {
+      const alias = option.aliases.find((a) => existingAlias.aliases.includes(a))!
+      throw new ValidationError({
+        code: 'duplicate_option_alias',
+        message: `Option alias "${alias}" already exists on option "${existingAlias.name}"`,
+        path: [this.name, option.name],
+      })
+    }
+  }
+
+  private assertOnlyOneDefault<T = string, A extends ArgsObject = Args>(
+    option: MassargOption<T, A>,
+  ) {
+    if (option.isDefault) {
+      const defaultOption = this.options.find((o) => o.isDefault)
+      if (defaultOption) {
+        throw new ValidationError({
+          code: 'duplicate_default_option',
+          message: `Option "${option.name}" cannot be set as default because option "${defaultOption.name}" is already set as default`,
+          path: [this.name, option.name],
+        })
+      }
     }
   }
 
@@ -323,7 +338,12 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     args?: Partial<Args>,
     parent?: MassargCommand<Args>,
   ): Promise<void> | void {
-    this.getArgs(argv, args, parent, true)
+    try {
+      this.getArgs(argv, args, parent, true)
+    } catch (e) {
+      const message = getErrorMessage(e)
+      console.error(format(message, { color: 'red' }))
+    }
   }
 
   private parseOption(arg: string, argv: string[]) {
@@ -409,8 +429,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       // default option - passes arg value even without flag name
       const defaultOption = this.options.find((o) => o.isDefault)
       if (defaultOption) {
-        _argv = this.parseOption(`--${defaultOption.name}`, [arg, ..._argv])
-        _argv.shift()
+        this.parseOption(`--${defaultOption.name}`, [arg])
         continue
       }
       // not parsed by any step, add to extra key
@@ -466,7 +485,7 @@ export class MassargHelpCommand<
     const _config = CommandConfig(z.any()).parse({
       name: 'help',
       aliases: ['h'],
-      description: 'Print help for this command, or a subcommand if specified',
+      description: 'Print help for this command, or a sub-command if specified',
       run: (args: { command?: string }, parent) => {
         if (args.command) {
           const command = parent.commands.find((c) => c.name === args.command)

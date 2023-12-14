@@ -394,6 +394,7 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
         aliasPrefix,
         negatePrefix,
         negateAliasPrefix,
+        displayNegations,
       }),
     )
     .filter((r) => !r.hidden)
@@ -422,6 +423,7 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
       }
       currentRow += `${word} `
     }
+    subRows.push(currentRow)
 
     if (!compact) {
       subRows.push('')

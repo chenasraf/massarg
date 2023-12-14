@@ -16,8 +16,7 @@ const addCmd = massarg<{ component: string }>({
   description: 'Add a component',
   aliases: ['a'],
   run: (opts, parser) => {
-    parser.printHelp()
-    console.log('Adding component', opts.component)
+    console.log('Adding component', opts)
   },
 })
   .option({
@@ -25,6 +24,7 @@ const addCmd = massarg<{ component: string }>({
     description:
       'Component to add. Ut consectetur eu et occaecat enim magna amet eiusmod laboris deserunt proident culpa nulla ipsum adipiscing ullamco laboris sed est',
     aliases: ['c'],
+    isDefault: true,
     // aliases: "" as never,
   })
   .option({
@@ -81,6 +81,9 @@ const main = massarg<A>({
     bindCommand: true,
     headerText: 'This is a header',
     footerText: 'This is a footer',
+    optionOptions: {
+      displayNegations: true,
+    },
   })
   .main((opts, parser) => {
     console.log('Main command - printing all opts')
@@ -94,6 +97,13 @@ const main = massarg<A>({
     name: 'bool',
     description: 'Example boolean option',
     aliases: ['b'],
+    negatable: true,
+  })
+  .option({
+    name: 'string',
+    description:
+      'Laborum qui ex do consectetur magna. Ex do consectetur magna officia, consequat. Magna officia consequat labore veniam proident exercitation occaecat. Consequat labore veniam proident exercitation occaecat. Veniam proident exercitation occaecat aliquip.',
+    aliases: ['s'],
   })
   .option({
     name: 'number',

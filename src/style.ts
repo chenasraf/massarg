@@ -1,6 +1,6 @@
 import z from 'zod'
-import { zodEnumFromObjKeys, strConcat } from './utils'
-export { strConcat }
+import { zodEnumFromObjKeys } from './utils'
+export { strConcat, indent } from './utils'
 
 export const ansiStyles = {
   reset: '\x1b[0m',

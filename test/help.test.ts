@@ -87,6 +87,24 @@ describe('prints help from option', () => {
     command2.parse(['--help'])
     expect(mainCmd).not.toHaveBeenCalled()
   })
+
+  test('when default option exists', () => {
+    const command = massarg(opts)
+      .option({
+        name: 'test',
+        aliases: ['t'],
+        description: 'test',
+        isDefault: true,
+      })
+      .help({
+        bindOption: true,
+      })
+    const log = jest.spyOn(console, 'log').mockImplementation((...a) => {
+      console.info(...a)
+    })
+    command.parse(['--help'])
+    expect(log).toHaveBeenCalled()
+  })
 })
 
 test('help string', () => {
