@@ -1,4 +1,5 @@
 import z from 'zod'
+import { ValidationError } from './error'
 
 /** @internal */
 export function setOrPush<T>(
@@ -112,4 +113,11 @@ export function toPascalCase(str: string): string {
   return splitWords(str)
     .map((s) => s[0].toUpperCase() + s.slice(1))
     .join('')
+}
+
+export function getErrorMessage(err: unknown): string {
+  if (err instanceof Error) {
+    return err.message
+  }
+  return String(err)
 }
