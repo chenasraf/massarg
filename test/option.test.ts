@@ -38,7 +38,7 @@ describe('option', () => {
           aliases: [],
           defaultValue: '',
         }),
-    ).toThrow('Option "test2" already exists')
+    ).toThrow('test.test2: Option name "test2" already exists')
   })
   test('default', () => {
     const command = massarg(opts)
@@ -108,7 +108,7 @@ describe('flag', () => {
       massarg(opts)
         .flag({ name: 'test2', description: 'test2', aliases: [] })
         .flag({ name: 'test2', description: 'test2', aliases: [] }),
-    ).toThrow('Flag "test2" already exists')
+    ).toThrow('test.test2: Flag name "test2" already exists')
   })
   test('validate', () => {
     expect(() =>

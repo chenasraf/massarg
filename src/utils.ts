@@ -87,6 +87,11 @@ export function deepMerge<T1, T2>(obj1: T1, obj2: T2): NonNullable<T1> & NonNull
   }
   return res
 }
+
+export function capitalize(str: string): string {
+  return str[0].toUpperCase() + str.slice(1)
+}
+
 /**
  * Splits a name into words, using camelCase, PascalCase, snake_case, and kebab-case or
  * regular spaced strings.

@@ -99,9 +99,7 @@ describe('prints help from option', () => {
       .help({
         bindOption: true,
       })
-    const log = jest.spyOn(console, 'log').mockImplementation((...a) => {
-      console.info(...a)
-    })
+    const log = jest.spyOn(console, 'log').mockImplementation(() => {})
     command.parse(['--help'])
     expect(log).toHaveBeenCalled()
   })
