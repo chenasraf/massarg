@@ -4,7 +4,6 @@ import { defaultHelpConfig, HelpConfig, HelpGenerator } from './help'
 import {
   MassargOption,
   MassargFlag,
-  OptionConfig,
   TypedOptionConfig,
   MassargHelpFlag,
   OPT_FULL_PREFIX,
@@ -245,7 +244,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   }
 
   private assertNotDuplicate<T = string, A extends ArgsObject = Args>(option: MassargOption<T, A>) {
-    const existingName = this.options.find((c) => c.name === option.name),)
+    const existingName = this.options.find((c) => c.name === option.name))
     if (existingName) {
       throw new ValidationError({
         code: 'duplicate_option_name',
