@@ -512,6 +512,7 @@ export class MassargHelpCommand<
       name: 'command',
       aliases: ['c'],
       description: 'Command to print help for',
+      isDefault: true,
     })
   }
 }
