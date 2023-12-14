@@ -13,7 +13,7 @@ import {
   Prefixes,
   FlagConfig,
 } from './option'
-import { DeepRequired, setOrPush, deepMerge, getErrorMessage } from './utils'
+import { DeepRequired, setOrPush, deepMerge, getErrorMessage, capitalize } from './utils'
 import { MassargExample, ExampleConfig } from './example'
 import { format } from './style'
 
@@ -187,7 +187,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
   flag(config: FlagConfig | MassargFlag): MassargCommand<Args> {
     try {
       const flag = config instanceof MassargFlag ? config : new MassargFlag(config)
-      this.assertNotDuplicate(flag)
+      this.assertNotDuplicate(flag, 'flag')
       this.options.push(flag as MassargOption)
       return this
     } catch (e) {
@@ -227,7 +227,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
         config instanceof MassargOption
           ? config
           : MassargOption.fromTypedConfig(config as TypedOptionConfig<T, A>)
-      this.assertNotDuplicate(option)
+      this.assertNotDuplicate(option, 'option')
       this.assertOnlyOneDefault<T, A>(option)
       this.options.push(option as MassargOption)
       return this
@@ -243,12 +243,15 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     }
   }
 
-  private assertNotDuplicate<T = string, A extends ArgsObject = Args>(option: MassargOption<T, A>) {
-    const existingName = this.options.find((c) => c.name === option.name))
+  private assertNotDuplicate<T = string, A extends ArgsObject = Args>(
+    option: MassargOption<T, A>,
+    type: 'option' | 'flag',
+  ) {
+    const existingName = this.options.find((c) => c.name === option.name)
     if (existingName) {
       throw new ValidationError({
-        code: 'duplicate_option_name',
-        message: `Option name "${existingName.name}" already exists`,
+        code: `duplicate_${type}_name`,
+        message: `${capitalize(type)} name "${existingName.name}" already exists`,
         path: [this.name, option.name],
       })
     }
