@@ -136,7 +136,9 @@ export type ArgvValue<T> = { argv: string[]; value: T; key: string }
  * })
  * ```
  */
-export class MassargOption<OptionType extends any = unknown, Args extends ArgsObject = ArgsObject> {
+export class MassargOption<OptionType extends any = unknown, Args extends ArgsObject = ArgsObject>
+  implements OptionConfig<OptionType, Args>
+{
   name: string
   description: string
   defaultValue?: OptionType

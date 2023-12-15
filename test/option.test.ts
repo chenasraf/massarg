@@ -14,6 +14,7 @@ describe('option', () => {
     ).toBeInstanceOf(MassargCommand)
   })
   test('validate', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts).option({
         name: 'test2',
@@ -22,8 +23,10 @@ describe('option', () => {
         defaultValue: '',
       }),
     ).toThrow('Expected string, received number')
+    error.mockRestore()
   })
   test('add duplicate', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts)
         .option({
@@ -39,6 +42,7 @@ describe('option', () => {
           defaultValue: '',
         }),
     ).toThrow('test.test2: Option name "test2" already exists')
+    error.mockRestore()
   })
   test('default', () => {
     const command = massarg(opts)
@@ -57,6 +61,7 @@ describe('option', () => {
     expect(command.getArgs(['123'])).toHaveProperty('def', '123')
   })
   test('add 2 defaults', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts)
         .option({
@@ -74,6 +79,7 @@ describe('option', () => {
     ).toThrow(
       'Option "test2" cannot be set as default because option "test" is already set as default',
     )
+    error.mockRestore()
   })
   test('uses output name', () => {
     const command = massarg(opts).option({
@@ -85,6 +91,7 @@ describe('option', () => {
     expect(command.getArgs(['--test2', 'test'])).toHaveProperty('test', 'test')
   })
   test('required', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
     const command = massarg(opts).option({
       name: 'test2',
       description: 'test2',
@@ -92,6 +99,7 @@ describe('option', () => {
       required: true,
     })
     expect(() => command.getArgs([])).toThrow('Missing required option: test2')
+    error.mockRestore()
   })
 })
 
@@ -104,13 +112,16 @@ describe('flag', () => {
     )
   })
   test('add duplicate', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts)
         .flag({ name: 'test2', description: 'test2', aliases: [] })
         .flag({ name: 'test2', description: 'test2', aliases: [] }),
     ).toThrow('test.test2: Flag name "test2" already exists')
+    error.mockRestore()
   })
   test('validate', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts).flag({
         name: 'test2',
@@ -118,13 +129,16 @@ describe('flag', () => {
         aliases: [],
       }),
     ).toThrow('Expected string, received number')
+    error.mockRestore()
   })
   describe('negation', () => {
     test('no negation', () => {
+      const error = jest.spyOn(console, 'error').mockImplementation(() => { })
       const command = massarg(opts).flag({ name: 'test2', description: 'test2', aliases: [] })
       expect(() => command.getArgs(['--no-test2'])).toThrow(
         'test2: Option test2 cannot be negated (received: "--no-test2")',
       )
+      error.mockRestore()
     })
     test('negation', () => {
       const command = massarg(opts).flag({
