@@ -47,7 +47,7 @@ export type CommandConfig<RunArgs extends ArgsObject = ArgsObject> = z.infer<
   ReturnType<typeof CommandConfig<RunArgs>>
 >
 
-export type ArgsObject = object
+export type ArgsObject = Record<string | number | symbol, any>
 
 export type Runner<Args extends ArgsObject> = (
   options: Args,
@@ -73,7 +73,9 @@ export type Runner<Args extends ArgsObject> = (
  * })
  * ```
  */
-export class MassargCommand<Args extends ArgsObject = ArgsObject> {
+export class MassargCommand<Args extends ArgsObject = ArgsObject>
+  implements Omit<CommandConfig<Args>, 'run'>
+{
   name: string
   description: string
   aliases: string[]
@@ -141,11 +143,11 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
    * While options are not inherited, they will be passed from any parent commands
    * to the sub-command when invoked.
    */
-  command<A extends ArgsObject = Args>(config: CommandConfig<A>): MassargCommand<Args>
-  command<A extends ArgsObject = Args>(config: MassargCommand<A>): MassargCommand<Args>
+  command<A extends ArgsObject = Args>(config: CommandConfig<A>): MassargCommand<Args & A>
+  command<A extends ArgsObject = Args>(config: MassargCommand<A>): MassargCommand<Args & A>
   command<A extends ArgsObject = Args>(
     config: CommandConfig<A> | MassargCommand<A>,
-  ): MassargCommand<Args> {
+  ): MassargCommand<Args & A> {
     try {
       const command = config instanceof MassargCommand ? config : new MassargCommand(config)
       const existing = this.commands.find((c) => c.name === command.name)
@@ -158,15 +160,16 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       }
       command.parent = this
       this.commands.push(command)
-      return this
+      return this as unknown as MassargCommand<Args & A>
     } catch (e) {
       if (isZodError(e)) {
-        throw new ValidationError({
+        e = new ValidationError({
           path: [this.name, config.name, ...e.issues[0].path.map((p) => p.toString())],
           code: e.issues[0].code,
           message: e.issues[0].message,
         })
       }
+      this.printError(e)
       throw e
     }
   }
@@ -192,12 +195,13 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       return this
     } catch (e) {
       if (isZodError(e)) {
-        throw new ValidationError({
+        e = new ValidationError({
           path: [this.name, config.name, ...e.issues[0].path.map((p) => p.toString())],
           code: e.issues[0].code,
           message: e.issues[0].message,
         })
       }
+      this.printError(e)
       throw e
     }
   }
@@ -233,12 +237,13 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
       return this
     } catch (e) {
       if (isZodError(e)) {
-        throw new ValidationError({
+        e = new ValidationError({
           path: [this.name, config.name, ...e.issues[0].path.map((p) => p.toString())],
           code: e.issues[0].code,
           message: e.issues[0].message,
         })
       }
+      this.printError(e)
       throw e
     }
   }
@@ -307,14 +312,14 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
    */
   help(config: HelpConfig): MassargCommand<Args> {
     this._helpConfig = HelpConfig.parse(config)
-
+    let ret: MassargCommand<any> = this
     if (this.helpConfig.bindCommand) {
-      this.command(new MassargHelpCommand())
+      ret = ret.command(new MassargHelpCommand())
     }
     if (this.helpConfig.bindOption) {
-      this.option(new MassargHelpFlag())
+      ret = ret.option(new MassargHelpFlag())
     }
-    return this
+    return this as MassargCommand<Args>
   }
 
   /**
@@ -343,9 +348,13 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject> {
     try {
       this.getArgs(argv, args, parent, true)
     } catch (e) {
-      const message = getErrorMessage(e)
-      console.error(format(message, { color: 'red' }))
+      this.printError(e)
     }
+  }
+
+  private printError(e: unknown) {
+    const message = getErrorMessage(e)
+    console.error(format(message, { color: 'red' }))
   }
 
   private parseOption(arg: string, argv: string[]) {

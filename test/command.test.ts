@@ -18,13 +18,16 @@ describe('sub command', () => {
     )
   })
   test('add duplicate', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts)
         .command({ name: 'test2', description: 'test2', run: jest.fn() })
         .command({ name: 'test2', description: 'test2', run: jest.fn() }),
     ).toThrow('Command "test2" already exists')
+    error.mockRestore()
   })
   test('validate', () => {
+    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts).command({
         name: 'test2',
@@ -32,6 +35,7 @@ describe('sub command', () => {
         run: jest.fn(),
       }),
     ).toThrow('Expected string, received number')
+    error.mockRestore()
   })
 })
 

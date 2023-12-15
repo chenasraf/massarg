@@ -3,7 +3,7 @@ import { MassargCommand } from './command'
 import { ParseError } from './error'
 
 type A = { test: boolean }
-const echoCmd = massarg<any>({
+const echoCmd = massarg<{}>({
   name: 'echo',
   description: 'Echo back the arguments',
   aliases: ['e'],
@@ -88,7 +88,6 @@ const main = massarg<A>({
   .main((opts, parser) => {
     console.log('Main command - printing all opts')
     console.log(opts, '\n')
-    parser.printHelp()
   })
   .command(echoCmd)
   .command(addCmd)
