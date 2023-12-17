@@ -113,7 +113,7 @@ const main = massarg<A>({
   .example({
     description: 'Example main command',
     input: 'my-cli --bool --number 123',
-    output: 'Main command - printing all opts\n  { bool: true, number: 123 }\n',
+    output: 'Main command - printing all opts\n{ bool: true, number: 123 }',
   })
   .example({
     description: 'Example add command',

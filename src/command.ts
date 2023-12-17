@@ -99,6 +99,11 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
     this._run = options.run
     this._helpConfig = {}
     this.parent = parent
+    // TODO mix these with help config
+    this.optionPrefix = options.optionPrefix ?? this.optionPrefix
+    this.negateFlagPrefix = options.negateFlagPrefix ?? this.negateFlagPrefix
+    this.optionAliasPrefix = options.optionAliasPrefix ?? this.optionAliasPrefix
+    this.negateAliasPrefix = options.negateAliasPrefix ?? this.negateAliasPrefix
   }
 
   get optionPrefixes(): Prefixes {
