@@ -99,6 +99,10 @@ export const HelpConfig = z.object({
       inputPrefix: z.string().default('$').optional(),
       /** Prefix for the example output (default: `>`) */
       outputPrefix: z.string().default('➜').optional(),
+      /** Style of the example input/output prefixes */
+      prefixStyle: StringStyle.optional(),
+      /** Whether to compact the examples section */
+      compact: z.boolean().default(true).optional(),
     })
     .optional(),
   /** Text to display at the very top, describing CLI usage */
@@ -149,6 +153,10 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
     },
     inputPrefix: '$',
     outputPrefix: '➜',
+    prefixStyle: {
+      color: 'gray',
+    },
+    compact: true,
   },
   bindCommand: false,
   bindOption: false,
@@ -204,6 +212,7 @@ export class HelpGenerator {
     const entry = this.entry
     const CMD_OPT_INDENT = 4
     const _wrap = (text: string, indent = 0) => wrap(text, this.config.lineLength - indent)
+    const _subindent = (text: string, amt: number) => text.replace(/\n/g, '\n' + ' '.repeat(amt))
     const optionOptions = {
       ...this.config.optionOptions,
       lineLength: this.config.lineLength - CMD_OPT_INDENT,
@@ -228,21 +237,40 @@ export class HelpGenerator {
           description && [
             _wrap(format(description, this.config.exampleOptions.descriptionStyle), 4),
           ],
+          ...(description && input && this.config.exampleOptions.compact ? [] : ['']),
           input &&
-            _wrap(
-              format(
-                [this.config.exampleOptions.inputPrefix, input].filter(Boolean).join(' '),
-                this.config.exampleOptions.inputStyle,
+            _subindent(
+              _wrap(
+                [
+                  this.config.exampleOptions.inputPrefix &&
+                    format(
+                      this.config.exampleOptions.inputPrefix,
+                      this.config.exampleOptions.prefixStyle,
+                    ),
+                  format(input, this.config.exampleOptions.inputStyle),
+                ]
+                  .filter(Boolean)
+                  .join(' '),
+                4,
               ),
-              4,
+              (this.config.exampleOptions.inputPrefix ?? '').length + 1,
             ),
           output &&
-            _wrap(
-              format(
-                [this.config.exampleOptions.outputPrefix, output].filter(Boolean).join(' '),
-                this.config.exampleOptions.outputStyle,
+            _subindent(
+              _wrap(
+                [
+                  this.config.exampleOptions.outputPrefix &&
+                    format(
+                      this.config.exampleOptions.outputPrefix,
+                      this.config.exampleOptions.prefixStyle,
+                    ),
+                  format(output, this.config.exampleOptions.outputStyle),
+                ]
+                  .filter(Boolean)
+                  .join(' '),
+                4,
               ),
-              4,
+              (this.config.exampleOptions.outputPrefix ?? '').length + 1,
             ),
           '',
         )
