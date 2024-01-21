@@ -404,7 +404,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
     try {
       let _args: Args = { ...this.args, ...args } as Args
       let _argv = [...argv]
-      const _a = this.args as Record<'extra', string[]>
+      const _a = this.args as Record<string, any>
 
       // fill defaults
       for (const option of this.options) {
