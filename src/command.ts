@@ -401,68 +401,79 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
     parent?: MassargCommand<any>,
     parseCommands = false,
   ): Args | Promise<void> | void {
-    let _args: Args = { ...this.args, ...args } as Args
-    let _argv = [...argv]
-    const _a = this.args as Record<string, string[]>
+    try {
+      let _args: Args = { ...this.args, ...args } as Args
+      let _argv = [...argv]
+      const _a = this.args as Record<'extra', string[]>
 
-    // fill defaults
-    for (const option of this.options) {
-      if (option.defaultValue !== undefined && _a[option.name] === undefined) {
-        _args[option.getOutputName() as keyof Args] = option.defaultValue as Args[keyof Args]
+      // fill defaults
+      for (const option of this.options) {
+        if (option.defaultValue !== undefined && _a[option.name] === undefined) {
+          _args[option.getOutputName() as keyof Args] = option.defaultValue as Args[keyof Args]
+        }
       }
-    }
 
-    // parse options
-    while (_argv.length) {
-      const arg = _argv.shift()!
+      // parse options
+      while (_argv.length) {
+        const arg = _argv.shift()!
 
-      // make sure option exists
-      const found = this.options.find((o) => o.isMatch(arg, this.optionPrefixes))
-      if (found) {
-        if (this.helpConfig.bindOption && found.name === 'help') {
-          if (parseCommands) {
-            this.printHelp()
-            return
+        // make sure option exists
+        const found = this.options.find((o) => o.isMatch(arg, this.optionPrefixes))
+        if (found) {
+          if (this.helpConfig.bindOption && found.name === 'help') {
+            if (parseCommands) {
+              this.printHelp()
+              return
+            }
+            return this.args as Args
           }
-          return this.args as Args
+          _argv = this.parseOption(arg, _argv)
+          _args = { ..._args, ...this.args }
+          continue
         }
-        _argv = this.parseOption(arg, _argv)
-        _args = { ..._args, ...this.args }
-        continue
+
+        // if not, try see if it's a command
+        const command = this.commands.find((c) => c.name === arg || c.aliases.includes(arg))
+        if (command) {
+          // this is dry run, just exit
+          if (!parseCommands) {
+            return command.getArgs(_argv, this.args, parent ?? this, false)
+            // break
+          }
+          // this is real run, parse command, pass unparsed args
+          return command.parse(_argv, this.args, parent ?? this)
+        }
+        // default option - passes arg value even without flag name
+        const defaultOption = this.options.find((o) => o.isDefault)
+        if (defaultOption) {
+          this.parseOption(`--${defaultOption.name}`, [arg])
+          continue
+        }
+        // not parsed by any step, add to extra key
+        _a.extra ??= []
+        _a.extra.push(arg)
+      }
+      // merge args
+      this.args = { ...this.args, ..._args }
+      this.assertRequired()
+      // dry run, just exit
+      if (!parseCommands) {
+        return this.args as Args
       }
 
-      // if not, try see if it's a command
-      const command = this.commands.find((c) => c.name === arg || c.aliases.includes(arg))
-      if (command) {
-        // this is dry run, just exit
-        if (!parseCommands) {
-          return command.getArgs(_argv, this.args, parent ?? this, false)
-          // break
-        }
-        // this is real run, parse command, pass unparsed args
-        return command.parse(_argv, this.args, parent ?? this)
+      // no sub command found, run main command
+      if (this._run) {
+        this._run(this.args as Args, parent ?? this)
       }
-      // default option - passes arg value even without flag name
-      const defaultOption = this.options.find((o) => o.isDefault)
-      if (defaultOption) {
-        this.parseOption(`--${defaultOption.name}`, [arg])
-        continue
+    } catch (e) {
+      if (isZodError(e)) {
+        e = new ValidationError({
+          path: [this.name, ...e.issues[0].path.map((p) => p.toString())],
+          code: e.issues[0].code,
+          message: e.issues[0].message,
+        })
       }
-      // not parsed by any step, add to extra key
-      _a.extra ??= []
-      _a.extra.push(arg)
-    }
-    // merge args
-    this.args = { ...this.args, ..._args }
-    this.assertRequired()
-    // dry run, just exit
-    if (!parseCommands) {
-      return this.args as Args
-    }
-
-    // no sub command found, run main command
-    if (this._run) {
-      this._run(this.args as Args, parent ?? this)
+      throw e
     }
   }
 

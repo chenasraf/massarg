@@ -2,7 +2,11 @@ import { massarg } from '.'
 import { MassargCommand } from './command'
 import { ParseError } from './error'
 
-type A = { test: boolean }
+type A = {
+  bool?: boolean
+  number?: number
+  string?: string
+}
 const echoCmd = massarg<{}>({
   name: 'echo',
   description: 'Echo back the arguments',
@@ -88,6 +92,9 @@ const main = massarg<A>({
   .main((opts, parser) => {
     console.log('Main command - printing all opts')
     console.log(opts, '\n')
+    if (opts.bool) {
+      throw new Error('Bool is true')
+    }
   })
   .command(echoCmd)
   .command(addCmd)
