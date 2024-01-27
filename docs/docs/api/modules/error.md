@@ -27,7 +27,7 @@ custom_edit_url: null
 
 #### Defined in
 
-[src/error.ts:3](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L3)
+[src/error.ts:3](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L3)
 
 ___
 
@@ -46,7 +46,7 @@ ___
 
 #### Defined in
 
-[src/error.ts:24](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L24)
+[src/error.ts:24](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L24)
 
 ## Functions
 
@@ -66,4 +66,4 @@ e is ZodError\<any\>
 
 #### Defined in
 
-[src/error.ts:56](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L56)
+[src/error.ts:56](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L56)

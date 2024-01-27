@@ -34,7 +34,7 @@ massarg(options).option({
 | Name | Type |
 | :------ | :------ |
 | `OptionType` | extends `any` = `unknown` |
-| `Args` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = [`ArgsObject`](../modules/command.md#argsobject-8) |
+| `Args` | extends [`ArgsObject`](../modules/command.md#argsobject) = [`ArgsObject`](../modules/command.md#argsobject) |
 
 ## Hierarchy
 
@@ -46,7 +46,7 @@ massarg(options).option({
 
 ## Implements
 
-- [`OptionConfig`](../modules/option.md#optionconfig-17)\<`OptionType`, `Args`\>
+- [`OptionConfig`](../modules/option.md#optionconfig-1)\<`OptionType`, `Args`\>
 
 ## Constructors
 
@@ -59,7 +59,7 @@ massarg(options).option({
 | Name | Type |
 | :------ | :------ |
 | `OptionType` | extends `unknown` = `unknown` |
-| `Args` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = [`ArgsObject`](../modules/command.md#argsobject-8) |
+| `Args` | extends [`ArgsObject`](../modules/command.md#argsobject) = [`ArgsObject`](../modules/command.md#argsobject) |
 
 #### Parameters
 
@@ -72,7 +72,7 @@ massarg(options).option({
 | `options.negationName?` | `string` | Negation name of the option, which can be used with the full option notation, e.g. `loud` for `--loud`. Defaults to `no-{name}`, e.g. `--no-quiet`. |
 | `options.defaultValue?` | `any` | Default value of the option |
 | `options.negationAliases?` | `string`[] | Negation aliases for the option, which can be used with the shorthand option notation, e.g. `Q` for `-Q`. Defaults to uppercase of each of the aliases provided. |
-| `options.parse?` | [`Parser`](../modules/option.md#parser-8)\<`Args`, `OptionType`\> | Parse the value of the option. You can return any type here, or throw an error if the value is invalid. |
+| `options.parse?` | [`Parser`](../modules/option.md#parser)\<`Args`, `OptionType`\> | Parse the value of the option. You can return any type here, or throw an error if the value is invalid. |
 | `options.array?` | `boolean` | Whether the option is an array. Array options can be specified multiple times, and the values will be collected into an array. Normally, specifying an option multiple times will override the previous value. |
 | `options.required?` | `boolean` | Whether the option is required. If it is required, parsing will throw an error if it's not present. |
 | `options.isDefault?` | `boolean` | Whether the option is the default option. The default option is the option that is used if no other option is specified, e.g. a value is passed in without an option name. Note that if commands match the same argument first, they will be used instead of the default option. |
@@ -85,7 +85,7 @@ massarg(options).option({
 
 #### Defined in
 
-[src/option.ts:174](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L174)
+[src/option.ts:174](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L174)
 
 ## Properties
 
@@ -99,7 +99,7 @@ OptionConfig.name
 
 #### Defined in
 
-[src/option.ts:162](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L162)
+[src/option.ts:162](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L162)
 
 ___
 
@@ -113,7 +113,7 @@ OptionConfig.negationName
 
 #### Defined in
 
-[src/option.ts:163](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L163)
+[src/option.ts:163](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L163)
 
 ___
 
@@ -127,7 +127,7 @@ OptionConfig.description
 
 #### Defined in
 
-[src/option.ts:164](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L164)
+[src/option.ts:164](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L164)
 
 ___
 
@@ -141,7 +141,7 @@ OptionConfig.defaultValue
 
 #### Defined in
 
-[src/option.ts:165](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L165)
+[src/option.ts:165](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L165)
 
 ___
 
@@ -155,7 +155,7 @@ OptionConfig.aliases
 
 #### Defined in
 
-[src/option.ts:166](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L166)
+[src/option.ts:166](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L166)
 
 ___
 
@@ -169,13 +169,13 @@ OptionConfig.negationAliases
 
 #### Defined in
 
-[src/option.ts:167](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L167)
+[src/option.ts:167](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L167)
 
 ___
 
 ### parse
 
-• **parse**: [`Parser`](../modules/option.md#parser-8)\<`Args`, `OptionType`\>
+• **parse**: [`Parser`](../modules/option.md#parser)\<`Args`, `OptionType`\>
 
 #### Implementation of
 
@@ -183,7 +183,7 @@ OptionConfig.parse
 
 #### Defined in
 
-[src/option.ts:168](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L168)
+[src/option.ts:168](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L168)
 
 ___
 
@@ -193,7 +193,7 @@ ___
 
 #### Defined in
 
-[src/option.ts:169](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L169)
+[src/option.ts:169](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L169)
 
 ___
 
@@ -203,7 +203,7 @@ ___
 
 #### Defined in
 
-[src/option.ts:170](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L170)
+[src/option.ts:170](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L170)
 
 ___
 
@@ -217,7 +217,7 @@ OptionConfig.isDefault
 
 #### Defined in
 
-[src/option.ts:171](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L171)
+[src/option.ts:171](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L171)
 
 ___
 
@@ -231,20 +231,20 @@ OptionConfig.outputName
 
 #### Defined in
 
-[src/option.ts:172](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L172)
+[src/option.ts:172](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L172)
 
 ## Methods
 
 ### fromTypedConfig
 
-▸ **fromTypedConfig**\<`T`, `A`\>(`config`): [`MassargOption`](option.MassargOption.md)\<`T`, [`ArgsObject`](../modules/command.md#argsobject-8)\>
+▸ **fromTypedConfig**\<`T`, `A`\>(`config`): [`MassargOption`](option.MassargOption.md)\<`T`, [`ArgsObject`](../modules/command.md#argsobject)\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
 | `T` | `unknown` |
-| `A` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = [`ArgsObject`](../modules/command.md#argsobject-8) |
+| `A` | extends [`ArgsObject`](../modules/command.md#argsobject) = [`ArgsObject`](../modules/command.md#argsobject) |
 
 #### Parameters
 
@@ -262,16 +262,16 @@ OptionConfig.outputName
 | `config.isDefault?` | `boolean` | Whether the option is the default option. The default option is the option that is used if no other option is specified, e.g. a value is passed in without an option name. Note that if commands match the same argument first, they will be used instead of the default option. |
 | `config.hidden?` | `boolean` | Whether the option is hidden. Hidden options are not displayed in the help output. |
 | `config.outputName?` | `string` | Specify a custom name for the output, which will be used when parsing the args. |
-| `config.parse?` | [`Parser`](../modules/option.md#parser-8)\<`A`, `T`\> | Parse the value of the option. You can return any type here, or throw an error if the value is invalid. |
+| `config.parse?` | [`Parser`](../modules/option.md#parser)\<`A`, `T`\> | Parse the value of the option. You can return any type here, or throw an error if the value is invalid. |
 | `config.type?` | ``"number"`` | - |
 
 #### Returns
 
-[`MassargOption`](option.MassargOption.md)\<`T`, [`ArgsObject`](../modules/command.md#argsobject-8)\>
+[`MassargOption`](option.MassargOption.md)\<`T`, [`ArgsObject`](../modules/command.md#argsobject)\>
 
 #### Defined in
 
-[src/option.ts:189](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L189)
+[src/option.ts:189](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L189)
 
 ___
 
@@ -285,7 +285,7 @@ ___
 
 #### Defined in
 
-[src/option.ts:199](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L199)
+[src/option.ts:199](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L199)
 
 ___
 
@@ -298,8 +298,8 @@ ___
 | Name | Type |
 | :------ | :------ |
 | `argv` | `string`[] |
-| `options` | [`ArgsObject`](../modules/command.md#argsobject-8) |
-| `prefixes` | [`Prefixes`](../modules/option.md#prefixes-8) |
+| `options` | [`ArgsObject`](../modules/command.md#argsobject) |
+| `prefixes` | [`Prefixes`](../modules/option.md#prefixes) |
 
 #### Returns
 
@@ -307,7 +307,7 @@ ___
 
 #### Defined in
 
-[src/option.ts:203](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L203)
+[src/option.ts:203](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L203)
 
 ___
 
@@ -321,7 +321,7 @@ ___
 
 #### Defined in
 
-[src/option.ts:231](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L231)
+[src/option.ts:231](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L231)
 
 ___
 
@@ -336,7 +336,7 @@ Returns true if the flag (including any prefixes) matches the name or aliases
 | Name | Type |
 | :------ | :------ |
 | `arg` | `string` |
-| `prefixes` | [`Prefixes`](../modules/option.md#prefixes-8) |
+| `prefixes` | [`Prefixes`](../modules/option.md#prefixes) |
 
 #### Returns
 
@@ -344,24 +344,24 @@ Returns true if the flag (including any prefixes) matches the name or aliases
 
 #### Defined in
 
-[src/option.ts:237](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L237)
+[src/option.ts:237](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L237)
 
 ___
 
 ### qualifiedNames
 
-▸ **qualifiedNames**(`prefixes`): [`QualifiedNames`](../modules/option.md#qualifiednames-8)
+▸ **qualifiedNames**(`prefixes`): [`QualifiedNames`](../modules/option.md#qualifiednames)
 
 #### Parameters
 
 | Name | Type |
 | :------ | :------ |
-| `prefixes` | [`Prefixes`](../modules/option.md#prefixes-8) |
+| `prefixes` | [`Prefixes`](../modules/option.md#prefixes) |
 
 #### Returns
 
-[`QualifiedNames`](../modules/option.md#qualifiednames-8)
+[`QualifiedNames`](../modules/option.md#qualifiednames)
 
 #### Defined in
 
-[src/option.ts:247](https://github.com/chenasraf/massarg/blob/48b3e64/src/option.ts#L247)
+[src/option.ts:247](https://github.com/chenasraf/massarg/blob/fe2fc21/src/option.ts#L247)
