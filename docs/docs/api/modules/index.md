@@ -10,7 +10,7 @@ custom_edit_url: null
 
 ### massarg
 
-Re-exports [massarg](massarg.md#massarg-8)
+Re-exports [massarg](massarg.md#massarg)
 
 ___
 
@@ -22,4 +22,4 @@ ___
 
 ### default
 
-Renames and re-exports [massarg](massarg.md#massarg-8)
+Renames and re-exports [massarg](massarg.md#massarg)

@@ -20,7 +20,7 @@ custom_edit_url: null
 
 | Name | Type |
 | :------ | :------ |
-| `Args` | extends [`ArgsObject`](command.md#argsobject-8) = [`ArgsObject`](command.md#argsobject-8) |
+| `Args` | extends [`ArgsObject`](command.md#argsobject) = [`ArgsObject`](command.md#argsobject) |
 
 #### Parameters
 
@@ -34,4 +34,4 @@ custom_edit_url: null
 
 #### Defined in
 
-[src/massarg.ts:23](https://github.com/chenasraf/massarg/blob/48b3e64/src/massarg.ts#L23)
+[src/massarg.ts:23](https://github.com/chenasraf/massarg/blob/fe2fc21/src/massarg.ts#L23)

@@ -25,7 +25,7 @@ This error is thrown when a validation fails.
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`ValidationErrorOptions`](../modules/error.md#validationerroroptions-8) |
+| `«destructured»` | [`ValidationErrorOptions`](../modules/error.md#validationerroroptions) |
 
 #### Returns
 
@@ -37,7 +37,7 @@ Error.constructor
 
 #### Defined in
 
-[src/error.ts:14](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L14)
+[src/error.ts:14](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L14)
 
 ## Properties
 
@@ -104,7 +104,7 @@ The path to the value that failed validation.
 
 #### Defined in
 
-[src/error.ts:8](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L8)
+[src/error.ts:8](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L8)
 
 ___
 
@@ -116,7 +116,7 @@ The error code.
 
 #### Defined in
 
-[src/error.ts:10](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L10)
+[src/error.ts:10](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L10)
 
 ___
 
@@ -132,7 +132,7 @@ Error.message
 
 #### Defined in
 
-[src/error.ts:12](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L12)
+[src/error.ts:12](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L12)
 
 ___
 

@@ -22,7 +22,7 @@ A type that makes all properties of an object required, recursively.
 
 #### Defined in
 
-[src/utils.ts:17](https://github.com/chenasraf/massarg/blob/48b3e64/src/utils.ts#L17)
+[src/utils.ts:17](https://github.com/chenasraf/massarg/blob/fe2fc21/src/utils.ts#L17)
 
 ## Functions
 
@@ -49,7 +49,7 @@ and using a boolean will only add it if it is `true`. Using 0 will also not add 
 
 #### Defined in
 
-[src/utils.ts:29](https://github.com/chenasraf/massarg/blob/48b3e64/src/utils.ts#L29)
+[src/utils.ts:29](https://github.com/chenasraf/massarg/blob/fe2fc21/src/utils.ts#L29)
 
 ___
 
@@ -72,7 +72,7 @@ Indents a string or an array of strings. Concatenates them all using `strConcat`
 
 #### Defined in
 
-[src/utils.ts:62](https://github.com/chenasraf/massarg/blob/48b3e64/src/utils.ts#L62)
+[src/utils.ts:62](https://github.com/chenasraf/massarg/blob/fe2fc21/src/utils.ts#L62)
 
 ___
 
@@ -92,7 +92,7 @@ ___
 
 #### Defined in
 
-[src/utils.ts:90](https://github.com/chenasraf/massarg/blob/48b3e64/src/utils.ts#L90)
+[src/utils.ts:90](https://github.com/chenasraf/massarg/blob/fe2fc21/src/utils.ts#L90)
 
 ___
 
@@ -115,7 +115,7 @@ regular spaced strings.
 
 #### Defined in
 
-[src/utils.ts:98](https://github.com/chenasraf/massarg/blob/48b3e64/src/utils.ts#L98)
+[src/utils.ts:98](https://github.com/chenasraf/massarg/blob/fe2fc21/src/utils.ts#L98)
 
 ___
 
@@ -135,7 +135,7 @@ ___
 
 #### Defined in
 
-[src/utils.ts:110](https://github.com/chenasraf/massarg/blob/48b3e64/src/utils.ts#L110)
+[src/utils.ts:110](https://github.com/chenasraf/massarg/blob/fe2fc21/src/utils.ts#L110)
 
 ___
 
@@ -155,7 +155,7 @@ ___
 
 #### Defined in
 
-[src/utils.ts:116](https://github.com/chenasraf/massarg/blob/48b3e64/src/utils.ts#L116)
+[src/utils.ts:116](https://github.com/chenasraf/massarg/blob/fe2fc21/src/utils.ts#L116)
 
 ___
 
@@ -175,4 +175,4 @@ ___
 
 #### Defined in
 
-[src/utils.ts:122](https://github.com/chenasraf/massarg/blob/48b3e64/src/utils.ts#L122)
+[src/utils.ts:122](https://github.com/chenasraf/massarg/blob/fe2fc21/src/utils.ts#L122)

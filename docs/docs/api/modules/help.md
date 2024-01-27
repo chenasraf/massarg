@@ -14,37 +14,187 @@ custom_edit_url: null
 
 ### GenerateTableCommandConfig
 
-Ƭ **GenerateTableCommandConfig**: `z.infer`\<typeof [`GenerateTableCommandConfig`](help.md#generatetablecommandconfig-16)\>
+Ƭ **GenerateTableCommandConfig**: `Object`
+
+#### Type declaration
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `lineLength?` | `number` | Length of each row in the table |
+| `compact?` | `boolean` | When `false`, each row is separated by a blank line |
+| `nameStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the command/option name |
+| `nameStyle.bold?` | `boolean` | - |
+| `nameStyle.underline?` | `boolean` | - |
+| `nameStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `nameStyle.reset?` | `boolean` | - |
+| `descriptionStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the command/option description |
+| `descriptionStyle.bold?` | `boolean` | - |
+| `descriptionStyle.underline?` | `boolean` | - |
+| `descriptionStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `descriptionStyle.reset?` | `boolean` | - |
+| `namePrefix?` | `string` | Prefix for the command/option name (default is the command's prefix) |
+| `aliasPrefix?` | `string` | Prefix for the command/option aliases (default is the command's prefix) |
 
 #### Defined in
 
-[src/help.ts:7](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L7)
+[src/help.ts:7](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L7)
 
-[src/help.ts:21](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L21)
+[src/help.ts:21](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L21)
 
 ___
 
 ### GenerateTableOptionConfig
 
-Ƭ **GenerateTableOptionConfig**: `z.infer`\<typeof [`GenerateTableOptionConfig`](help.md#generatetableoptionconfig-16)\>
+Ƭ **GenerateTableOptionConfig**: `Object`
+
+#### Type declaration
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `lineLength?` | `number` | Length of each row in the table |
+| `compact?` | `boolean` | When `false`, each row is separated by a blank line |
+| `nameStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the command/option name |
+| `nameStyle.bold?` | `boolean` | - |
+| `nameStyle.underline?` | `boolean` | - |
+| `nameStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `nameStyle.reset?` | `boolean` | - |
+| `descriptionStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the command/option description |
+| `descriptionStyle.bold?` | `boolean` | - |
+| `descriptionStyle.underline?` | `boolean` | - |
+| `descriptionStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `descriptionStyle.reset?` | `boolean` | - |
+| `namePrefix?` | `string` | Prefix for the command/option name (default is the command's prefix) |
+| `aliasPrefix?` | `string` | Prefix for the command/option aliases (default is the command's prefix) |
+| `displayNegations?` | `boolean` | Whether to display negations with each option name |
 
 #### Defined in
 
-[src/help.ts:23](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L23)
+[src/help.ts:23](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L23)
 
-[src/help.ts:29](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L29)
+[src/help.ts:29](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L29)
 
 ___
 
 ### HelpConfig
 
-Ƭ **HelpConfig**: `z.infer`\<typeof [`HelpConfig`](help.md#helpconfig-16)\>
+Ƭ **HelpConfig**: `Object`
+
+#### Type declaration
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `bindCommand?` | `boolean` | Whether to bind the help command to this command Set this to `true` to automatically add a `help` command to this command's subcommands. |
+| `bindOption?` | `boolean` | Whether to bind the help option to this command Set this to `true` to automatically add a `--help` option to this command's options. |
+| `useGlobalTableColumns?` | `boolean` | Whether to align all tables to the column widths, or have each table be independent. Default is `true` |
+| `commandOptions?` | \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string`  } | Options for generating the table of commands |
+| `commandOptions.compact?` | `boolean` | When `false`, each row is separated by a blank line |
+| `commandOptions.nameStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the command/option name |
+| `commandOptions.nameStyle.bold?` | `boolean` | - |
+| `commandOptions.nameStyle.underline?` | `boolean` | - |
+| `commandOptions.nameStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `commandOptions.nameStyle.reset?` | `boolean` | - |
+| `commandOptions.descriptionStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the command/option description |
+| `commandOptions.descriptionStyle.bold?` | `boolean` | - |
+| `commandOptions.descriptionStyle.underline?` | `boolean` | - |
+| `commandOptions.descriptionStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `commandOptions.descriptionStyle.reset?` | `boolean` | - |
+| `commandOptions.namePrefix?` | `string` | Prefix for the command/option name (default is the command's prefix) |
+| `commandOptions.aliasPrefix?` | `string` | Prefix for the command/option aliases (default is the command's prefix) |
+| `optionOptions?` | \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string` ; `displayNegations?`: `boolean`  } | Options for generating the table of options |
+| `optionOptions.compact?` | `boolean` | When `false`, each row is separated by a blank line |
+| `optionOptions.nameStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the command/option name |
+| `optionOptions.nameStyle.bold?` | `boolean` | - |
+| `optionOptions.nameStyle.underline?` | `boolean` | - |
+| `optionOptions.nameStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `optionOptions.nameStyle.reset?` | `boolean` | - |
+| `optionOptions.descriptionStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the command/option description |
+| `optionOptions.descriptionStyle.bold?` | `boolean` | - |
+| `optionOptions.descriptionStyle.underline?` | `boolean` | - |
+| `optionOptions.descriptionStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `optionOptions.descriptionStyle.reset?` | `boolean` | - |
+| `optionOptions.namePrefix?` | `string` | Prefix for the command/option name (default is the command's prefix) |
+| `optionOptions.aliasPrefix?` | `string` | Prefix for the command/option aliases (default is the command's prefix) |
+| `optionOptions.displayNegations?` | `boolean` | Whether to display negations with each option name |
+| `titleStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the help title |
+| `titleStyle.bold?` | `boolean` | - |
+| `titleStyle.underline?` | `boolean` | - |
+| `titleStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `titleStyle.reset?` | `boolean` | - |
+| `descriptionStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the help description |
+| `descriptionStyle.bold?` | `boolean` | - |
+| `descriptionStyle.underline?` | `boolean` | - |
+| `descriptionStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `descriptionStyle.reset?` | `boolean` | - |
+| `subtitleStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the help subtitles for commands, options and examples |
+| `subtitleStyle.bold?` | `boolean` | - |
+| `subtitleStyle.underline?` | `boolean` | - |
+| `subtitleStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `subtitleStyle.reset?` | `boolean` | - |
+| `usageStyle?` | \{ `prefix?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `main?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `command?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `options?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  }  } | Style of the help usage |
+| `usageStyle.prefix?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the help usage title - appears before the usage text (custom or auto) |
+| `usageStyle.prefix.bold?` | `boolean` | - |
+| `usageStyle.prefix.underline?` | `boolean` | - |
+| `usageStyle.prefix.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `usageStyle.prefix.reset?` | `boolean` | - |
+| `usageStyle.main?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | For custom usage text, this is the primary style used (right after the `prefix` style). For automated usage text, this style is used for the command/binary name |
+| `usageStyle.main.bold?` | `boolean` | - |
+| `usageStyle.main.underline?` | `boolean` | - |
+| `usageStyle.main.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `usageStyle.main.reset?` | `boolean` | - |
+| `usageStyle.command?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the help usage commands (if any) |
+| `usageStyle.command.bold?` | `boolean` | - |
+| `usageStyle.command.underline?` | `boolean` | - |
+| `usageStyle.command.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `usageStyle.command.reset?` | `boolean` | - |
+| `usageStyle.options?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the help usage options (if any) |
+| `usageStyle.options.bold?` | `boolean` | - |
+| `usageStyle.options.underline?` | `boolean` | - |
+| `usageStyle.options.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `usageStyle.options.reset?` | `boolean` | - |
+| `headerStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the help header |
+| `headerStyle.bold?` | `boolean` | - |
+| `headerStyle.underline?` | `boolean` | - |
+| `headerStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `headerStyle.reset?` | `boolean` | - |
+| `footerStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the help footer |
+| `footerStyle.bold?` | `boolean` | - |
+| `footerStyle.underline?` | `boolean` | - |
+| `footerStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `footerStyle.reset?` | `boolean` | - |
+| `lineLength?` | `number` | Maximum length of a row in the help output |
+| `exampleOptions?` | \{ `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `outputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputPrefix?`: `string` ; `outputPrefix?`: `string` ; `prefixStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `compact?`: `boolean`  } | Options for examples section |
+| `exampleOptions.descriptionStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the example description |
+| `exampleOptions.descriptionStyle.bold?` | `boolean` | - |
+| `exampleOptions.descriptionStyle.underline?` | `boolean` | - |
+| `exampleOptions.descriptionStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `exampleOptions.descriptionStyle.reset?` | `boolean` | - |
+| `exampleOptions.inputStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the example input |
+| `exampleOptions.inputStyle.bold?` | `boolean` | - |
+| `exampleOptions.inputStyle.underline?` | `boolean` | - |
+| `exampleOptions.inputStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `exampleOptions.inputStyle.reset?` | `boolean` | - |
+| `exampleOptions.outputStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the example output |
+| `exampleOptions.outputStyle.bold?` | `boolean` | - |
+| `exampleOptions.outputStyle.underline?` | `boolean` | - |
+| `exampleOptions.outputStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `exampleOptions.outputStyle.reset?` | `boolean` | - |
+| `exampleOptions.inputPrefix?` | `string` | Prefix for the example input (default: `$`) |
+| `exampleOptions.outputPrefix?` | `string` | Prefix for the example output (default: `>`) |
+| `exampleOptions.prefixStyle?` | \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } | Style of the example input/output prefixes |
+| `exampleOptions.prefixStyle.bold?` | `boolean` | - |
+| `exampleOptions.prefixStyle.underline?` | `boolean` | - |
+| `exampleOptions.prefixStyle.color?` | ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` | - |
+| `exampleOptions.prefixStyle.reset?` | `boolean` | - |
+| `exampleOptions.compact?` | `boolean` | Whether to compact the examples section |
+| `usageText?` | `string` | Text to display at the very top, describing CLI usage |
+| `headerText?` | `string` | Text to display above the description, below the usage |
+| `footerText?` | `string` | Text to display at the very bottom, below the examples |
 
 #### Defined in
 
-[src/help.ts:31](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L31)
+[src/help.ts:31](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L31)
 
-[src/help.ts:107](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L107)
+[src/help.ts:107](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L107)
 
 ___
 
@@ -66,7 +216,7 @@ ___
 
 #### Defined in
 
-[src/help.ts:183](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L183)
+[src/help.ts:183](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L183)
 
 ## Variables
 
@@ -76,9 +226,9 @@ ___
 
 #### Defined in
 
-[src/help.ts:7](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L7)
+[src/help.ts:7](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L7)
 
-[src/help.ts:21](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L21)
+[src/help.ts:21](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L21)
 
 ___
 
@@ -88,9 +238,9 @@ ___
 
 #### Defined in
 
-[src/help.ts:23](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L23)
+[src/help.ts:23](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L23)
 
-[src/help.ts:29](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L29)
+[src/help.ts:29](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L29)
 
 ___
 
@@ -100,16 +250,16 @@ ___
 
 #### Defined in
 
-[src/help.ts:31](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L31)
+[src/help.ts:31](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L31)
 
-[src/help.ts:107](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L107)
+[src/help.ts:107](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L107)
 
 ___
 
 ### defaultHelpConfig
 
-• `Const` **defaultHelpConfig**: [`DeepRequired`](utils.md#deeprequired-8)\<[`HelpConfig`](help.md#helpconfig-17)\>
+• `Const` **defaultHelpConfig**: [`DeepRequired`](utils.md#deeprequired)\<[`HelpConfig`](help.md#helpconfig-1)\>
 
 #### Defined in
 
-[src/help.ts:109](https://github.com/chenasraf/massarg/blob/48b3e64/src/help.ts#L109)
+[src/help.ts:109](https://github.com/chenasraf/massarg/blob/fe2fc21/src/help.ts#L109)

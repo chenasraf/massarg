@@ -25,7 +25,7 @@ This error is thrown when a parse fails on an option value.
 
 | Name | Type |
 | :------ | :------ |
-| `«destructured»` | [`ParseErrorOptions`](../modules/error.md#parseerroroptions-8) |
+| `«destructured»` | [`ParseErrorOptions`](../modules/error.md#parseerroroptions) |
 
 #### Returns
 
@@ -37,7 +37,7 @@ Error.constructor
 
 #### Defined in
 
-[src/error.ts:42](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L42)
+[src/error.ts:42](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L42)
 
 ## Properties
 
@@ -104,7 +104,7 @@ The path to the value that failed parsing.
 
 #### Defined in
 
-[src/error.ts:34](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L34)
+[src/error.ts:34](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L34)
 
 ___
 
@@ -116,7 +116,7 @@ The error code.
 
 #### Defined in
 
-[src/error.ts:36](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L36)
+[src/error.ts:36](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L36)
 
 ___
 
@@ -132,7 +132,7 @@ Error.message
 
 #### Defined in
 
-[src/error.ts:38](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L38)
+[src/error.ts:38](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L38)
 
 ___
 
@@ -144,7 +144,7 @@ The value that failed parsing.
 
 #### Defined in
 
-[src/error.ts:40](https://github.com/chenasraf/massarg/blob/48b3e64/src/error.ts#L40)
+[src/error.ts:40](https://github.com/chenasraf/massarg/blob/fe2fc21/src/error.ts#L40)
 
 ___
 
