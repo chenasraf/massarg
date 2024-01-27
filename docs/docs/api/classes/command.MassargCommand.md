@@ -30,7 +30,7 @@ massarg(options).command({
 
 | Name | Type |
 | :------ | :------ |
-| `Args` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = [`ArgsObject`](../modules/command.md#argsobject-8) |
+| `Args` | extends [`ArgsObject`](../modules/command.md#argsobject) = [`ArgsObject`](../modules/command.md#argsobject) |
 
 ## Hierarchy
 
@@ -42,7 +42,7 @@ massarg(options).command({
 
 ## Implements
 
-- `Omit`\<[`CommandConfig`](../modules/command.md#commandconfig-17)\<`Args`\>, ``"run"``\>
+- `Omit`\<[`CommandConfig`](../modules/command.md#commandconfig-1)\<`Args`\>, ``"run"``\>
 
 ## Constructors
 
@@ -54,7 +54,7 @@ massarg(options).command({
 
 | Name | Type |
 | :------ | :------ |
-| `Args` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = [`ArgsObject`](../modules/command.md#argsobject-8) |
+| `Args` | extends [`ArgsObject`](../modules/command.md#argsobject) = [`ArgsObject`](../modules/command.md#argsobject) |
 
 #### Parameters
 
@@ -63,7 +63,7 @@ massarg(options).command({
 | `options` | `Object` | - |
 | `options.name` | `string` | Command name |
 | `options.description` | `string` | Command description, displayed in the help output |
-| `options.run` | [`Runner`](../modules/command.md#runner-8)\<`Args`\> | Function used when invoking this command. It receives the parsed options and the primary instance of Massarg used to invoke this command (the top-level instance) |
+| `options.run` | [`Runner`](../modules/command.md#runner)\<`Args`\> | Function used when invoking this command. It receives the parsed options and the primary instance of Massarg used to invoke this command (the top-level instance) |
 | `options.aliases?` | `string`[] | Command aliases |
 | `options.optionPrefix?` | `string` | The prefix to match before option names, e.g. `--` |
 | `options.aliasPrefix?` | `string` | The prefix to match before option aliases, e.g. `-` |
@@ -75,7 +75,7 @@ massarg(options).command({
 
 #### Defined in
 
-[src/command.ts:86](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L86)
+[src/command.ts:86](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L86)
 
 ## Properties
 
@@ -89,7 +89,7 @@ Omit.name
 
 #### Defined in
 
-[src/command.ts:73](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L73)
+[src/command.ts:73](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L73)
 
 ___
 
@@ -103,7 +103,7 @@ Omit.description
 
 #### Defined in
 
-[src/command.ts:74](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L74)
+[src/command.ts:74](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L74)
 
 ___
 
@@ -117,7 +117,7 @@ Omit.aliases
 
 #### Defined in
 
-[src/command.ts:75](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L75)
+[src/command.ts:75](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L75)
 
 ___
 
@@ -127,17 +127,17 @@ ___
 
 #### Defined in
 
-[src/command.ts:77](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L77)
+[src/command.ts:77](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L77)
 
 ___
 
 ### options
 
-• **options**: [`MassargOption`](option.MassargOption.md)\<`unknown`, [`ArgsObject`](../modules/command.md#argsobject-8)\>[] = `[]`
+• **options**: [`MassargOption`](option.MassargOption.md)\<`unknown`, [`ArgsObject`](../modules/command.md#argsobject)\>[] = `[]`
 
 #### Defined in
 
-[src/command.ts:78](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L78)
+[src/command.ts:78](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L78)
 
 ___
 
@@ -147,7 +147,7 @@ ___
 
 #### Defined in
 
-[src/command.ts:79](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L79)
+[src/command.ts:79](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L79)
 
 ___
 
@@ -157,7 +157,7 @@ ___
 
 #### Defined in
 
-[src/command.ts:80](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L80)
+[src/command.ts:80](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L80)
 
 ___
 
@@ -167,7 +167,7 @@ ___
 
 #### Defined in
 
-[src/command.ts:82](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L82)
+[src/command.ts:82](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L82)
 
 ___
 
@@ -181,7 +181,7 @@ Omit.optionPrefix
 
 #### Defined in
 
-[src/command.ts:83](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L83)
+[src/command.ts:83](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L83)
 
 ___
 
@@ -195,35 +195,35 @@ Omit.aliasPrefix
 
 #### Defined in
 
-[src/command.ts:84](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L84)
+[src/command.ts:84](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L84)
 
 ## Accessors
 
 ### optionPrefixes
 
-• `get` **optionPrefixes**(): [`Prefixes`](../modules/option.md#prefixes-8)
+• `get` **optionPrefixes**(): [`Prefixes`](../modules/option.md#prefixes)
 
 #### Returns
 
-[`Prefixes`](../modules/option.md#prefixes-8)
+[`Prefixes`](../modules/option.md#prefixes)
 
 #### Defined in
 
-[src/command.ts:99](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L99)
+[src/command.ts:99](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L99)
 
 ___
 
 ### helpConfig
 
-• `get` **helpConfig**(): [`DeepRequired`](../modules/utils.md#deeprequired-8)\<\{ `bindCommand?`: `boolean` ; `bindOption?`: `boolean` ; `useGlobalTableColumns?`: `boolean` ; `commandOptions?`: \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string`  } ; `optionOptions?`: \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string` ; `displayNegations?`: `boolean`  } ; `titleStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `subtitleStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `usageStyle?`: \{ `prefix?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `main?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `command?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `options?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  }  } ; `headerStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `footerStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `lineLength?`: `number` ; `exampleOptions?`: \{ `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `outputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputPrefix?`: `string` ; `outputPrefix?`: `string` ; `prefixStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `compact?`: `boolean`  } ; `usageText?`: `string` ; `headerText?`: `string` ; `footerText?`: `string`  }\>
+• `get` **helpConfig**(): [`DeepRequired`](../modules/utils.md#deeprequired)\<\{ `bindCommand?`: `boolean` ; `bindOption?`: `boolean` ; `useGlobalTableColumns?`: `boolean` ; `commandOptions?`: \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string`  } ; `optionOptions?`: \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string` ; `displayNegations?`: `boolean`  } ; `titleStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `subtitleStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `usageStyle?`: \{ `prefix?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `main?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `command?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `options?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  }  } ; `headerStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `footerStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `lineLength?`: `number` ; `exampleOptions?`: \{ `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `outputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputPrefix?`: `string` ; `outputPrefix?`: `string` ; `prefixStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `compact?`: `boolean`  } ; `usageText?`: `string` ; `headerText?`: `string` ; `footerText?`: `string`  }\>
 
 #### Returns
 
-[`DeepRequired`](../modules/utils.md#deeprequired-8)\<\{ `bindCommand?`: `boolean` ; `bindOption?`: `boolean` ; `useGlobalTableColumns?`: `boolean` ; `commandOptions?`: \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string`  } ; `optionOptions?`: \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string` ; `displayNegations?`: `boolean`  } ; `titleStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `subtitleStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `usageStyle?`: \{ `prefix?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `main?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `command?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `options?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  }  } ; `headerStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `footerStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `lineLength?`: `number` ; `exampleOptions?`: \{ `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `outputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputPrefix?`: `string` ; `outputPrefix?`: `string` ; `prefixStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `compact?`: `boolean`  } ; `usageText?`: `string` ; `headerText?`: `string` ; `footerText?`: `string`  }\>
+[`DeepRequired`](../modules/utils.md#deeprequired)\<\{ `bindCommand?`: `boolean` ; `bindOption?`: `boolean` ; `useGlobalTableColumns?`: `boolean` ; `commandOptions?`: \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string`  } ; `optionOptions?`: \{ `compact?`: `boolean` ; `nameStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `namePrefix?`: `string` ; `aliasPrefix?`: `string` ; `displayNegations?`: `boolean`  } ; `titleStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `subtitleStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `usageStyle?`: \{ `prefix?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `main?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `command?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `options?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  }  } ; `headerStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `footerStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `lineLength?`: `number` ; `exampleOptions?`: \{ `descriptionStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `outputStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `inputPrefix?`: `string` ; `outputPrefix?`: `string` ; `prefixStyle?`: \{ `bold?`: `boolean` ; `underline?`: `boolean` ; `color?`: ``"red"`` \| ``"green"`` \| ``"yellow"`` \| ``"blue"`` \| ``"magenta"`` \| ``"cyan"`` \| ``"white"`` \| ``"gray"`` \| ``"grey"`` \| ``"brightRed"`` \| ``"brightGreen"`` \| ``"brightYellow"`` \| ``"brightBlue"`` \| ``"brightMagenta"`` \| ``"brightCyan"`` \| ``"brightWhite"`` ; `reset?`: `boolean`  } ; `compact?`: `boolean`  } ; `usageText?`: `string` ; `headerText?`: `string` ; `footerText?`: `string`  }\>
 
 #### Defined in
 
-[src/command.ts:106](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L106)
+[src/command.ts:106](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L106)
 
 ## Methods
 
@@ -243,7 +243,7 @@ to the sub-command when invoked.
 
 | Name | Type |
 | :------ | :------ |
-| `A` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = `Args` |
+| `A` | extends [`ArgsObject`](../modules/command.md#argsobject) = `Args` |
 
 #### Parameters
 
@@ -252,7 +252,7 @@ to the sub-command when invoked.
 | `config` | `Object` | - |
 | `config.name` | `string` | Command name |
 | `config.description` | `string` | Command description, displayed in the help output |
-| `config.run` | [`Runner`](../modules/command.md#runner-8)\<`A`\> | Function used when invoking this command. It receives the parsed options and the primary instance of Massarg used to invoke this command (the top-level instance) |
+| `config.run` | [`Runner`](../modules/command.md#runner)\<`A`\> | Function used when invoking this command. It receives the parsed options and the primary instance of Massarg used to invoke this command (the top-level instance) |
 | `config.aliases?` | `string`[] | Command aliases |
 | `config.optionPrefix?` | `string` | The prefix to match before option names, e.g. `--` |
 | `config.aliasPrefix?` | `string` | The prefix to match before option aliases, e.g. `-` |
@@ -263,7 +263,7 @@ to the sub-command when invoked.
 
 #### Defined in
 
-[src/command.ts:133](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L133)
+[src/command.ts:133](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L133)
 
 ▸ **command**\<`A`\>(`config`): [`MassargCommand`](command.MassargCommand.md)\<`Args` & `A`\>
 
@@ -271,7 +271,7 @@ to the sub-command when invoked.
 
 | Name | Type |
 | :------ | :------ |
-| `A` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = `Args` |
+| `A` | extends [`ArgsObject`](../modules/command.md#argsobject) = `Args` |
 
 #### Parameters
 
@@ -285,7 +285,7 @@ to the sub-command when invoked.
 
 #### Defined in
 
-[src/command.ts:134](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L134)
+[src/command.ts:134](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L134)
 
 ___
 
@@ -326,7 +326,7 @@ configuration.
 
 #### Defined in
 
-[src/command.ts:175](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L175)
+[src/command.ts:175](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L175)
 
 ▸ **flag**(`config`): [`MassargCommand`](command.MassargCommand.md)\<`Args`\>
 
@@ -342,7 +342,7 @@ configuration.
 
 #### Defined in
 
-[src/command.ts:176](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L176)
+[src/command.ts:176](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L176)
 
 ___
 
@@ -367,7 +367,7 @@ into a more complex type, or if you want to validate the value.
 | Name | Type |
 | :------ | :------ |
 | `T` | `string` |
-| `A` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = `Args` |
+| `A` | extends [`ArgsObject`](../modules/command.md#argsobject) = `Args` |
 
 #### Parameters
 
@@ -381,7 +381,7 @@ into a more complex type, or if you want to validate the value.
 
 #### Defined in
 
-[src/command.ts:209](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L209)
+[src/command.ts:209](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L209)
 
 ▸ **option**\<`T`, `A`\>(`config`): [`MassargCommand`](command.MassargCommand.md)\<`Args`\>
 
@@ -390,7 +390,7 @@ into a more complex type, or if you want to validate the value.
 | Name | Type |
 | :------ | :------ |
 | `T` | `string` |
-| `A` | extends [`ArgsObject`](../modules/command.md#argsobject-8) = `Args` |
+| `A` | extends [`ArgsObject`](../modules/command.md#argsobject) = `Args` |
 
 #### Parameters
 
@@ -408,7 +408,7 @@ into a more complex type, or if you want to validate the value.
 | `config.isDefault?` | `boolean` | Whether the option is the default option. The default option is the option that is used if no other option is specified, e.g. a value is passed in without an option name. Note that if commands match the same argument first, they will be used instead of the default option. |
 | `config.hidden?` | `boolean` | Whether the option is hidden. Hidden options are not displayed in the help output. |
 | `config.outputName?` | `string` | Specify a custom name for the output, which will be used when parsing the args. |
-| `config.parse?` | [`Parser`](../modules/option.md#parser-8)\<`A`, `T`\> | Parse the value of the option. You can return any type here, or throw an error if the value is invalid. |
+| `config.parse?` | [`Parser`](../modules/option.md#parser)\<`A`, `T`\> | Parse the value of the option. You can return any type here, or throw an error if the value is invalid. |
 | `config.type?` | ``"number"`` | - |
 
 #### Returns
@@ -417,7 +417,7 @@ into a more complex type, or if you want to validate the value.
 
 #### Defined in
 
-[src/command.ts:210](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L210)
+[src/command.ts:210](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L210)
 
 ___
 
@@ -447,7 +447,7 @@ required.
 
 #### Defined in
 
-[src/command.ts:286](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L286)
+[src/command.ts:286](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L286)
 
 ___
 
@@ -581,7 +581,7 @@ access the help output via `this.helpString()` and `this.printHelp()`.
 
 #### Defined in
 
-[src/command.ts:300](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L300)
+[src/command.ts:300](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L300)
 
 ___
 
@@ -598,7 +598,7 @@ If none is provided, help will be printed.
 
 | Name | Type |
 | :------ | :------ |
-| `run` | [`Runner`](../modules/command.md#runner-8)\<`Args`\> |
+| `run` | [`Runner`](../modules/command.md#runner)\<`Args`\> |
 
 #### Returns
 
@@ -606,7 +606,7 @@ If none is provided, help will be printed.
 
 #### Defined in
 
-[src/command.ts:318](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L318)
+[src/command.ts:318](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L318)
 
 ___
 
@@ -634,7 +634,7 @@ use `getArgs` instead.
 
 #### Defined in
 
-[src/command.ts:330](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L330)
+[src/command.ts:330](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L330)
 
 ___
 
@@ -659,7 +659,7 @@ Parse the given arguments and return the output args.
 
 #### Defined in
 
-[src/command.ts:368](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L368)
+[src/command.ts:368](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L368)
 
 ▸ **getArgs**(`argv`, `__args?`, `parent?`, `parseCommands?`): `Args`
 
@@ -678,7 +678,7 @@ Parse the given arguments and return the output args.
 
 #### Defined in
 
-[src/command.ts:374](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L374)
+[src/command.ts:374](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L374)
 
 ___
 
@@ -694,7 +694,7 @@ Generate the help output for this command, and return it as a string.
 
 #### Defined in
 
-[src/command.ts:478](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L478)
+[src/command.ts:478](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L478)
 
 ___
 
@@ -710,4 +710,4 @@ Print the help output for this command.
 
 #### Defined in
 
-[src/command.ts:485](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L485)
+[src/command.ts:485](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L485)

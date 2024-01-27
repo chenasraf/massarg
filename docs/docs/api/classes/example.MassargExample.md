@@ -28,7 +28,7 @@ custom_edit_url: null
 
 #### Defined in
 
-[src/example.ts:25](https://github.com/chenasraf/massarg/blob/48b3e64/src/example.ts#L25)
+[src/example.ts:25](https://github.com/chenasraf/massarg/blob/fe2fc21/src/example.ts#L25)
 
 ## Properties
 
@@ -38,7 +38,7 @@ custom_edit_url: null
 
 #### Defined in
 
-[src/example.ts:21](https://github.com/chenasraf/massarg/blob/48b3e64/src/example.ts#L21)
+[src/example.ts:21](https://github.com/chenasraf/massarg/blob/fe2fc21/src/example.ts#L21)
 
 ___
 
@@ -48,7 +48,7 @@ ___
 
 #### Defined in
 
-[src/example.ts:22](https://github.com/chenasraf/massarg/blob/48b3e64/src/example.ts#L22)
+[src/example.ts:22](https://github.com/chenasraf/massarg/blob/fe2fc21/src/example.ts#L22)
 
 ___
 
@@ -58,4 +58,4 @@ ___
 
 #### Defined in
 
-[src/example.ts:23](https://github.com/chenasraf/massarg/blob/48b3e64/src/example.ts#L23)
+[src/example.ts:23](https://github.com/chenasraf/massarg/blob/fe2fc21/src/example.ts#L23)
