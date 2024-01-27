@@ -14,13 +14,21 @@ custom_edit_url: null
 
 ### ExampleConfig
 
-Ƭ **ExampleConfig**: `z.infer`\<typeof [`ExampleConfig`](example.md#exampleconfig-16)\>
+Ƭ **ExampleConfig**: `Object`
+
+#### Type declaration
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `description?` | `string` | Description of the example. This will appear as a title above the input/output line(s). |
+| `input?` | `string` | Input of the example. This will appear as a line below the description, with a `$` prefix. The prefix can be changed using the `help()` function on the command. |
+| `output?` | `string` | Output of the example. This will appear as a line below the input, with a `>` prefix. The prefix can be changed using the `help()` function on the command. |
 
 #### Defined in
 
-[src/example.ts:4](https://github.com/chenasraf/massarg/blob/48b3e64/src/example.ts#L4)
+[src/example.ts:4](https://github.com/chenasraf/massarg/blob/fe2fc21/src/example.ts#L4)
 
-[src/example.ts:18](https://github.com/chenasraf/massarg/blob/48b3e64/src/example.ts#L18)
+[src/example.ts:18](https://github.com/chenasraf/massarg/blob/fe2fc21/src/example.ts#L18)
 
 ## Variables
 
@@ -30,6 +38,6 @@ custom_edit_url: null
 
 #### Defined in
 
-[src/example.ts:4](https://github.com/chenasraf/massarg/blob/48b3e64/src/example.ts#L4)
+[src/example.ts:4](https://github.com/chenasraf/massarg/blob/fe2fc21/src/example.ts#L4)
 
-[src/example.ts:18](https://github.com/chenasraf/massarg/blob/48b3e64/src/example.ts#L18)
+[src/example.ts:18](https://github.com/chenasraf/massarg/blob/fe2fc21/src/example.ts#L18)

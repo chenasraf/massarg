@@ -15,19 +15,30 @@ custom_edit_url: null
 
 ### CommandConfig
 
-Ƭ **CommandConfig**\<`RunArgs`\>: `z.infer`\<`ReturnType`\<typeof [`CommandConfig`](command.md#commandconfig-16)\>\>
+Ƭ **CommandConfig**\<`RunArgs`\>: `Object`
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `RunArgs` | extends [`ArgsObject`](command.md#argsobject-8) = [`ArgsObject`](command.md#argsobject-8) |
+| `RunArgs` | extends [`ArgsObject`](command.md#argsobject) = [`ArgsObject`](command.md#argsobject) |
+
+#### Type declaration
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `name` | `string` | Command name |
+| `description` | `string` | Command description, displayed in the help output |
+| `run` | [`Runner`](command.md#runner)\<`RunArgs`\> | Function used when invoking this command. It receives the parsed options and the primary instance of Massarg used to invoke this command (the top-level instance) |
+| `aliases?` | `string`[] | Command aliases |
+| `optionPrefix?` | `string` | The prefix to match before option names, e.g. `--` |
+| `aliasPrefix?` | `string` | The prefix to match before option aliases, e.g. `-` |
 
 #### Defined in
 
-[src/command.ts:18](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L18)
+[src/command.ts:18](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L18)
 
-[src/command.ts:40](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L40)
+[src/command.ts:40](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L40)
 
 ___
 
@@ -37,7 +48,7 @@ ___
 
 #### Defined in
 
-[src/command.ts:44](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L44)
+[src/command.ts:44](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L44)
 
 ___
 
@@ -49,7 +60,7 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `Args` | extends [`ArgsObject`](command.md#argsobject-8) |
+| `Args` | extends [`ArgsObject`](command.md#argsobject) |
 
 #### Type declaration
 
@@ -68,19 +79,19 @@ ___
 
 #### Defined in
 
-[src/command.ts:46](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L46)
+[src/command.ts:46](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L46)
 
 ## Functions
 
 ### CommandConfig
 
-▸ **CommandConfig**\<`RunArgs`\>(`args`): `ZodObject`\<\{ `name`: `ZodString` ; `description`: `ZodString` ; `aliases`: `ZodOptional`\<`ZodArray`\<`ZodString`, ``"many"``\>\> ; `run`: `ZodType`\<[`Runner`](command.md#runner-8)\<`RunArgs`\>, `ZodTypeDef`, [`Runner`](command.md#runner-8)\<`RunArgs`\>\> ; `optionPrefix`: `ZodOptional`\<`ZodDefault`\<`ZodString`\>\> ; `aliasPrefix`: `ZodOptional`\<`ZodDefault`\<`ZodString`\>\>  }, ``"strip"``, `ZodTypeAny`, \{ `name`: `string` ; `description`: `string` ; `run`: [`Runner`](command.md#runner-8)\<`RunArgs`\> ; `aliases?`: `string`[] ; `optionPrefix?`: `string` ; `aliasPrefix?`: `string`  }, \{ `name`: `string` ; `description`: `string` ; `run`: [`Runner`](command.md#runner-8)\<`RunArgs`\> ; `aliases?`: `string`[] ; `optionPrefix?`: `string` ; `aliasPrefix?`: `string`  }\>
+▸ **CommandConfig**\<`RunArgs`\>(`args`): `ZodObject`\<\{ `name`: `ZodString` ; `description`: `ZodString` ; `aliases`: `ZodOptional`\<`ZodArray`\<`ZodString`, ``"many"``\>\> ; `run`: `ZodType`\<[`Runner`](command.md#runner)\<`RunArgs`\>, `ZodTypeDef`, [`Runner`](command.md#runner)\<`RunArgs`\>\> ; `optionPrefix`: `ZodOptional`\<`ZodDefault`\<`ZodString`\>\> ; `aliasPrefix`: `ZodOptional`\<`ZodDefault`\<`ZodString`\>\>  }, ``"strip"``, `ZodTypeAny`, \{ `name`: `string` ; `description`: `string` ; `run`: [`Runner`](command.md#runner)\<`RunArgs`\> ; `aliases?`: `string`[] ; `optionPrefix?`: `string` ; `aliasPrefix?`: `string`  }, \{ `name`: `string` ; `description`: `string` ; `run`: [`Runner`](command.md#runner)\<`RunArgs`\> ; `aliases?`: `string`[] ; `optionPrefix?`: `string` ; `aliasPrefix?`: `string`  }\>
 
 #### Type parameters
 
 | Name | Type |
 | :------ | :------ |
-| `RunArgs` | extends [`ArgsObject`](command.md#argsobject-8) = [`ArgsObject`](command.md#argsobject-8) |
+| `RunArgs` | extends [`ArgsObject`](command.md#argsobject) = [`ArgsObject`](command.md#argsobject) |
 
 #### Parameters
 
@@ -90,8 +101,8 @@ ___
 
 #### Returns
 
-`ZodObject`\<\{ `name`: `ZodString` ; `description`: `ZodString` ; `aliases`: `ZodOptional`\<`ZodArray`\<`ZodString`, ``"many"``\>\> ; `run`: `ZodType`\<[`Runner`](command.md#runner-8)\<`RunArgs`\>, `ZodTypeDef`, [`Runner`](command.md#runner-8)\<`RunArgs`\>\> ; `optionPrefix`: `ZodOptional`\<`ZodDefault`\<`ZodString`\>\> ; `aliasPrefix`: `ZodOptional`\<`ZodDefault`\<`ZodString`\>\>  }, ``"strip"``, `ZodTypeAny`, \{ `name`: `string` ; `description`: `string` ; `run`: [`Runner`](command.md#runner-8)\<`RunArgs`\> ; `aliases?`: `string`[] ; `optionPrefix?`: `string` ; `aliasPrefix?`: `string`  }, \{ `name`: `string` ; `description`: `string` ; `run`: [`Runner`](command.md#runner-8)\<`RunArgs`\> ; `aliases?`: `string`[] ; `optionPrefix?`: `string` ; `aliasPrefix?`: `string`  }\>
+`ZodObject`\<\{ `name`: `ZodString` ; `description`: `ZodString` ; `aliases`: `ZodOptional`\<`ZodArray`\<`ZodString`, ``"many"``\>\> ; `run`: `ZodType`\<[`Runner`](command.md#runner)\<`RunArgs`\>, `ZodTypeDef`, [`Runner`](command.md#runner)\<`RunArgs`\>\> ; `optionPrefix`: `ZodOptional`\<`ZodDefault`\<`ZodString`\>\> ; `aliasPrefix`: `ZodOptional`\<`ZodDefault`\<`ZodString`\>\>  }, ``"strip"``, `ZodTypeAny`, \{ `name`: `string` ; `description`: `string` ; `run`: [`Runner`](command.md#runner)\<`RunArgs`\> ; `aliases?`: `string`[] ; `optionPrefix?`: `string` ; `aliasPrefix?`: `string`  }, \{ `name`: `string` ; `description`: `string` ; `run`: [`Runner`](command.md#runner)\<`RunArgs`\> ; `aliases?`: `string`[] ; `optionPrefix?`: `string` ; `aliasPrefix?`: `string`  }\>
 
 #### Defined in
 
-[src/command.ts:18](https://github.com/chenasraf/massarg/blob/48b3e64/src/command.ts#L18)
+[src/command.ts:18](https://github.com/chenasraf/massarg/blob/fe2fc21/src/command.ts#L18)
