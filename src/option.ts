@@ -9,12 +9,22 @@ export const OptionConfig = <OptionType, Args extends ArgsObject = ArgsObject>(
   z.object({
     /** Name of the option */
     name: z.string(),
+    /**
+     * Negation name of the option, which can be used with the full option notation, e.g. `loud` for `--loud`.
+     * Defaults to `no-{name}`, e.g. `--no-quiet`.
+     */
+    negationName: z.string().optional(),
     /** Description of the option, displayed in the help output */
     description: z.string(),
     /** Default value of the option */
     defaultValue: z.any().optional(),
     /** Aliases for the option, which can be used with the shorthand option notation. */
     aliases: z.string().array(),
+    /**
+     * Negation aliases for the option, which can be used with the shorthand option notation, e.g. `Q` for `-Q`.
+     * Defaults to uppercase of each of the aliases provided.
+     */
+    negationAliases: z.string().array().optional(),
     /**
      * Parse the value of the option. You can return any type here, or throw an error if the value
      * is invalid.
@@ -98,17 +108,27 @@ export type ArrayOptionConfig<T = unknown> = z.infer<
   ReturnType<typeof ArrayOptionConfig<z.ZodType<T>>>
 >
 
-// TODO turn to options
-export const OPT_FULL_PREFIX = '--'
-export const OPT_SHORT_PREFIX = '-'
-export const NEGATE_FULL_PREFIX = '--no-'
-export const NEGATE_SHORT_PREFIX = '^'
+export const DEFAULT_OPT_FULL_PREFIX = '--'
+export const DEFAULT_OPT_SHORT_PREFIX = '-'
 
+/* Prefixes for options */
 export type Prefixes = {
-  optionPrefix: string
+  normalPrefix: string
   aliasPrefix: string
-  negateFlagPrefix: string
-  negateAliasPrefix: string
+}
+
+/* Plain names, without prefixes/transformations */
+export type Names = {
+  name: string
+  aliases: string[]
+}
+
+/** Names with prefixes built-in */
+export type QualifiedNames = {
+  name: string
+  aliases: string[]
+  negationName: string
+  negationAliases: string[]
 }
 
 /** @internal */
@@ -140,9 +160,11 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
   implements OptionConfig<OptionType, Args>
 {
   name: string
+  negationName: string
   description: string
   defaultValue?: OptionType
   aliases: string[]
+  negationAliases: string[]
   parse: Parser<Args, OptionType>
   isArray: boolean
   isRequired: boolean
@@ -152,9 +174,11 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
   constructor(options: OptionConfig<OptionType, Args>) {
     OptionConfig(z.any()).parse(options)
     this.name = options.name
+    this.negationName = options.negationName ?? `no-${options.name}`
     this.description = options.description
     this.defaultValue = options.defaultValue
     this.aliases = options.aliases
+    this.negationAliases = options.negationAliases ?? this.aliases.map((a) => a.toUpperCase())
     this.parse = options.parse ?? ((x: string) => x as OptionType)
     this.isArray = options.array ?? false
     this.isDefault = options.isDefault ?? false
@@ -211,8 +235,22 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
 
   /** Returns true if the flag (including any prefixes) matches the name or aliases */
   isMatch(arg: string, prefixes: Prefixes): boolean {
-    const name = MassargOption.findNameInArg(arg, prefixes)
-    return name === this.name || this.aliases.includes(name)
+    const qualifiedNames = this.qualifiedNames(prefixes)
+    return (
+      arg === qualifiedNames.name ||
+      arg === qualifiedNames.negationName ||
+      qualifiedNames.aliases.includes(arg) ||
+      qualifiedNames.negationAliases.includes(arg)
+    )
+  }
+
+  qualifiedNames(prefixes: Prefixes): QualifiedNames {
+    return {
+      name: prefixes.normalPrefix + this.name,
+      aliases: this.aliases.map((a) => prefixes.aliasPrefix + a),
+      negationName: prefixes.normalPrefix + this.negationName,
+      negationAliases: this.negationAliases.map((a) => prefixes.aliasPrefix + a),
+    }
   }
 
   /**
@@ -220,25 +258,17 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
    * exists, as it is a static method; it only returns the name of the flag if it matches the
    * prefixes format.
    */
-  static findNameInArg(arg: string, prefixes: Prefixes): string {
-    const { optionPrefix, aliasPrefix, negateFlagPrefix, negateAliasPrefix } = prefixes
-    // negate full prefix
-    if (arg.startsWith(negateFlagPrefix)) {
-      return arg.slice(negateFlagPrefix.length)
-    }
-    if (arg.startsWith(optionPrefix)) {
-      return arg.slice(optionPrefix.length)
-    }
-    // negate short prefix
-    if (arg.startsWith(negateAliasPrefix)) {
-      return arg.slice(negateAliasPrefix.length)
-    }
-    // short prefix
-    if (arg.startsWith(aliasPrefix) || arg.startsWith(negateAliasPrefix)) {
-      return arg.slice(aliasPrefix.length)
-    }
-    return '<blank>'
-  }
+  // static findNameInArg(arg: string, prefixes: Prefixes): string {
+  //   const { normalPrefix: optionPrefix, aliasPrefix } = prefixes
+  //   if (arg.startsWith(optionPrefix)) {
+  //     return arg.slice(optionPrefix.length)
+  //   }
+  //   // short prefix
+  //   if (arg.startsWith(aliasPrefix)) {
+  //     return arg.slice(aliasPrefix.length)
+  //   }
+  //   return '<blank>'
+  // }
 }
 
 /**
@@ -325,9 +355,9 @@ export class MassargFlag extends MassargOption<boolean> {
 
   parseDetails(argv: string[], _options: ArgsObject, prefixes: Prefixes): ArgvValue<boolean> {
     try {
+      const qualifiedNames = this.qualifiedNames(prefixes)
       const isNegation =
-        argv[0]?.startsWith(prefixes.negateAliasPrefix) ||
-        argv[0]?.startsWith(prefixes.negateFlagPrefix)
+        argv[0] === qualifiedNames.negationName || qualifiedNames.negationAliases.includes(argv[0])
       if (!this.negatable && isNegation) {
         throw new ParseError({
           path: [this.name],
