@@ -1,13 +1,8 @@
 import z from 'zod'
 import { format, StringStyle, stripStyle } from './style'
 import { MassargCommand } from './command'
-import { DeepRequired, strConcat, indent, deepMerge } from './utils'
-import {
-  NEGATE_FULL_PREFIX,
-  NEGATE_SHORT_PREFIX,
-  OPT_FULL_PREFIX,
-  OPT_SHORT_PREFIX,
-} from './option'
+import { DeepRequired, strConcat, indent, _deepMerge } from './utils'
+import { DEFAULT_OPT_FULL_PREFIX, DEFAULT_OPT_SHORT_PREFIX } from './option'
 
 export const GenerateTableCommandConfig = z.object({
   /** Length of each row in the table */
@@ -27,10 +22,6 @@ export type GenerateTableCommandConfig = z.infer<typeof GenerateTableCommandConf
 
 export const GenerateTableOptionConfig = GenerateTableCommandConfig.merge(
   z.object({
-    /** Prefix for the command/option negations (default is the command's prefix) */
-    negatePrefix: z.string().optional(),
-    /** Prefix for the command/option negation aliases (default is the command's prefix) */
-    negateAliasPrefix: z.string().optional(),
     /** Whether to display negations with each option name */
     displayNegations: z.boolean().optional(),
   }),
@@ -127,10 +118,8 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
     },
   },
   optionOptions: {
-    namePrefix: OPT_FULL_PREFIX,
-    aliasPrefix: OPT_SHORT_PREFIX,
-    negatePrefix: NEGATE_FULL_PREFIX,
-    negateAliasPrefix: NEGATE_SHORT_PREFIX,
+    namePrefix: DEFAULT_OPT_FULL_PREFIX,
+    aliasPrefix: DEFAULT_OPT_SHORT_PREFIX,
     displayNegations: false,
     nameStyle: {
       color: 'yellow',
@@ -193,7 +182,9 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
 
 export type HelpItem = {
   name: string
+  negationName?: string
   aliases: string[]
+  negationAliases?: string[]
   description: string
   hidden?: boolean
   negatable?: boolean
@@ -205,7 +196,7 @@ export class HelpGenerator {
 
   constructor(entry: MassargCommand<any>, config?: HelpConfig) {
     this.entry = entry
-    this.config = HelpConfig.required().parse(deepMerge(entry.helpConfig, config))
+    this.config = HelpConfig.required().parse(_deepMerge(entry.helpConfig, config))
   }
 
   generate(): string {
@@ -367,27 +358,19 @@ function getItemDetails(
   o: HelpItem,
   options?: Pick<
     GenerateTableOptionConfig & GenerateTableOptionConfig,
-    'displayNegations' | 'namePrefix' | 'aliasPrefix' | 'negatePrefix' | 'negateAliasPrefix'
+    'displayNegations' | 'namePrefix' | 'aliasPrefix'
   >,
 ): ParsedHelpItem {
-  const {
-    displayNegations = false,
-    namePrefix = '',
-    negatePrefix = '',
-    aliasPrefix = '',
-    negateAliasPrefix = '',
-  } = options ?? {}
+  const { displayNegations = false, namePrefix = '', aliasPrefix = '' } = options ?? {}
   const description = o.description
   const hidden = o.hidden || false
   const negatable = (displayNegations && o.negatable) || false
 
   const cmdNames = {
     full: `${namePrefix}${o.name}`,
-    fullNegated: negatePrefix ? `${negatePrefix}${o.name}` : undefined,
+    fullNegated: `${namePrefix}no-${o.name}`,
     aliases: o.aliases.map((a) => `${aliasPrefix}${a}`).join(' | '),
-    aliasesNegated: negatePrefix
-      ? o.aliases.map((a) => `${negateAliasPrefix}${a}`).join(' | ')
-      : undefined,
+    aliasesNegated: o.aliases.map((a) => `${aliasPrefix}${a}`).join(' | '),
   }
   const name = [
     cmdNames.full,
@@ -409,8 +392,6 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
     lineLength = 80,
     namePrefix = '',
     aliasPrefix = '',
-    negatePrefix = '',
-    negateAliasPrefix = '',
     displayNegations = false,
     compact = false,
     ...config
@@ -420,8 +401,6 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
       getItemDetails(o, {
         namePrefix,
         aliasPrefix,
-        negatePrefix,
-        negateAliasPrefix,
         displayNegations,
       }),
     )

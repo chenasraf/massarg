@@ -6,14 +6,12 @@ import {
   MassargFlag,
   TypedOptionConfig,
   MassargHelpFlag,
-  OPT_FULL_PREFIX,
-  NEGATE_FULL_PREFIX,
-  OPT_SHORT_PREFIX,
-  NEGATE_SHORT_PREFIX,
+  DEFAULT_OPT_FULL_PREFIX,
+  DEFAULT_OPT_SHORT_PREFIX,
   Prefixes,
   FlagConfig,
 } from './option'
-import { DeepRequired, setOrPush, deepMerge, getErrorMessage, capitalize } from './utils'
+import { DeepRequired, _setOrPush, _deepMerge, getErrorMessage, capitalize } from './utils'
 import { MassargExample, ExampleConfig } from './example'
 import { format } from './style'
 
@@ -33,14 +31,10 @@ export const CommandConfig = <RunArgs extends ArgsObject = ArgsObject>(args: z.Z
       .function()
       .args(args, z.any())
       .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<RunArgs>>,
-    /** Prefix of options understood by this command */
-    optionPrefix: z.string().default(OPT_FULL_PREFIX).optional(),
-    /** Prefix of negated flags understood by this command */
-    negateFlagPrefix: z.string().default(NEGATE_FULL_PREFIX).optional(),
-    /** Prefix of aliases of options understood by this command */
-    optionAliasPrefix: z.string().default(OPT_SHORT_PREFIX).optional(),
-    /** Prefix of aliases of negated flags understood by this command */
-    negateAliasPrefix: z.string().default(NEGATE_SHORT_PREFIX).optional(),
+    /** The prefix to match before option names, e.g. `--` */
+    optionPrefix: z.string().default(DEFAULT_OPT_FULL_PREFIX).optional(),
+    /** The prefix to match before option aliases, e.g. `-` */
+    aliasPrefix: z.string().default(DEFAULT_OPT_SHORT_PREFIX).optional(),
   })
 
 export type CommandConfig<RunArgs extends ArgsObject = ArgsObject> = z.infer<
@@ -86,10 +80,8 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
   args: Partial<Args> = {}
   private _helpConfig: HelpConfig
   parent?: MassargCommand<any>
-  optionPrefix = OPT_FULL_PREFIX
-  negateFlagPrefix = NEGATE_FULL_PREFIX
-  optionAliasPrefix = OPT_SHORT_PREFIX
-  negateAliasPrefix = NEGATE_SHORT_PREFIX
+  optionPrefix = DEFAULT_OPT_FULL_PREFIX
+  aliasPrefix = DEFAULT_OPT_SHORT_PREFIX
 
   constructor(options: CommandConfig<Args>, parent?: MassargCommand<any>) {
     CommandConfig(z.any()).parse(options)
@@ -101,37 +93,27 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
     this.parent = parent
     // TODO mix these with help config
     this.optionPrefix = options.optionPrefix ?? this.optionPrefix
-    this.negateFlagPrefix = options.negateFlagPrefix ?? this.negateFlagPrefix
-    this.optionAliasPrefix = options.optionAliasPrefix ?? this.optionAliasPrefix
-    this.negateAliasPrefix = options.negateAliasPrefix ?? this.negateAliasPrefix
+    this.aliasPrefix = options.aliasPrefix ?? this.aliasPrefix
   }
 
   get optionPrefixes(): Prefixes {
-    return this.getPrefixes()
-  }
-
-  private getPrefixes(): Prefixes {
     return {
-      optionPrefix: this.optionPrefix,
-      aliasPrefix: this.optionAliasPrefix,
-      negateFlagPrefix: this.negateFlagPrefix,
-      negateAliasPrefix: this.negateAliasPrefix,
+      normalPrefix: this.optionPrefix,
+      aliasPrefix: this.aliasPrefix,
     }
   }
 
   get helpConfig(): DeepRequired<HelpConfig> {
     if (this.parent) {
-      return deepMerge(this.parent.helpConfig, this._helpConfig)
+      return _deepMerge(this.parent.helpConfig, this._helpConfig)
     }
-    return deepMerge(
+    return _deepMerge(
       defaultHelpConfig,
-      deepMerge(
+      _deepMerge(
         {
           optionOptions: {
             namePrefix: this.optionPrefix,
-            aliasPrefix: this.optionAliasPrefix,
-            negatePrefix: this.negateFlagPrefix,
-            negateAliasPrefix: this.negateAliasPrefix,
+            aliasPrefix: this.aliasPrefix,
           },
         } as Partial<HelpConfig>,
         this._helpConfig,
@@ -367,14 +349,14 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
     const option = this.options.find((o) => o.isMatch(arg, prefixes))
     if (!option) {
       throw new ValidationError({
-        path: [MassargOption.findNameInArg(arg, prefixes)],
+        path: [arg.slice(prefixes.normalPrefix.length)],
         code: 'unknown_option',
         message: 'Unknown option',
       })
     }
     const res = option.parseDetails([arg, ...argv], { ...this.args }, prefixes)
 
-    this.args[res.key as keyof Args] = setOrPush<Args[keyof Args]>(
+    this.args[res.key as keyof Args] = _setOrPush<Args[keyof Args]>(
       res.value,
       this.args[res.key as keyof Args],
       option.isArray,

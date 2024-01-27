@@ -1,5 +1,5 @@
 import z from 'zod'
-import { zodEnumFromObjKeys } from './utils'
+import { _zodEnumFromObjKeys } from './utils'
 export { strConcat, indent } from './utils'
 
 export const ansiStyles = {
@@ -31,7 +31,7 @@ export const ansiColors = {
 export const StringStyle = z.object({
   bold: z.boolean().optional(),
   underline: z.boolean().optional(),
-  color: zodEnumFromObjKeys(ansiColors).optional(),
+  color: _zodEnumFromObjKeys(ansiColors).optional(),
   reset: z.boolean().default(true).optional(),
 })
 

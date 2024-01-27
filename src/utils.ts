@@ -1,8 +1,7 @@
 import z from 'zod'
-import { ValidationError } from './error'
 
 /** @internal */
-export function setOrPush<T>(
+export function _setOrPush<T>(
   newValue: unknown,
   currentValue: T[] | T | undefined,
   isArray: boolean,
@@ -68,19 +67,19 @@ export function indent(str: Parseable | Parseable[], indent = 2): string {
 }
 
 /** @internal */
-export function zodEnumFromObjKeys<K extends string>(obj: Record<K, any>): z.ZodEnum<[K, ...K[]]> {
+export function _zodEnumFromObjKeys<K extends string>(obj: Record<K, any>): z.ZodEnum<[K, ...K[]]> {
   const [firstKey, ...otherKeys] = Object.keys(obj) as K[]
   return z.enum([firstKey, ...otherKeys])
 }
 
 /** @internal */
-export function deepMerge<T1, T2>(obj1: T1, obj2: T2): NonNullable<T1> & NonNullable<T2> {
+export function _deepMerge<T1, T2>(obj1: T1, obj2: T2): NonNullable<T1> & NonNullable<T2> {
   const res = { ...obj1 } as any
   if (obj1 == null) return obj2 as any
   if (obj2 == null) return obj1 as any
   for (const [key, value] of Object.entries(obj2 as never)) {
     if (typeof value === 'object' && typeof res[key] === 'object') {
-      res[key] = deepMerge(res[key], value)
+      res[key] = _deepMerge(res[key], value)
     } else {
       res[key] = value
     }
