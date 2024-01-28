@@ -4,7 +4,7 @@ import type * as Preset from '@docusaurus/preset-classic'
 
 const config: Config = {
   title: 'Massarg',
-  tagline: 'Dinosaurs are cool',
+  tagline: 'Flexible, powerful, and simple command/argument parser for CLI applications',
   favicon: 'img/favicon.ico',
 
   // Set the production url of your site here
@@ -100,7 +100,7 @@ const config: Config = {
     navbar: {
       title: 'Massarg',
       logo: {
-        alt: 'My Site Logo',
+        alt: 'Massarg Logo',
         src: 'img/logo.svg',
       },
       items: [
@@ -109,6 +109,11 @@ const config: Config = {
           sidebarId: 'tutorialSidebar',
           position: 'left',
           label: 'Docs',
+        },
+        {
+          href: 'https://npmjs.com/package/massarg',
+          label: 'NPM',
+          position: 'right',
         },
         {
           href: 'https://github.com/chenasraf/massarg',
@@ -145,6 +150,10 @@ const config: Config = {
         {
           title: 'More',
           items: [
+            {
+              label: 'NPM',
+              href: 'https://npmjs.com/package/massarg',
+            },
             {
               label: 'GitHub',
               href: 'https://github.com/chenasraf/massarg',
