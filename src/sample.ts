@@ -104,6 +104,7 @@ const main = massarg<A>({
     description: 'Example boolean option',
     aliases: ['b'],
     negatable: true,
+    defaultValue: false,
   })
   .option({
     name: 'string',

@@ -24,6 +24,10 @@ export const GenerateTableOptionConfig = GenerateTableCommandConfig.merge(
   z.object({
     /** Whether to display negations with each option name */
     displayNegations: z.boolean().optional(),
+    /** Whether to display the default value with each option (if it has one) */
+    displayDefaultValue: z.boolean().optional(),
+    /** Style of the default value */
+    defaultValueStyle: StringStyle.optional(),
   }),
 )
 export type GenerateTableOptionConfig = z.infer<typeof GenerateTableOptionConfig>
@@ -46,7 +50,11 @@ export const HelpConfig = z.object({
   useGlobalTableColumns: z.boolean().default(true).optional(),
 
   /** Options for generating the table of commands */
-  commandOptions: GenerateTableCommandConfig.omit({ lineLength: true }).optional(),
+  commandOptions: GenerateTableCommandConfig.omit({
+    lineLength: true,
+    dislayDefaultValue: true,
+    defaultValueStyle: true,
+  }).optional(),
   /** Options for generating the table of options */
   optionOptions: GenerateTableOptionConfig.omit({ lineLength: true }).optional(),
   /** Style of the help title */
@@ -121,11 +129,15 @@ export const defaultHelpConfig: DeepRequired<HelpConfig> = {
     namePrefix: DEFAULT_OPT_FULL_PREFIX,
     aliasPrefix: DEFAULT_OPT_SHORT_PREFIX,
     displayNegations: false,
+    displayDefaultValue: true,
     nameStyle: {
       color: 'yellow',
     },
     descriptionStyle: {
       color: 'gray',
+    },
+    defaultValueStyle: {
+      color: 'brightWhite',
     },
   },
   descriptionStyle: {},
@@ -188,6 +200,7 @@ export type HelpItem = {
   description: string
   hidden?: boolean
   negatable?: boolean
+  defaultValue?: any
 }
 
 export class HelpGenerator {
@@ -215,9 +228,9 @@ export class HelpGenerator {
     }
     const maxNameLength = this.config.useGlobalTableColumns
       ? Math.max(
-          getMaxNameLength(entry.options.map((e) => getItemDetails(e, optionOptions))),
-          getMaxNameLength(entry.commands.map((e) => getItemDetails(e, commandOptions))),
-        )
+        getMaxNameLength(entry.options.map((e) => getItemDetails(e, optionOptions))),
+        getMaxNameLength(entry.commands.map((e) => getItemDetails(e, commandOptions))),
+      )
       : undefined
     const options = generateHelpTable(entry.options, optionOptions, maxNameLength).trimEnd()
     const commands = generateHelpTable(entry.commands, commandOptions, maxNameLength).trimEnd()
@@ -230,39 +243,39 @@ export class HelpGenerator {
           ],
           ...(description && input && this.config.exampleOptions.compact ? [] : ['']),
           input &&
-            _subindent(
-              _wrap(
-                [
-                  this.config.exampleOptions.inputPrefix &&
-                    format(
-                      this.config.exampleOptions.inputPrefix,
-                      this.config.exampleOptions.prefixStyle,
-                    ),
-                  format(input, this.config.exampleOptions.inputStyle),
-                ]
-                  .filter(Boolean)
-                  .join(' '),
-                4,
-              ),
-              (this.config.exampleOptions.inputPrefix ?? '').length + 1,
+          _subindent(
+            _wrap(
+              [
+                this.config.exampleOptions.inputPrefix &&
+                format(
+                  this.config.exampleOptions.inputPrefix,
+                  this.config.exampleOptions.prefixStyle,
+                ),
+                format(input, this.config.exampleOptions.inputStyle),
+              ]
+                .filter(Boolean)
+                .join(' '),
+              4,
             ),
+            (this.config.exampleOptions.inputPrefix ?? '').length + 1,
+          ),
           output &&
-            _subindent(
-              _wrap(
-                [
-                  this.config.exampleOptions.outputPrefix &&
-                    format(
-                      this.config.exampleOptions.outputPrefix,
-                      this.config.exampleOptions.prefixStyle,
-                    ),
-                  format(output, this.config.exampleOptions.outputStyle),
-                ]
-                  .filter(Boolean)
-                  .join(' '),
-                4,
-              ),
-              (this.config.exampleOptions.outputPrefix ?? '').length + 1,
+          _subindent(
+            _wrap(
+              [
+                this.config.exampleOptions.outputPrefix &&
+                format(
+                  this.config.exampleOptions.outputPrefix,
+                  this.config.exampleOptions.prefixStyle,
+                ),
+                format(output, this.config.exampleOptions.outputStyle),
+              ]
+                .filter(Boolean)
+                .join(' '),
+              4,
             ),
+            (this.config.exampleOptions.outputPrefix ?? '').length + 1,
+          ),
           '',
         )
       })
@@ -274,17 +287,17 @@ export class HelpGenerator {
         _wrap(
           usageText
             ? strConcat(
-                format('Usage:', this.config.usageStyle.prefix),
-                format(usageText, this.config.usageStyle.main),
-              )
+              format('Usage:', this.config.usageStyle.prefix),
+              format(usageText, this.config.usageStyle.main),
+            )
             : [
-                format(`Usage:`, this.config.usageStyle.prefix),
-                format(entry.name, this.config.usageStyle.main),
-                commands.length && format('[command]', this.config.usageStyle.command),
-                options.length && format('[options]', this.config.usageStyle.options),
-              ]
-                .filter(Boolean)
-                .join(' '),
+              format(`Usage:`, this.config.usageStyle.prefix),
+              format(entry.name, this.config.usageStyle.main),
+              commands.length && format('[command]', this.config.usageStyle.command),
+              options.length && format('[options]', this.config.usageStyle.options),
+            ]
+              .filter(Boolean)
+              .join(' '),
         ),
         headerText.length && ['', format(headerText, this.config.descriptionStyle)],
         entry.description.length && [
@@ -292,27 +305,27 @@ export class HelpGenerator {
           _wrap(format(entry.description, this.config.descriptionStyle)),
         ],
         commands.length &&
-          indent([
-            '',
-            format(
-              entry.parent ? `Commands for ${entry.name}:` : 'Commands:',
-              this.config.subtitleStyle,
-            ),
-            '',
-            indent(commands),
-          ]),
+        indent([
+          '',
+          format(
+            entry.parent ? `Commands for ${entry.name}:` : 'Commands:',
+            this.config.subtitleStyle,
+          ),
+          '',
+          indent(commands),
+        ]),
         options.length &&
-          indent([
-            '',
-            format(
-              entry.parent ? `Options for ${entry.name}:` : 'Options:',
-              this.config.subtitleStyle,
-            ),
-            '',
-            indent(options),
-          ]),
+        indent([
+          '',
+          format(
+            entry.parent ? `Options for ${entry.name}:` : 'Options:',
+            this.config.subtitleStyle,
+          ),
+          '',
+          indent(options),
+        ]),
         examples.length &&
-          indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
+        indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
         footerText.length && ['', format(footerText, this.config.descriptionStyle)],
       ) + '\n'
     )
@@ -349,6 +362,8 @@ type ParsedHelpItem = {
   description: string
   hidden: boolean
   negatable: boolean
+  displayNegations: boolean
+  defaultValue: any
 }
 
 const getMaxNameLength = (items: ParsedHelpItem[]): number =>
@@ -365,6 +380,7 @@ function getItemDetails(
   const description = o.description
   const hidden = o.hidden || false
   const negatable = (displayNegations && o.negatable) || false
+  const defaultValue = o.defaultValue ?? null
 
   const cmdNames = {
     full: `${namePrefix}${o.name}`,
@@ -380,7 +396,7 @@ function getItemDetails(
   ]
     .filter(Boolean)
     .join(' | ')
-  return { name, description, hidden, negatable }
+  return { name, description, hidden, negatable, displayNegations, defaultValue }
 }
 
 function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableOptionConfig>(
@@ -393,6 +409,7 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
     namePrefix = '',
     aliasPrefix = '',
     displayNegations = false,
+    displayDefaultValue = false,
     compact = false,
     ...config
   } = fullConfig as GenerateTableOptionConfig
@@ -410,7 +427,10 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
   const descStyle = (desc: string) => format(desc, config.descriptionStyle)
   const table = rows.map((row) => {
     const name = nameStyle(row.name.padEnd(maxNameLength! + 2))
-    const description = descStyle(row.description)
+    let description = descStyle(row.description)
+    if (displayDefaultValue && row.defaultValue != null) {
+      description += ` ${format(`(default: ${row.defaultValue})`, config.defaultValueStyle)}`
+    }
     const length = stripStyle(name).length + stripStyle(description).length
     if (length <= lineLength) {
       const line = `${name}${description}`
