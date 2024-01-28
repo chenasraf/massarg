@@ -41,6 +41,9 @@ export type CommandConfig<RunArgs extends ArgsObject = ArgsObject> = z.infer<
   ReturnType<typeof CommandConfig<RunArgs>>
 >
 
+/**
+ * An object with string keys and any values.
+ */
 export type ArgsObject = Record<string | number | symbol, any>
 
 export type Runner<Args extends ArgsObject> = (
@@ -168,9 +171,10 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
    * a boolean value, or to indicate that a command should be run in a different
    * mode.
    *
-   * A flag can be negated by prefixing it with `no-`. For example, `--no-verbose`,
-   * or by prefixing the alias with `^` instead of `-`. This is configurable via the command's
-   * configuration.
+   * A flag can be negated by using `negatable: true`. By default, the negated name is the same
+   * as the option name, prefixed by `no-`, and each of the aliases will be uppercased.
+   * For example, `--verbose` and `--no-verbose`, or `-v` and `-V`.
+   * This behavior can be overridden by the `negatedName` and `negatedAliases` options.
    */
   flag(config: FlagConfig): MassargCommand<Args>
   flag(config: MassargFlag): MassargCommand<Args>
