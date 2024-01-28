@@ -135,15 +135,15 @@ const config: Config = {
           ],
         },
         {
-          title: 'Community',
+          title: 'More from @casraf',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/massarg',
+              label: 'Simple Scaffold - Easy codegen tool',
+              href: 'https://chenasraf.github.io/simple-scaffold',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'Website',
+              href: 'https://casraf.dev',
             },
           ],
         },
