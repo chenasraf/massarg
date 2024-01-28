@@ -313,7 +313,7 @@ export class HelpGenerator {
           ]),
         examples.length &&
           indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
-        footerText.length && ['', _wrap(format(footerText, this.config.descriptionStyle))],
+        footerText.length && ['', format(footerText, this.config.descriptionStyle)],
       ) + '\n'
     )
   }
