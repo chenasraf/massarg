@@ -50,6 +50,9 @@ export type OptionConfig<T = unknown, Args extends ArgsObject = ArgsObject> = z.
   ReturnType<typeof OptionConfig<T, Args>>
 >
 
+/**
+ * Configuration for a flag (boolean argument) that can be passed to a command.
+ */
 export const FlagConfig = OptionConfig<boolean>(z.any())
   .omit({ parse: true, isDefault: true })
   .merge(
@@ -84,6 +87,7 @@ export type Parser<Args extends ArgsObject = ArgsObject, OptionType extends any 
   y: Args,
 ) => OptionType
 
+/** {@link OptionConfig} with a specified value type */
 export const TypedOptionConfig = <OptionType, Args extends ArgsObject = ArgsObject>(
   type: z.ZodType<OptionType>,
 ) =>
@@ -117,7 +121,9 @@ export type ArrayOptionConfig<T = unknown> = z.infer<
   ReturnType<typeof ArrayOptionConfig<z.ZodType<T>>>
 >
 
+/** The default prefixes for options */
 export const DEFAULT_OPT_FULL_PREFIX = '--'
+/** The default prefix for option aliases */
 export const DEFAULT_OPT_SHORT_PREFIX = '-'
 
 /* Prefixes for options */
@@ -173,7 +179,12 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
   defaultValue?: OptionType
   aliases: string[]
   parse: Parser<Args, OptionType>
+  /**
+   * Whether this option can be used multiple times. Any passed values will end up in an array
+   * instead of each usage overwriting the existing value.
+   */
   isArray: boolean
+  /** Whether this option is required. Failing to specify this option will throw an error. */
   isRequired: boolean
   isDefault: boolean
   outputName?: string
@@ -191,6 +202,10 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     this.outputName = options.outputName
   }
 
+  /**
+   * Create a typed option from a configuration. Currently supports `number` options which
+   * are automatically transformed from `string` to `number`.
+   */
   static fromTypedConfig<T = unknown, A extends ArgsObject = ArgsObject>(
     config: TypedOptionConfig<T, A>,
   ): MassargOption<T> {
@@ -201,10 +216,18 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     return new MassargOption(config as OptionConfig<T>)
   }
 
+  /**
+   * Returns the key which this option outputs to in the final object.
+   *
+   * @default The camelCase version of this option's name.
+   *
+   * Can be overridden with {@link outputName}.
+   */
   getOutputName(): string {
     return this.outputName || toCamelCase(this.name)
   }
 
+  /** @internal */
   parseDetails(argv: string[], options: ArgsObject, prefixes: Prefixes): ArgvValue<OptionType> {
     let input = ''
     try {
@@ -233,6 +256,7 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     }
   }
 
+  /** Get the help string for this option */
   helpString(): string {
     const aliases = this.aliases.length ? `|${this.aliases.join('|-')}` : ''
     return `--${this.name}${aliases} ${this.description}`
@@ -249,6 +273,7 @@ export class MassargOption<OptionType extends any = unknown, Args extends ArgsOb
     )
   }
 
+  /** Return the finalized names that will cause this option to match. */
   qualifiedNames(prefixes: Prefixes): QualifiedNames {
     return {
       name: prefixes.normalPrefix + this.name,
@@ -310,7 +335,7 @@ export class MassargNumber extends MassargOption<number> {
 }
 
 /**
- * An option that can be passed to a command.
+ * A boolean option that can be passed to a command.
  *
  * A flag is an option that is either present or not. It can be used to toggle
  * a boolean value, or to indicate that a command should be run in a different
@@ -332,8 +357,11 @@ export class MassargNumber extends MassargOption<number> {
  * ```
  */
 export class MassargFlag extends MassargOption<boolean> {
+  /** Whether this flag may be negated using `negationName` or `negationAliases`. */
   negatable: boolean
+  /** The negation name of this flag, which can be used with the full option notation. */
   negationName: string
+  /** The negation aliases of this flag, which can be used with the shorthand option notation. */
   negationAliases: string[]
 
   constructor(options: FlagConfig) {
@@ -396,6 +424,7 @@ export class MassargFlag extends MassargOption<boolean> {
   }
 }
 
+/** A flag that can be passed to a command to show the help message. */
 export class MassargHelpFlag extends MassargFlag {
   constructor(config: Partial<Omit<OptionConfig<boolean>, 'parse'>> = {}) {
     super({
