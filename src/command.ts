@@ -491,6 +491,12 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
   }
 }
 
+/**
+ * A command that prints help for this command, or a sub-command if specified.
+ *
+ * This command is automatically added to the top-level command if you use `bindCommand: true` in `help()`.
+ * You can also add it manually to any command.
+ */
 export class MassargHelpCommand<
   T extends { command?: string } = { command?: string },
 > extends MassargCommand<T> {
