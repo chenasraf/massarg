@@ -11,7 +11,8 @@ export function _setOrPush<T>(
   }
   return newValue as T
 }
-type Parseable = string | number | boolean | null | undefined | Record<string, unknown>
+/** A value that can be stringified using one of the util functions. */
+export type Parseable = string | number | boolean | null | undefined | Record<string, unknown>
 
 /** A type that makes all properties of an object required, recursively. */
 export type DeepRequired<T> = {
