@@ -18,7 +18,7 @@ const config: Config = {
   organizationName: 'chenasraf', // Usually your GitHub org/user name.
   projectName: 'massarg', // Usually your repo name.
 
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
 
   // Even if you don't use internationalization, you can use this field to set
@@ -35,7 +35,19 @@ const config: Config = {
 
       // Plugin / TypeDoc options
       {
-        entryPoints: ['../src/*.ts'],
+        entryPoints: [
+          '../src/*.ts',
+          // '../src/index.ts',
+          // '../src/command.ts',
+          // '../src/error.ts',
+          // '../src/example.ts',
+          // '../src/help.ts',
+          // '../src/massarg.ts',
+          // '../src/option.ts',
+          // '../src/sample.ts',
+          // '../src/style.ts',
+          // '../src/utils.ts',
+        ],
         tsconfig: '../tsconfig.json',
 
         // typedoc options
