@@ -1,10 +1,7 @@
 name: Release
 on:
   push:
-    branches:
-      - master
-      - pre
-
+    branches: [master, pre, develop]
 permissions:
   contents: read # for checkout
 
