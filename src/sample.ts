@@ -109,8 +109,15 @@ const main = massarg<A>({
   .flag({
     name: 'bool2',
     description:
-      'Ad consequat eiusmod officia aliqua. Eiusmod officia aliqua amet et laboris. Aliqua amet et laboris officia proident. Et, laboris officia proident minim duis officia. Proident minim, duis officia.',
+      'Ad consequat eiusmod officia aliqua. Eiusmod officia aliqua amet et laboris. Aliqua amet et laboris officia proident. Et, laboris officia proident minim duis officia. Proident minim, duis officia. Non commodo ...',
     aliases: ['e'],
+    negatable: true,
+    defaultValue: false,
+  })
+  .flag({
+    name: 'bool3',
+    description: 'Ad consequat eiusmod officia aliqua. Eiusmod officia aliqua ',
+    aliases: ['e22'],
     negatable: true,
     defaultValue: false,
   })
