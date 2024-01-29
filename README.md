@@ -136,9 +136,9 @@ The full documentation can be found here:
 [Massarg Documentation](https://chenasraf.github.io/massarg)
 
 - [Massarg](https://chenasraf.github.io/massarg/docs/api/classes/massarg.Massarg)
-- [MassargOption](https://chenasraf.github.io/massarg/docs/api/classes/massarg.MassargOption)
-- [MassargFlag](https://chenasraf.github.io/massarg/docs/api/classes/massarg.MassargFlag)
-- [MassargExample](https://chenasraf.github.io/massarg/docs/api/classes/massarg.MassargExample)
+- [MassargOption](https://chenasraf.github.io/massarg/docs/api/classes/option.MassargOption)
+- [MassargFlag](https://chenasraf.github.io/massarg/docs/api/classes/option.MassargFlag)
+- [MassargExample](https://chenasraf.github.io/massarg/docs/api/classes/example.MassargExample)
 
 ## Contributing
 
