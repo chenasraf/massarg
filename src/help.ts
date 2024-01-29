@@ -423,46 +423,30 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
   const nameStyle = (name: string) => format(name, config.nameStyle)
   const descStyle = (desc: string) => format(desc, config.descriptionStyle)
   const table = rows.map((row) => {
-    const nameLines = row.name.split('\n').map((l) => nameStyle(l).padEnd(maxNameLength! + 2))
-    let description = descStyle(row.description)
-    if (displayDefaultValue && row.defaultValue != null) {
-      description += ` ${format(`(default: ${row.defaultValue})`, config.defaultValueStyle)}`
-    }
-    const firstNameLine = nameStyle(stripStyle(nameLines[0]).padEnd(maxNameLength! + 2))
-    const length =
-      stripStyle(firstNameLine).padEnd(maxNameLength! + 2).length + stripStyle(description).length
-    if (length <= lineLength) {
-      let line = `${firstNameLine}${description}`
-      if (nameLines.length > 1) {
-        line += `\n${nameLines.slice(1).join('\n')}`
-      }
-      if (!compact) {
-        return `${line}\n`
-      }
-      return line
-    }
+    const nameLines = row.name.split('\n').map((l) => nameStyle(l.padEnd(maxNameLength! + 2)))
+    const descLines = wrap(row.description, lineLength - maxNameLength!)
+      .split('\n')
+      .map(descStyle)
+    const max = Math.max(nameLines.length, descLines.length)
     const subRows: string[] = []
-    const words = description.split(' ')
-    let currentRow = firstNameLine
-    let rowCount = 0
 
-    for (const word of words) {
-      if (stripStyle(currentRow).length + stripStyle(word).length + 1 > lineLength) {
-        subRows.push(currentRow)
-        rowCount++
-        if (rowCount > 0 && rowCount < nameLines.length) {
-          currentRow = nameStyle(stripStyle(nameLines[rowCount]).padEnd(maxNameLength! + 2))
-          currentRow += format('', { ...config.descriptionStyle, reset: false })
-        } else {
-          currentRow = ' '.repeat(maxNameLength! + 2)
-        }
-      }
-      currentRow += `${word} `
+    for (let i = 0; i < max - 1; i++) {
+      subRows.push(`${(nameLines[i] ?? ' ').padEnd(maxNameLength! + 2)}${descLines[i] ?? ''}`)
     }
-    if (rowCount > 0 && rowCount < nameLines.length) {
-      currentRow += ` ${nameLines[rowCount].padEnd(maxNameLength! + 2)}`
+    const defaultText =
+      displayDefaultValue && row.defaultValue != null
+        ? format(`(default: ${row.defaultValue})`, config.defaultValueStyle)
+        : ''
+    if (subRows.length + 1 + stripStyle(defaultText).length <= lineLength) {
+      subRows.push(
+        `${(nameLines[max - 1] ?? ' ').padEnd(maxNameLength! + 2)}${descLines[max - 1] ?? ''}${defaultText}`,
+      )
+    } else {
+      subRows.push(
+        `${(nameLines[max - 1] ?? ' ').padEnd(maxNameLength! + 2)}${descLines[max - 1] ?? ''}`,
+      )
+      subRows.push(defaultText.padStart(maxNameLength! + 2))
     }
-    subRows.push(currentRow)
 
     if (!compact) {
       subRows.push('')
