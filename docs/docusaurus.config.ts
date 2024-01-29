@@ -35,7 +35,7 @@ const config: Config = {
 
       // Plugin / TypeDoc options
       {
-        entryPoints: ['../src/index.ts'],
+        entryPoints: ['../src/*.ts'],
         tsconfig: '../tsconfig.json',
 
         // typedoc options
