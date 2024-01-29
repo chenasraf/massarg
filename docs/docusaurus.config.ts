@@ -35,19 +35,7 @@ const config: Config = {
 
       // Plugin / TypeDoc options
       {
-        entryPoints: [
-          '../src/*.ts',
-          // '../src/index.ts',
-          // '../src/command.ts',
-          // '../src/error.ts',
-          // '../src/example.ts',
-          // '../src/help.ts',
-          // '../src/massarg.ts',
-          // '../src/option.ts',
-          // '../src/sample.ts',
-          // '../src/style.ts',
-          // '../src/utils.ts',
-        ],
+        entryPoints: ['../src/index.ts'],
         tsconfig: '../tsconfig.json',
 
         // typedoc options
@@ -105,10 +93,11 @@ const config: Config = {
       },
       items: [
         {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
           position: 'left',
-          label: 'Docs',
+          type: 'docSidebar',
+          sidebarId: 'api',
+          label: 'API',
+          to: 'docs/api',
         },
         {
           href: 'https://npmjs.com/package/massarg',
