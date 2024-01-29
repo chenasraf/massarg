@@ -325,7 +325,7 @@ export class HelpGenerator {
           indent(options),
         ]),
         examples.length &&
-          indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
+        indent(['', format('Examples:', this.config.subtitleStyle), '', indent(examples)]),
         footerText.length && ['', format(footerText, this.config.descriptionStyle)],
       ) + '\n'
     )
@@ -367,7 +367,7 @@ type ParsedHelpItem = {
 }
 
 const getMaxNameLength = (items: ParsedHelpItem[]): number =>
-  Math.max(...items.map((o) => o.name.length))
+  Math.max(...items.map((o) => Math.max(...o.name.split('\n').map((c) => c.length))))
 
 function getItemDetails(
   o: HelpItem,
@@ -384,18 +384,15 @@ function getItemDetails(
 
   const cmdNames = {
     full: `${namePrefix}${o.name}`,
-    fullNegated: `${namePrefix}no-${o.name}`,
+    fullNegated: `${namePrefix}${o.negationName}`,
     aliases: o.aliases.map((a) => `${aliasPrefix}${a}`).join(' | '),
-    aliasesNegated: o.aliases.map((a) => `${aliasPrefix}${a}`).join(' | '),
+    aliasesNegated: (o.negationAliases ?? []).map((a) => `${aliasPrefix}${a}`).join(' | '),
   }
-  const name = [
-    cmdNames.full,
-    cmdNames.aliases,
-    negatable && cmdNames.fullNegated,
-    negatable && cmdNames.aliasesNegated,
-  ]
+  const normal = [cmdNames.full, cmdNames.aliases].filter(Boolean).join(' | ')
+  const negations = [negatable && cmdNames.fullNegated, negatable && cmdNames.aliasesNegated]
     .filter(Boolean)
     .join(' | ')
+  const name = [normal, negations].filter(Boolean).join('\n')
   return { name, description, hidden, negatable, displayNegations, defaultValue }
 }
 
@@ -426,14 +423,19 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
   const nameStyle = (name: string) => format(name, config.nameStyle)
   const descStyle = (desc: string) => format(desc, config.descriptionStyle)
   const table = rows.map((row) => {
-    const name = nameStyle(row.name.padEnd(maxNameLength! + 2))
+    const nameLines = row.name.split('\n').map((l) => nameStyle(l).padEnd(maxNameLength! + 2))
     let description = descStyle(row.description)
     if (displayDefaultValue && row.defaultValue != null) {
       description += ` ${format(`(default: ${row.defaultValue})`, config.defaultValueStyle)}`
     }
-    const length = stripStyle(name).length + stripStyle(description).length
+    const firstNameLine = nameStyle(stripStyle(nameLines[0]).padEnd(maxNameLength! + 2))
+    const length =
+      stripStyle(firstNameLine).padEnd(maxNameLength! + 2).length + stripStyle(description).length
     if (length <= lineLength) {
-      const line = `${name}${description}`
+      let line = `${firstNameLine}${description}`
+      if (nameLines.length > 1) {
+        line += `\n${nameLines.slice(1).join('\n')}`
+      }
       if (!compact) {
         return `${line}\n`
       }
@@ -441,14 +443,24 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
     }
     const subRows: string[] = []
     const words = description.split(' ')
-    let currentRow = name
+    let currentRow = firstNameLine
+    let rowCount = 0
 
     for (const word of words) {
       if (stripStyle(currentRow).length + stripStyle(word).length + 1 > lineLength) {
         subRows.push(currentRow)
-        currentRow = ' '.repeat(maxNameLength! + 2)
+        rowCount++
+        if (rowCount > 0 && rowCount < nameLines.length) {
+          currentRow = nameStyle(stripStyle(nameLines[rowCount]).padEnd(maxNameLength! + 2))
+          currentRow += format('', { ...config.descriptionStyle, reset: false })
+        } else {
+          currentRow = ' '.repeat(maxNameLength! + 2)
+        }
       }
       currentRow += `${word} `
+    }
+    if (rowCount > 0 && rowCount < nameLines.length) {
+      currentRow += ` ${nameLines[rowCount].padEnd(maxNameLength! + 2)}`
     }
     subRows.push(currentRow)
 
