@@ -40,12 +40,7 @@ module.exports = {
     [
       '@semantic-release/git',
       {
-        assets: [
-          'package.json',
-          process.env.GITHUB_REF === 'refs/heads/master' && process.env.GITHUB_EVENT_NAME === 'push'
-            ? 'CHANGELOG.md'
-            : undefined,
-        ].filter(Boolean),
+        assets: ['package.json', 'CHANGELOG.md'].filter(Boolean),
       },
     ],
     //
