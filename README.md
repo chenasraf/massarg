@@ -1,5 +1,16 @@
 # massarg
 
+<h2 align="center">
+
+[GitHub](https://github.com/chenasraf/massarg) |
+[Documentation](https://chenasraf.github.io/massarg) | [NPM](https://npmjs.com/package/massarg) |
+[casraf.dev](https://casraf.dev)
+
+![version](https://img.shields.io/github/package-json/v/chenasraf/massarg/master?label=version)
+![build](https://img.shields.io/github/actions/workflow/status/chenasraf/massarg/release.yml?branch=master)
+
+</h2>
+
 Massarg is a modern, flexible, powerful, and simple-to-use command/argument parser for JS
 applications, allowing you to create complex but easy applications that consume command-line
 arguments and commands.
@@ -14,7 +25,6 @@ a way to parse the chain of commands, flags or options.
 And it should look good too, right?
 
 ![Previw of shell help output](https://github.com/chenasraf/massarg/assets/167217/37dc8d4f-8e14-4040-9986-1d3113314731)
-
 
 ## Features
 
