@@ -83,8 +83,8 @@ const main = massarg<A>({
   .help({
     bindOption: true,
     bindCommand: true,
-    headerText: 'This is a header',
-    footerText: 'This is a footer',
+    headerText: 'This is the header',
+    footerText: 'This is the footer',
     optionOptions: {
       displayNegations: true,
     },
@@ -106,25 +106,9 @@ const main = massarg<A>({
     negatable: true,
     defaultValue: false,
   })
-  .flag({
-    name: 'bool2',
-    description:
-      'Ad consequat eiusmod officia aliqua. Eiusmod officia aliqua amet et laboris. Aliqua amet et laboris officia proident. Et, laboris officia proident minim duis officia. Proident minim, duis officia. Non commodo ...',
-    aliases: ['e'],
-    negatable: true,
-    defaultValue: false,
-  })
-  .flag({
-    name: 'bool3',
-    description: 'Ad consequat eiusmod officia aliqua. Eiusmod officia aliqua ',
-    aliases: ['e22'],
-    negatable: true,
-    defaultValue: false,
-  })
   .option({
     name: 'string',
-    description:
-      'Laborum qui ex do consectetur magna. Ex do consectetur magna officia, consequat. Magna officia consequat labore veniam proident exercitation occaecat. Consequat labore veniam proident exercitation occaecat. Veniam proident exercitation occaecat aliquip.',
+    description: 'A string option',
     aliases: ['s'],
   })
   .option({
@@ -141,8 +125,7 @@ const main = massarg<A>({
   .example({
     description: 'Example add command',
     input: 'my-cli add --component foo --classes bar --classes baz --custom 123',
-    output:
-      'Duis ad consectetur dolore elit laborum do et aute consequat magna eu consequat dolore dolor commodo sit enim reprehenderit lorem consectetur adipiscing officia nisi adipiscing consequat consequat labore sint incididunt',
+    output: '42',
   })
 
 // console.log("Opts:", main.getArgs(process.argv.slice(2)), "\n")

@@ -78,18 +78,20 @@ const parser = massarg({
   // A subcommand example
   .command({
     name: 'foo',
-    description: 'a sub command',
+    description: 'a foo command',
     aliases: ['f'],
+    // default prefixes:
     optionPrefix: '--',
     aliasPrefix: '-',
-    run: (options) => console.log('foo command'), // The function to run
+    // The function to run for this command
+    run: (options) => console.log('foo command', options),
   })
   // A subcommand example, which contains its own set of options or sub commands. This is infinitely
   // nestible.
   .command(
     massarg({
       name: 'bar',
-      description: 'another sub command',
+      description: 'a bar command',
       aliases: ['s'],
       run: (options) => console.log('bar command', options),
     }).option({
