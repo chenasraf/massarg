@@ -423,7 +423,9 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
   const nameStyle = (name: string) => format(name, config.nameStyle)
   const descStyle = (desc: string) => format(desc, config.descriptionStyle)
   const table = rows.map((row) => {
-    const nameLines = row.name.split('\n').map((l) => nameStyle(l.padEnd(maxNameLength! + 2)))
+    const padAmount = 4
+    const pad = (s: string) => s.padEnd(maxNameLength! + padAmount)
+    const nameLines = row.name.split('\n').map((l) => nameStyle(pad(l)))
     const descLines = wrap(row.description, lineLength - maxNameLength!)
       .split('\n')
       .map(descStyle)
@@ -431,21 +433,17 @@ function generateHelpTable<T extends GenerateTableCommandConfig | GenerateTableO
     const subRows: string[] = []
 
     for (let i = 0; i < max - 1; i++) {
-      subRows.push(`${(nameLines[i] ?? ' ').padEnd(maxNameLength! + 2)}${descLines[i] ?? ''}`)
+      subRows.push(`${pad(nameLines[i] ?? ' ')}${descLines[i] ?? ''}`)
     }
     const defaultText =
       displayDefaultValue && row.defaultValue != null
         ? format(`(default: ${row.defaultValue})`, config.defaultValueStyle)
         : ''
     if (subRows.length + 1 + stripStyle(defaultText).length <= lineLength) {
-      subRows.push(
-        `${(nameLines[max - 1] ?? ' ').padEnd(maxNameLength! + 2)}${descLines[max - 1] ?? ''}${defaultText}`,
-      )
+      subRows.push(`${pad(nameLines[max - 1] ?? ' ')}${descLines[max - 1] ?? ''}${defaultText}`)
     } else {
-      subRows.push(
-        `${(nameLines[max - 1] ?? ' ').padEnd(maxNameLength! + 2)}${descLines[max - 1] ?? ''}`,
-      )
-      subRows.push(defaultText.padStart(maxNameLength! + 2))
+      subRows.push(`${pad(nameLines[max - 1] ?? ' ')}${descLines[max - 1] ?? ''}`)
+      subRows.push(defaultText.padStart(maxNameLength! + padAmount))
     }
 
     if (!compact) {
