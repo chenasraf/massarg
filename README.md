@@ -6,7 +6,8 @@
 [Documentation](https://chenasraf.github.io/massarg) | [NPM](https://npmjs.com/package/massarg) |
 [casraf.dev](https://casraf.dev)
 
-![version](https://img.shields.io/github/package-json/v/chenasraf/massarg/master?label=version)
+![version](https://img.shields.io/github/package-json/v/chenasraf/massarg/master?label=latest)
+![version](https://img.shields.io/github/package-json/v/chenasraf/massarg/pre?label=pre)
 ![build](https://img.shields.io/github/actions/workflow/status/chenasraf/massarg/release.yml?branch=master)
 
 </h2>
