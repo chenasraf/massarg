@@ -13,7 +13,8 @@ a way to parse the chain of commands, flags or options.
 
 And it should look good too, right?
 
-![colored shell output](https://user-images.githubusercontent.com/167217/126086652-433a523f-2f0a-427c-b58a-18b2131489f4.png)
+![Previw of shell help output](https://github.com/chenasraf/massarg/assets/167217/37dc8d4f-8e14-4040-9986-1d3113314731)
+
 
 ## Features
 
