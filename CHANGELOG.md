@@ -1,5 +1,60 @@
 # Change Log
 
+# [2.0.0](https://github.com/chenasraf/massarg/compare/v1.0.6...v2.0.0) (2024-01-31)
+
+
+### Bug Fixes
+
+* add spacing between args, update sample ([dbbb12c](https://github.com/chenasraf/massarg/commit/dbbb12cd6a0a724e37655e6d49d1bb53b881dc8f))
+* bugfixes, build updates ([ecd3a20](https://github.com/chenasraf/massarg/commit/ecd3a20463cc2715b7d7c723c741999f812c40e2))
+* build ([cdc9118](https://github.com/chenasraf/massarg/commit/cdc9118f6d8fe8f509fbc7e3d12854cf1376c762))
+* command/option parsing priorities ([5129528](https://github.com/chenasraf/massarg/commit/5129528339579af6e778c8c4195717539dd4f189))
+* default options & default values ([84b2599](https://github.com/chenasraf/massarg/commit/84b2599454cf1edae4d0380b6058b7c3f5e29625))
+* detect the correct flag syntax in all cases ([08192b9](https://github.com/chenasraf/massarg/commit/08192b9c277a2bf658b534a3d7e508ba3ebb0736))
+* docs ([0d3bb62](https://github.com/chenasraf/massarg/commit/0d3bb62d8b11fd23fbc6c006789a8c3d6cfa1db3))
+* error types ([8364f19](https://github.com/chenasraf/massarg/commit/8364f1998c1a322c5c91e92d246f0c27bf863a21))
+* exported types fixes ([941d2b3](https://github.com/chenasraf/massarg/commit/941d2b3ac871a10916c7ff8b071f7becfa21a4de))
+* flag negation ([d2426ec](https://github.com/chenasraf/massarg/commit/d2426ecde570da65b09c1b82c997623d9006fff4))
+* help output formatting/text ([eceeed5](https://github.com/chenasraf/massarg/commit/eceeed52c1cdf80edd632f5dda21226c96edeab2))
+* **help:** help subcommand default ([59c393d](https://github.com/chenasraf/massarg/commit/59c393d5f572772a7b81561cf38663658fcf8135))
+* let help flag ignore requirements ([203adba](https://github.com/chenasraf/massarg/commit/203adba62248696f4aad596fc5489d6209ee1aca))
+* move negation logic to MassargFlag ([359d802](https://github.com/chenasraf/massarg/commit/359d802c824db593f2baceeaa3c4f2140b7d684d))
+* required options ([aaa4ecd](https://github.com/chenasraf/massarg/commit/aaa4ecd9d2fa2ba1d3db7539c7bb25ca585eea75))
+* simplify option help output, fix default value display ([c340280](https://github.com/chenasraf/massarg/commit/c34028059ed2e9a0cee7a4493c18fa829869fe7a))
+* split negation labels to 2 lines ([34fd299](https://github.com/chenasraf/massarg/commit/34fd299674cf36701a45c1ded9a0db83691b59c7))
+* support help option with early quit ([185939b](https://github.com/chenasraf/massarg/commit/185939bd216c6419969882c8020932baac14eab6))
+* type err ([852ce3f](https://github.com/chenasraf/massarg/commit/852ce3f3f6b2b456d3380c0246ea4aeeda515e29))
+* type inferences ([c92785e](https://github.com/chenasraf/massarg/commit/c92785e74606ed52a2d241790810a4cc926105bf))
+
+
+### Continuous Integration
+
+* update release config ([6eb382d](https://github.com/chenasraf/massarg/commit/6eb382d5c907d6142039ae6a262b1275d8d94634))
+
+
+### Features
+
+* array & typed options ([eca10e4](https://github.com/chenasraf/massarg/commit/eca10e4c1d1423d84f0196e49b41aa08e1b9444e))
+* built-in help command + flag ([f0ee853](https://github.com/chenasraf/massarg/commit/f0ee853dbe47ff84a5a8fe5adbc082612f3a8b47))
+* default value in help ([7e5f15a](https://github.com/chenasraf/massarg/commit/7e5f15a18d75cd6c3874756009fd604b95ee3fc4))
+* different opt output name (default camelCase) ([76e0f85](https://github.com/chenasraf/massarg/commit/76e0f85e00af77440625c5f606cbb315c1c6afe5))
+* don't auto-wrap footer text ([b6d6583](https://github.com/chenasraf/massarg/commit/b6d6583ef288f91c567befcff2ffc615453eb715))
+* don't auto-wrap footer text ([6e947a4](https://github.com/chenasraf/massarg/commit/6e947a434040614a56fcaf9203f58319359622c4))
+* example lines, help style updates ([c042a34](https://github.com/chenasraf/massarg/commit/c042a3481cf3aa418d13c909306e956ff1303a66))
+* global column width ([70dfd55](https://github.com/chenasraf/massarg/commit/70dfd55be7dd2b44ed16e8dd739d5ea9ecda0c3e))
+* help generator ([4051864](https://github.com/chenasraf/massarg/commit/4051864429dd1250343cb824fca738c47a45dace))
+* **help:** update styles ([da59628](https://github.com/chenasraf/massarg/commit/da59628aba65b67443f8594147b000c9c6f40c72))
+* improve help config, update styles, fixes ([c397ec9](https://github.com/chenasraf/massarg/commit/c397ec9fd78d80985e41626540b7d17a10f21357))
+* new docs wip ([05bd42c](https://github.com/chenasraf/massarg/commit/05bd42c8e5c6dd38435821391951b36dfc039359))
+* pass main instance to run fn ([e110498](https://github.com/chenasraf/massarg/commit/e110498f3b89c2f60e6e8a7cacd033f900e84db8))
+* transform output name for options ([64545ae](https://github.com/chenasraf/massarg/commit/64545ae75089071c9174ef685645fbd13eb611a9))
+* v2 poc ([5476327](https://github.com/chenasraf/massarg/commit/54763276e7479c2c5fbba1f37eccf4fee1a5f9a5))
+
+
+### BREAKING CHANGES
+
+* recreated massarg package
+
 ## 2.0.0-pre.12 (2024-01-29)
 
 * chore(release): 2.0.0-pre.12 [skip ci] ([5f23a57](https://github.com/chenasraf/massarg/commit/5f23a57))

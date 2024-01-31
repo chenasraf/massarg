@@ -1,6 +1,6 @@
 {
   "name": "massarg",
-  "version": "2.0.0-pre.13",
+  "version": "2.0.0",
   "description": "Flexible, powerful, and simple command/argument parser for CLI applications",
   "keywords": [
     "shell",
