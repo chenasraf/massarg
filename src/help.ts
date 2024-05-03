@@ -52,8 +52,6 @@ export const HelpConfig = z.object({
   /** Options for generating the table of commands */
   commandOptions: GenerateTableCommandConfig.omit({
     lineLength: true,
-    dislayDefaultValue: true,
-    defaultValueStyle: true,
   }).optional(),
   /** Options for generating the table of options */
   optionOptions: GenerateTableOptionConfig.omit({ lineLength: true }).optional(),
