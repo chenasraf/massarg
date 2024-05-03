@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.0.1](https://github.com/chenasraf/massarg/compare/v2.0.0...v2.0.1) (2024-05-03)
+
+
+### Bug Fixes
+
+* remove unecessary keys ([e44510d](https://github.com/chenasraf/massarg/commit/e44510dca49534e0d2be8a15875e70970609551b))
+
 # [2.0.0](https://github.com/chenasraf/massarg/compare/v1.0.6...v2.0.0) (2024-01-31)
 
 
