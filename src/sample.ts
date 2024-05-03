@@ -15,6 +15,14 @@ const echoCmd = massarg<{}>({
     console.log('Echoing back', opts)
   },
 })
+const throwCmd = massarg<{}>({
+  name: 'throw',
+  description: 'Throw an error',
+  aliases: ['t'],
+  run: () => {
+    throw new Error('This is an error')
+  },
+})
 const addCmd = massarg<{ component: string }>({
   name: 'add',
   description: 'Add a component',
@@ -89,7 +97,7 @@ const main = massarg<A>({
       displayNegations: true,
     },
   })
-  .main((opts, parser) => {
+  .main((opts, _parser) => {
     console.log('Main command - printing all opts')
     console.log(opts, '\n')
     if (opts.bool) {
@@ -99,6 +107,7 @@ const main = massarg<A>({
   .command(echoCmd)
   .command(addCmd)
   .command(removeCmd)
+  .command(throwCmd)
   .flag({
     name: 'bool',
     description: 'Example boolean option',
