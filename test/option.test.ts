@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { MassargCommand } from '../src/command'
 import { massarg } from '../src/index'
 
@@ -14,7 +15,7 @@ describe('option', () => {
     ).toBeInstanceOf(MassargCommand)
   })
   test('validate', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts).option({
         name: 'test2',
@@ -26,7 +27,7 @@ describe('option', () => {
     error.mockRestore()
   })
   test('add duplicate', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts)
         .option({
@@ -61,7 +62,7 @@ describe('option', () => {
     expect(command.getArgs(['123'])).toHaveProperty('def', '123')
   })
   test('add 2 defaults', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts)
         .option({
@@ -91,7 +92,7 @@ describe('option', () => {
     expect(command.getArgs(['--test2', 'test'])).toHaveProperty('test', 'test')
   })
   test('required', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => { })
     const command = massarg(opts).option({
       name: 'test2',
       description: 'test2',
@@ -112,7 +113,7 @@ describe('flag', () => {
     )
   })
   test('add duplicate', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts)
         .flag({ name: 'test2', description: 'test2', aliases: [] })
@@ -121,7 +122,7 @@ describe('flag', () => {
     error.mockRestore()
   })
   test('validate', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts).flag({
         name: 'test2',
@@ -133,7 +134,7 @@ describe('flag', () => {
   })
   describe('negation', () => {
     test('no negation', () => {
-      const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+      const error = vi.spyOn(console, 'error').mockImplementation(() => { })
       const command = massarg(opts).flag({ name: 'test2', description: 'test2', aliases: [] })
       expect(() => command.getArgs(['--no-test2'])).toThrow(
         'test2: Option test2 cannot be negated (received: "--no-test2")',

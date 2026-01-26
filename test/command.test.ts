@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { MassargCommand } from '../src/command'
 import { massarg } from '../src/index'
 
@@ -13,26 +14,26 @@ describe('sub command', () => {
   test('add', () => {
     const command = massarg(opts)
     expect(command.command).toBeInstanceOf(Function)
-    expect(command.command({ name: 'test2', description: 'test2', run: jest.fn() })).toBeInstanceOf(
+    expect(command.command({ name: 'test2', description: 'test2', run: vi.fn() })).toBeInstanceOf(
       MassargCommand,
     )
   })
   test('add duplicate', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts)
-        .command({ name: 'test2', description: 'test2', run: jest.fn() })
-        .command({ name: 'test2', description: 'test2', run: jest.fn() }),
+        .command({ name: 'test2', description: 'test2', run: vi.fn() })
+        .command({ name: 'test2', description: 'test2', run: vi.fn() }),
     ).toThrow('Command "test2" already exists')
     error.mockRestore()
   })
   test('validate', () => {
-    const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+    const error = vi.spyOn(console, 'error').mockImplementation(() => { })
     expect(() =>
       massarg(opts).command({
         name: 'test2',
         description: 123 as any,
-        run: jest.fn(),
+        run: vi.fn(),
       }),
     ).toThrow('Invalid input: expected string, received number')
     error.mockRestore()
@@ -56,7 +57,7 @@ describe('getArgs', () => {
   test('stops after command', () => {
     expect(
       massarg(opts)
-        .command({ name: 'test', description: 'test', run: jest.fn() })
+        .command({ name: 'test', description: 'test', run: vi.fn() })
         .getArgs(['test', '--test', 'test']),
     ).toEqual({ extra: ['--test', 'test'] })
   })
@@ -130,7 +131,7 @@ describe('getArgs', () => {
         .command({
           name: 'test3',
           description: 'test3',
-          run: jest.fn(),
+          run: vi.fn(),
         })
         .option({
           name: 'test',
@@ -147,7 +148,7 @@ describe('getArgs', () => {
         .command({
           name: 'test3',
           description: 'test3',
-          run: jest.fn(),
+          run: vi.fn(),
         })
         .option({
           name: 'test',
@@ -161,7 +162,7 @@ describe('getArgs', () => {
 
 describe('parse', () => {
   test('runs command', () => {
-    const fn = jest.fn()
+    const fn = vi.fn()
     const command = massarg(opts).command({
       name: 'test',
       description: 'test',
@@ -172,7 +173,7 @@ describe('parse', () => {
     expect(fn).toHaveBeenCalled()
   })
   test('runs main', () => {
-    const fn = jest.fn()
+    const fn = vi.fn()
     const command = massarg(opts)
       .main(fn)
       .flag({ name: 'test', description: 'test', aliases: [] })
@@ -183,7 +184,7 @@ describe('parse', () => {
     expect(fn).toHaveBeenCalledWith({}, command)
   })
   test('runs main with args', () => {
-    const fn = jest.fn()
+    const fn = vi.fn()
     const command = massarg(opts)
       .option({ name: 'test', description: 'test', aliases: [] })
       .main(fn)
@@ -204,7 +205,7 @@ describe('parse', () => {
 
 describe('main', () => {
   test('add', () => {
-    const fn = jest.fn()
+    const fn = vi.fn()
     const command = massarg(opts)
     expect(command.main).toBeInstanceOf(Function)
     expect(command.main(fn)).toBeInstanceOf(MassargCommand)
@@ -212,12 +213,12 @@ describe('main', () => {
 })
 
 describe('onError', () => {
-  let mockExit: jest.SpyInstance
-  let mockConsoleError: jest.SpyInstance
+  let mockExit: ReturnType<typeof vi.spyOn>
+  let mockConsoleError: ReturnType<typeof vi.spyOn>
 
   beforeEach(() => {
-    mockExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never)
-    mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {})
+    mockExit = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
+    mockConsoleError = vi.spyOn(console, 'error').mockImplementation(() => {})
   })
 
   afterEach(() => {
@@ -226,7 +227,7 @@ describe('onError', () => {
   })
 
   test('add handler', () => {
-    const handler = jest.fn()
+    const handler = vi.fn()
     const command = massarg(opts)
     expect(command.onError).toBeInstanceOf(Function)
     expect(command.onError(handler)).toBeInstanceOf(MassargCommand)
@@ -246,7 +247,7 @@ describe('onError', () => {
   })
 
   test('custom error handler is called', () => {
-    const handler = jest.fn()
+    const handler = vi.fn()
     const command = massarg(opts)
       .onError(handler)
       .option({
@@ -263,7 +264,7 @@ describe('onError', () => {
   })
 
   test('custom error handler overrides default', () => {
-    const handler = jest.fn()
+    const handler = vi.fn()
     const command = massarg(opts)
       .onError(handler)
       .option({
@@ -279,7 +280,7 @@ describe('onError', () => {
   })
 
   test('error handler catches errors from run function', () => {
-    const handler = jest.fn()
+    const handler = vi.fn()
     const command = massarg(opts)
       .onError(handler)
       .main(() => {
@@ -293,7 +294,7 @@ describe('onError', () => {
   })
 
   test('error handler propagates to subcommands', () => {
-    const handler = jest.fn()
+    const handler = vi.fn()
     const command = massarg(opts)
       .onError(handler)
       .command({

@@ -18,20 +18,18 @@
     "build": "tsc -p tsconfig.build.json && cp package.json README.md build",
     "dev": "tsc --watch",
     "cmd": "ts-node src/sample.ts",
-    "test": "jest",
+    "test": "vitest run",
     "docs:build": "cd docs && pnpm build",
     "docs:watch": "cd docs && pnpm start",
     "docs:deploy": "pnpm docs:build && gh-pages -d docs"
   },
   "devDependencies": {
-    "@types/jest": "^30.0.0",
     "@types/node": "^25.0.10",
     "gh-pages": "^6.3.0",
-    "jest": "^30.2.0",
     "prettier": "^3.8.1",
-    "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.0.0"
   },
   "dependencies": {
     "zod": "^4.3.6"

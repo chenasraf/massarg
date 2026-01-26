@@ -1,3 +1,4 @@
+import { vi } from 'vitest'
 import { defaultHelpConfig } from '../src/help'
 import { massarg } from '../src/index'
 
@@ -38,8 +39,8 @@ test('prints help from command', () => {
   const command = massarg(opts).help({
     bindCommand: true,
   })
-  const log = jest.spyOn(console, 'log').mockImplementation(() => { })
-  const error = jest.spyOn(console, 'error').mockImplementation(() => { })
+  const log = vi.spyOn(console, 'log').mockImplementation(() => { })
+  const error = vi.spyOn(console, 'error').mockImplementation(() => { })
   command.parse(['help'])
   expect(log).toHaveBeenCalled()
   log.mockRestore()
@@ -74,13 +75,13 @@ describe('prints help from option', () => {
     const command = massarg(opts).help({
       bindOption: true,
     })
-    const log = jest.spyOn(console, 'log').mockImplementation(() => { })
+    const log = vi.spyOn(console, 'log').mockImplementation(() => { })
     command.parse(['--help'])
     expect(log).toHaveBeenCalled()
   })
 
   test('when main command', () => {
-    const mainCmd = jest.fn()
+    const mainCmd = vi.fn()
     const command2 = massarg(opts)
       .help({
         bindOption: true,
@@ -101,7 +102,7 @@ describe('prints help from option', () => {
       .help({
         bindOption: true,
       })
-    const log = jest.spyOn(console, 'log').mockImplementation(() => { })
+    const log = vi.spyOn(console, 'log').mockImplementation(() => { })
     command.parse(['--help'])
     expect(log).toHaveBeenCalled()
   })
@@ -113,7 +114,7 @@ test('help string', () => {
 })
 
 test('print help', () => {
-  const log = jest.spyOn(console, 'log').mockImplementation(() => { })
+  const log = vi.spyOn(console, 'log').mockImplementation(() => { })
   const command = massarg(opts)
   command.printHelp()
   expect(log).toHaveBeenCalled()
