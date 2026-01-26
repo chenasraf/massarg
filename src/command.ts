@@ -399,7 +399,18 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
     process.on('unhandledRejection', handleRejection)
 
     try {
-      this.getArgs(argv, args, parent, true)
+      const result = this.getArgs(argv, args, parent, true)
+
+      // Handle async run functions
+      if (result instanceof Promise) {
+        return result
+          .then(() => cleanup())
+          .catch((e) => {
+            cleanup()
+            this.handleError(e)
+          })
+      }
+
       cleanup()
     } catch (e) {
       cleanup()
@@ -520,7 +531,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
 
       // no sub command found, run main command
       if (this._run) {
-        this._run(this.args as Args, parent ?? this)
+        return this._run(this.args as Args, parent ?? this)
       }
     } catch (e) {
       if (isZodError(e)) {

@@ -309,4 +309,20 @@ describe('onError', () => {
     expect(handler).toHaveBeenCalled()
     expect(handler.mock.calls[0][0].message).toBe('sub error')
   })
+
+  test('error handler catches async errors', async () => {
+    const handler = vi.fn()
+    const command = massarg(opts)
+      .onError(handler)
+      .main(async () => {
+        await Promise.resolve()
+        throw new Error('async error')
+      })
+
+    await command.parse([])
+
+    expect(handler).toHaveBeenCalled()
+    expect(handler.mock.calls[0][0].message).toBe('async error')
+    expect(mockExit).toHaveBeenCalledWith(1)
+  })
 })
