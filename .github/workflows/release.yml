@@ -55,7 +55,7 @@ jobs:
         run: pnpm build
 
       - name: Publish to NPM
-        run: pnpm publish ./build --access public --no-git-checks --provenance
+        run: npm publish ./build --access public --no-git-checks --provenance
 
   docs:
     name: Build & Deploy Docs
