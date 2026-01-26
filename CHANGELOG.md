@@ -1,5 +1,12 @@
 # Change Log
 
+## [2.1.1](https://github.com/chenasraf/massarg/compare/v2.1.0...v2.1.1) (2026-01-26)
+
+
+### Bug Fixes
+
+* async run error handling ([4de92ef](https://github.com/chenasraf/massarg/commit/4de92efef23144950704e976fac0d2a0340116aa))
+
 ## [2.1.0](https://github.com/chenasraf/massarg/compare/v2.0.1...v2.1.0) (2026-01-26)
 
 
