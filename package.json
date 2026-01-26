@@ -21,23 +21,14 @@
     "test": "jest",
     "docs:build": "cd docs && pnpm build",
     "docs:watch": "cd docs && pnpm start",
-    "docs:deploy": "pnpm docs:build && gh-pages -d docs",
-    "semantic-release": "semantic-release",
-    "changelog": "conventional-changelog -i CHANGELOG.md -s -r 0; echo \"# Change Log\n\n$(cat CHANGELOG.md)\" > CHANGELOG.md"
+    "docs:deploy": "pnpm docs:build && gh-pages -d docs"
   },
   "devDependencies": {
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/exec": "^7.1.0",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/release-notes-generator": "^14.1.0",
     "@types/jest": "^30.0.0",
     "@types/node": "^25.0.10",
-    "conventional-changelog": "^7.1.1",
-    "conventional-changelog-cli": "^5.0.0",
     "gh-pages": "^6.3.0",
     "jest": "^30.2.0",
     "prettier": "^3.8.1",
-    "semantic-release": "^25.0.2",
     "ts-jest": "^29.4.6",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
