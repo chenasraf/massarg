@@ -55,9 +55,7 @@ jobs:
         run: pnpm build
 
       - name: Publish to NPM
-        run: pnpm publish ./build --access public --no-git-checks
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm publish ./build --access public --no-git-checks --provenance
 
   docs:
     name: Build & Deploy Docs
