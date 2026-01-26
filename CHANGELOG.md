@@ -1,5 +1,17 @@
 # Change Log
 
+## [2.1.0](https://github.com/chenasraf/massarg/compare/v2.0.1...v2.1.0) (2026-01-26)
+
+
+### Features
+
+* add error handling ([818fb9c](https://github.com/chenasraf/massarg/commit/818fb9c34ee1180a6c6afc3fa3a4c1bfac3a94d7))
+
+
+### Bug Fixes
+
+* cleanup error listeners after parse ([e7e635c](https://github.com/chenasraf/massarg/commit/e7e635c91c698d4a5bee2ac322c6c8acf1442048))
+
 ## [2.0.1](https://github.com/chenasraf/massarg/compare/v2.0.0...v2.0.1) (2024-05-03)
 
 
