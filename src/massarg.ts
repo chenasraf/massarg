@@ -1,4 +1,6 @@
-import { ArgsObject, CommandConfig, MassargCommand } from './command'
+import { ArgsObject, CommandConfig, ErrorHandler, MassargCommand } from './command'
+
+export type { ErrorHandler }
 
 /** A minimal command config that can be used to create a top-level command. */
 export type MinimalCommandConfig<Args extends ArgsObject = ArgsObject> = Omit<

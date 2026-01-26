@@ -34,6 +34,7 @@ And it should look good too, right?
 - Required options
 - Options with multiple values
 - Nameless options
+- Built-in error handling with customizable handlers
 - Automatically generated help text:
   - Customizable colors
   - Customizable header and footer text
@@ -142,6 +143,38 @@ const parser = massarg({
     },
   })
 ```
+
+### Error Handling
+
+By default, massarg catches all errors and displays a friendly error message in red to stderr,
+then exits with code 1. You can customize this behavior with the `.onError()` method:
+
+```ts
+massarg({
+  name: 'my-cli',
+  description: 'My CLI application',
+})
+  .option({
+    name: 'config',
+    description: 'Config file path',
+    aliases: ['c'],
+    required: true,
+  })
+  // Custom error handler
+  .onError((error) => {
+    console.error(`Error: ${error.message}`)
+    // Log to external service, show custom UI, etc.
+  })
+  .parse()
+```
+
+**Error handling features:**
+
+- **Default handler**: Logs error message in red to stderr
+- **Custom handler**: Use `.onError(callback)` to override the default behavior
+- **Automatic exit**: Process exits with code 1 after any error (regardless of handler)
+- **Process-level handling**: Handlers also catch `uncaughtException` and `unhandledRejection`
+- **Handler inheritance**: Error handlers propagate from parent commands to subcommands
 
 ## Documentation
 

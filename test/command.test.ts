@@ -210,3 +210,102 @@ describe('main', () => {
     expect(command.main(fn)).toBeInstanceOf(MassargCommand)
   })
 })
+
+describe('onError', () => {
+  let mockExit: jest.SpyInstance
+  let mockConsoleError: jest.SpyInstance
+
+  beforeEach(() => {
+    mockExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never)
+    mockConsoleError = jest.spyOn(console, 'error').mockImplementation(() => {})
+  })
+
+  afterEach(() => {
+    mockExit.mockRestore()
+    mockConsoleError.mockRestore()
+  })
+
+  test('add handler', () => {
+    const handler = jest.fn()
+    const command = massarg(opts)
+    expect(command.onError).toBeInstanceOf(Function)
+    expect(command.onError(handler)).toBeInstanceOf(MassargCommand)
+  })
+
+  test('default error handler logs to stderr', () => {
+    const command = massarg(opts).option({
+      name: 'required-opt',
+      description: 'required option',
+      aliases: [],
+      required: true,
+    })
+    command.parse([])
+
+    expect(mockConsoleError).toHaveBeenCalled()
+    expect(mockExit).toHaveBeenCalledWith(1)
+  })
+
+  test('custom error handler is called', () => {
+    const handler = jest.fn()
+    const command = massarg(opts)
+      .onError(handler)
+      .option({
+        name: 'required-opt',
+        description: 'required option',
+        aliases: [],
+        required: true,
+      })
+    command.parse([])
+
+    expect(handler).toHaveBeenCalled()
+    expect(handler.mock.calls[0][0]).toBeInstanceOf(Error)
+    expect(mockExit).toHaveBeenCalledWith(1)
+  })
+
+  test('custom error handler overrides default', () => {
+    const handler = jest.fn()
+    const command = massarg(opts)
+      .onError(handler)
+      .option({
+        name: 'required-opt',
+        description: 'required option',
+        aliases: [],
+        required: true,
+      })
+    command.parse([])
+
+    expect(handler).toHaveBeenCalled()
+    expect(mockConsoleError).not.toHaveBeenCalled()
+  })
+
+  test('error handler catches errors from run function', () => {
+    const handler = jest.fn()
+    const command = massarg(opts)
+      .onError(handler)
+      .main(() => {
+        throw new Error('main error')
+      })
+    command.parse([])
+
+    expect(handler).toHaveBeenCalled()
+    expect(handler.mock.calls[0][0].message).toBe('main error')
+    expect(mockExit).toHaveBeenCalledWith(1)
+  })
+
+  test('error handler propagates to subcommands', () => {
+    const handler = jest.fn()
+    const command = massarg(opts)
+      .onError(handler)
+      .command({
+        name: 'sub',
+        description: 'sub command',
+        run: () => {
+          throw new Error('sub error')
+        },
+      })
+    command.parse(['sub'])
+
+    expect(handler).toHaveBeenCalled()
+    expect(handler.mock.calls[0][0].message).toBe('sub error')
+  })
+})

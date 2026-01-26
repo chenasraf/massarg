@@ -49,6 +49,12 @@ export type Runner<Args extends ArgsObject> = (
 ) => Promise<void> | void
 
 /**
+ * Error handler callback type.
+ * Called when an error occurs during parsing or command execution.
+ */
+export type ErrorHandler = (error: Error) => void
+
+/**
  * A command is a named function that can be invoked with a set of options.
  *
  * Commands can have sub-commands, which can have their own sub-commands, and so on.
@@ -79,6 +85,7 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
   examples: MassargExample[] = []
   args: Partial<Args> = {}
   private _helpConfig: HelpConfig
+  private _errorHandler?: ErrorHandler
   parent?: MassargCommand<any>
   optionPrefix = DEFAULT_OPT_FULL_PREFIX
   aliasPrefix = DEFAULT_OPT_SHORT_PREFIX
@@ -322,6 +329,46 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
   }
 
   /**
+   * Configure a custom error handler for this command.
+   *
+   * By default, errors are caught and logged to stderr with a red color.
+   * Use this method to override the default error handling behavior.
+   *
+   * Note: The process will always exit with code 1 after an error, regardless of the handler.
+   *
+   * @example
+   * ```ts
+   * massarg(options)
+   *   .onError((error) => {
+   *     console.error('Custom error:', error.message)
+   *     // Log to external service, show custom UI, etc.
+   *   })
+   *   .parse()
+   * ```
+   */
+  onError(handler: ErrorHandler): MassargCommand<Args> {
+    this._errorHandler = handler
+    return this
+  }
+
+  /** Get the error handler, checking parent chain if not set locally */
+  private get errorHandler(): ErrorHandler {
+    if (this._errorHandler) {
+      return this._errorHandler
+    }
+    if (this.parent) {
+      return this.parent.errorHandler
+    }
+    return this.defaultErrorHandler
+  }
+
+  /** Default error handler that logs red error message to stderr */
+  private defaultErrorHandler = (e: Error): void => {
+    const message = getErrorMessage(e)
+    console.error(format(message, { color: 'red' }))
+  }
+
+  /**
    * Parse the given arguments and run the command or sub-commands along with the given options
    * and flags.
    *
@@ -333,11 +380,28 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
     args?: Partial<Args>,
     parent?: MassargCommand<Args>,
   ): Promise<void> | void {
+    // Set up process-level error handlers
+    const handleProcessError = (error: Error) => {
+      this.handleError(error)
+    }
+    process.on('uncaughtException', handleProcessError)
+    process.on('unhandledRejection', (reason) => {
+      const error = reason instanceof Error ? reason : new Error(String(reason))
+      handleProcessError(error)
+    })
+
     try {
       this.getArgs(argv, args, parent, true)
     } catch (e) {
-      this.printError(e)
+      this.handleError(e)
     }
+  }
+
+  /** Handle an error using the configured error handler, then exit */
+  private handleError(e: unknown): void {
+    const error = e instanceof Error ? e : new Error(getErrorMessage(e))
+    this.errorHandler(error)
+    process.exit(1)
   }
 
   private printError(e: unknown) {
