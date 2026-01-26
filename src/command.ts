@@ -15,7 +15,7 @@ import { DeepRequired, _setOrPush, _deepMerge, getErrorMessage, capitalize } fro
 import { MassargExample, ExampleConfig } from './example'
 import { format } from './style'
 
-export const CommandConfig = <RunArgs extends ArgsObject = ArgsObject>(args: z.ZodType<RunArgs>) =>
+export const CommandConfig = <RunArgs extends ArgsObject = ArgsObject>(_args: z.ZodType<RunArgs>) =>
   z.object({
     /** Command name */
     name: z.string(),
@@ -27,10 +27,7 @@ export const CommandConfig = <RunArgs extends ArgsObject = ArgsObject>(args: z.Z
      * Function used when invoking this command. It receives the parsed options and the primary
      * instance of Massarg used to invoke this command (the top-level instance)
      */
-    run: z
-      .function()
-      .args(args, z.any())
-      .returns(z.union([z.promise(z.void()), z.void()])) as z.ZodType<Runner<RunArgs>>,
+    run: z.function() as unknown as z.ZodType<Runner<RunArgs>>,
     /** The prefix to match before option names, e.g. `--` */
     optionPrefix: z.string().default(DEFAULT_OPT_FULL_PREFIX).optional(),
     /** The prefix to match before option aliases, e.g. `-` */

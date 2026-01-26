@@ -1,5 +1,4 @@
 import z from 'zod'
-import { _zodEnumFromObjKeys } from './utils'
 export { strConcat, indent } from './utils'
 
 export const ansiStyles = {
@@ -26,12 +25,14 @@ export const ansiColors = {
   brightMagenta: '\x1b[95m',
   brightCyan: '\x1b[96m',
   brightWhite: '\x1b[97m',
-}
+} as const
+
+export type AnsiColor = keyof typeof ansiColors
 
 export const StringStyle = z.object({
   bold: z.boolean().optional(),
   underline: z.boolean().optional(),
-  color: _zodEnumFromObjKeys(ansiColors).optional(),
+  color: z.enum(Object.keys(ansiColors) as [AnsiColor, ...AnsiColor[]]).optional(),
   reset: z.boolean().default(true).optional(),
 })
 
@@ -39,7 +40,7 @@ export type StringStyle = z.infer<typeof StringStyle>
 
 export function format(string: string, style: StringStyle = {}): string {
   const { color, bold, underline, reset = true } = style
-  const colorCode = color ? ansiColors[color] : ''
+  const colorCode = color ? ansiColors[color as AnsiColor] : ''
   const boldCode = bold ? ansiStyles.bold : ''
   const underlineCode = underline ? ansiStyles.underline : ''
   const resetCode = reset ? ansiStyles.reset : ''

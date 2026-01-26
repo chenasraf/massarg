@@ -34,7 +34,7 @@ describe('sub command', () => {
         description: 123 as any,
         run: jest.fn(),
       }),
-    ).toThrow('Expected string, received number')
+    ).toThrow('Invalid input: expected string, received number')
     error.mockRestore()
   })
 })

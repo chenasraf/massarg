@@ -68,9 +68,9 @@ export function indent(str: Parseable | Parseable[], indent = 2): string {
 }
 
 /** @internal */
-export function _zodEnumFromObjKeys<K extends string>(obj: Record<K, any>): z.ZodEnum<[K, ...K[]]> {
-  const [firstKey, ...otherKeys] = Object.keys(obj) as K[]
-  return z.enum([firstKey, ...otherKeys])
+export function _zodEnumFromObjKeys<K extends string>(obj: Record<K, any>) {
+  const keys = Object.keys(obj) as [K, ...K[]]
+  return z.enum(keys)
 }
 
 /** @internal */

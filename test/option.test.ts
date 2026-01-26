@@ -22,7 +22,7 @@ describe('option', () => {
         aliases: [],
         defaultValue: '',
       }),
-    ).toThrow('Expected string, received number')
+    ).toThrow('Invalid input: expected string, received number')
     error.mockRestore()
   })
   test('add duplicate', () => {
@@ -128,7 +128,7 @@ describe('flag', () => {
         description: 123 as any,
         aliases: [],
       }),
-    ).toThrow('Expected string, received number')
+    ).toThrow('Invalid input: expected string, received number')
     error.mockRestore()
   })
   describe('negation', () => {

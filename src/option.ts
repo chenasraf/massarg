@@ -19,9 +19,7 @@ export const OptionConfig = <OptionType, Args extends ArgsObject = ArgsObject>(
      * Parse the value of the option. You can return any type here, or throw an error if the value
      * is invalid.
      */
-    parse: z.function().args(z.string(), z.any()).returns(type).optional() as z.ZodOptional<
-      z.ZodType<Parser<Args, OptionType>>
-    >,
+    parse: z.function().optional() as unknown as z.ZodOptional<z.ZodType<Parser<Args, OptionType>>>,
     /**
      * Whether the option is an array.
      *
