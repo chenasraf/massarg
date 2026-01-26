@@ -381,18 +381,28 @@ export class MassargCommand<Args extends ArgsObject = ArgsObject>
     parent?: MassargCommand<Args>,
   ): Promise<void> | void {
     // Set up process-level error handlers
-    const handleProcessError = (error: Error) => {
+    const handleUncaught = (error: Error) => {
+      cleanup()
       this.handleError(error)
     }
-    process.on('uncaughtException', handleProcessError)
-    process.on('unhandledRejection', (reason) => {
+    const handleRejection = (reason: unknown) => {
+      cleanup()
       const error = reason instanceof Error ? reason : new Error(String(reason))
-      handleProcessError(error)
-    })
+      this.handleError(error)
+    }
+    const cleanup = () => {
+      process.off('uncaughtException', handleUncaught)
+      process.off('unhandledRejection', handleRejection)
+    }
+
+    process.on('uncaughtException', handleUncaught)
+    process.on('unhandledRejection', handleRejection)
 
     try {
       this.getArgs(argv, args, parent, true)
+      cleanup()
     } catch (e) {
+      cleanup()
       this.handleError(e)
     }
   }
